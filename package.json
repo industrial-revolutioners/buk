@@ -1,0 +1,27 @@
+{
+  "name": "buk",
+  "version": "0.0.1",
+  "description": ".buk is a cube rolling puzzle game",
+  "main": "dist/main.js",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-util": "^3.0.7",
+    "tsify": "^1.0.3",
+    "typescript": "^1.8.10",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  },
+  "scripts": {
+    "develop": "gulp watch",
+    "build": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/industrialrevolutioners/buk.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/industrialrevolutioners/buk#readme"
+}
