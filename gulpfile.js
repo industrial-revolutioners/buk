@@ -1,6 +1,7 @@
 'use strict';
 
 const browserify = require('browserify');
+const browserSync = require('browser-sync').create();
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const sass = require('gulp-sass');
@@ -9,9 +10,17 @@ const vinylSourceStream = require('vinyl-source-stream');
 const watchify = require('watchify');
 
 // html ------------------------------------------------------------------------
-gulp.task('copy-html', () => {
+gulp.task('build-html', () => {
     return gulp.src(['./src/html/index.html'])
         .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('watch-html', ['build-html'], () => {
+    return gulp.watch('./src/html/index.html', () => {
+        return gulp.src('./src/html/index.html')
+            .pipe(gulp.dest('./dist'))
+            .pipe(browserSync.stream({match: '**/*.html'}));
+    });
 });
 
 // sass ------------------------------------------------------------------------
@@ -21,28 +30,47 @@ gulp.task('build-sass', () => {
         .pipe(gulp.dest('./dist/assets'))
 });
 
-gulp.task('watch-sass', () => {
-    gulp.watch('./src/sass/style.scss', ['build-sass']);
+gulp.task('watch-sass', ['build-sass'], () => {
+    return gulp.watch('./src/sass/style.scss', () => {
+        return gulp.src('./src/sass/style.scss')
+            .pipe(sass().on('error', sass.logError))
+            .pipe(gulp.dest('./dist/assets'))
+            .pipe(browserSync.stream({match: '**/*.css'}));
+    });
 });
 
 // ts --------------------------------------------------------------------------
-const bukBundle = browserify('./src/ts/main.ts', {debug: true}).plugin(tsify);
+const browserified = browserify('./src/ts/main.ts', {debug: true}).plugin(tsify);
 gulp.task('build-ts', () => {
-    bukBundle.bundle()
+    return browserified.bundle()
         .pipe(vinylSourceStream('main.js'))
         .pipe(gulp.dest('./dist/assets'));
 });
 
-// main tasks ------------------------------------------------------------------
-gulp.task('default', ['copy-html', 'build-sass', 'build-ts']);
-gulp.task('watch', ['default', 'watch-sass'], () => {
-    const watchedBrowserify = watchify(bukBundle);
+gulp.task('watch-ts', ['build-ts'], () => {
+    let watchedBrowserify = watchify(browserified);
 
-    watchedBrowserify.on('update', () => {
+    function bundle(){
         return watchedBrowserify
             .bundle()
             .pipe(vinylSourceStream('main.js'))
-            .pipe(gulp.dest('./dist/assets'));
+            .pipe(gulp.dest('./dist/assets'))
+            .pipe(browserSync.stream({match: '**/*.js'}));
+    }
+    bundle();
+
+    watchedBrowserify.on('update', bundle);
+    watchedBrowserify.on('log', gulpUtil.log);
+});
+
+// main tasks ------------------------------------------------------------------
+gulp.task('default', ['build-html', 'build-sass', 'build-ts']);
+gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts'], () => {
+    browserSync.init({
+        server: {
+            baseDir: './dist'
+        },
+        open: false,
+        notify: false
     });
-    watchedBrowserify.on("log", gulpUtil.log);
 });
