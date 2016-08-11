@@ -383,3 +383,4 @@ ENV/
 # Temporary data
 .ipynb_checkpoints/
 /typings/
+/dev/

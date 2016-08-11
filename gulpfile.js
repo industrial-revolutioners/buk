@@ -2,6 +2,7 @@
 
 const browserify = require('browserify');
 const browserSync = require('browser-sync').create();
+const errorify = require('errorify');
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const sass = require('gulp-sass');
@@ -40,27 +41,34 @@ gulp.task('watch-sass', ['build-sass'], () => {
 });
 
 // ts --------------------------------------------------------------------------
-const browserified = browserify('./src/ts/main.ts', {debug: true}).plugin(tsify);
 gulp.task('build-ts', () => {
+    let browserified = browserify('./src/ts/main.ts').plugin(tsify);
+
     return browserified.bundle()
         .pipe(vinylSourceStream('main.js'))
         .pipe(gulp.dest('./dist/assets'));
 });
 
-gulp.task('watch-ts', ['build-ts'], () => {
-    let watchedBrowserify = watchify(browserified);
+gulp.task('watch-ts', () => {
+    let b = browserify({
+        entries: ['./src/ts/main.ts'],
+        cache: {},
+        packageCache: {},
+        plugin: [tsify, watchify, errorify],
+        debug: true,
+    });
+
+    b.on('update', bundle);
+    b.on('log', gulpUtil.log);
+    bundle();
 
     function bundle(){
-        return watchedBrowserify
+        return b
             .bundle()
             .pipe(vinylSourceStream('main.js'))
             .pipe(gulp.dest('./dist/assets'))
             .pipe(browserSync.stream({match: '**/*.js'}));
     }
-    bundle();
-
-    watchedBrowserify.on('update', bundle);
-    watchedBrowserify.on('log', gulpUtil.log);
 });
 
 // main tasks ------------------------------------------------------------------
