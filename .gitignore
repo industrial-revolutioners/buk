@@ -384,3 +384,8 @@ ENV/
 .ipynb_checkpoints/
 /typings/
 /dev/
+
+# ignore VC project files
+*.njsproj
+*.sln
+.vscode/
