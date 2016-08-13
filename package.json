@@ -23,7 +23,8 @@
     "bootstrap": "npm install && typings install",
     "develop": "gulp watch",
     "build": "gulp",
-    "typings": "typings"
+    "typings": "typings",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",

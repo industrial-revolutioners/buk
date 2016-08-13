@@ -14,3 +14,18 @@ body {
 #canvas-wrapper {
   display: flex;
 }
+
+.event-source {
+  width: 100%;
+  height: 100%;
+}
+
+.event-source::after {
+  content: 'event-source';
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid red;
+  background: rgba(255, 0, 0, 0.1);
+}
