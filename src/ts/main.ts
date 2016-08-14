@@ -1,8 +1,14 @@
-import {events, getActiveInput, PlayerEvent} from './input';
+import {events, input, PlayerEvent, CameraDirectionEvent, CameraAttributeEvent} from './input';
 
-
-let input = getActiveInput();
 
 input.on(events.player.MOVE, (e: PlayerEvent) => {
-    console.log(e.direction);
+    console.log('player.MOVE', e);
+});
+
+input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
+    console.log('camera.ROTATE', e);
+});
+
+input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
+    console.log('camera.ZOOM', e);
 });

@@ -35,17 +35,22 @@ export interface CameraDirectionEvent {
 
 export interface CameraAttributeEvent {
     attribute: cameraAttributes
+    value: any
 }
 
-
-abstract class InputBase extends EventEmitter {
-    protected eventSource: HTMLElement;
+class Input extends EventEmitter {
+    public zoomDelta = 0.1;
+    private eventSource: HTMLElement;
+    private rotateAreaY: number;
 
     constructor(eventSourceElement: HTMLElement){
         super();
 
         this.setEventSource(eventSourceElement);
-        this.setupHandlers();
+
+        this.update();
+        this.setupKeyboardHandlers();
+        this.setupTouchHandlers();
     }
 
     getEventSource(): HTMLElement {
@@ -57,31 +62,107 @@ abstract class InputBase extends EventEmitter {
             throw new Error("Argument 'eventSourceElement' must be an HTMLElement instance.");
         }
 
+        eventSourceElement.setAttribute('tabindex', '1');
+        eventSourceElement.focus();
         eventSourceElement.classList.add(CLASS_NAME);
         this.eventSource = eventSourceElement;
     }
 
-    protected abstract setupHandlers(): void;
-}
+    setupKeyboardHandlers(): void{
+        let elem = this.eventSource;
 
+        elem.addEventListener('keydown', e => {
+            let eventName: string;
+            let eventObject: Object;
 
-export class TouchInput extends InputBase {
-    constructor(eventSourceElement: HTMLElement){
-        super(eventSourceElement);
+            switch(e.key){
+                case 'w':
+                case 'ArrowUp':
+                    eventName = events.player.MOVE;
+                    eventObject = <PlayerEvent>{direction: playerDirections.FRONT};
+                    break;
+                case 's':
+                case 'ArrowDown':
+                    eventName = events.player.MOVE;
+                    eventObject = <PlayerEvent>{direction: playerDirections.BACK};
+                    break;
+                case 'a':
+                case 'ArrowLeft':
+                    eventName = events.player.MOVE;
+                    eventObject = <PlayerEvent>{direction: playerDirections.LEFT};
+                    break;
+                case 'd':
+                case 'ArrowRight':
+                    eventName = events.player.MOVE;
+                    eventObject = <PlayerEvent>{direction: playerDirections.RIGHT};
+                    break;
+                case 'A':
+                    eventName = events.camera.ROTATE;
+                    eventObject = <CameraDirectionEvent>{direction: cameraDirections.CCW};
+                    break;
+                case 'D':
+                    eventName = events.camera.ROTATE;
+                    eventObject = <CameraDirectionEvent>{direction: cameraDirections.CW};
+                    break;
+                case 'W':
+                    eventName = events.camera.ZOOM;
+                    eventObject = <CameraAttributeEvent>{
+                        attribute: cameraAttributes.ZOOM,
+                        value: this.zoomDelta
+                    };
+                    break;
+                case 'S':
+                    eventName = events.camera.ZOOM;
+                    eventObject = <CameraAttributeEvent>{
+                        attribute: cameraAttributes.ZOOM,
+                        value: -1 * this.zoomDelta
+                    };
+                    break;
+                default:
+                    console.warn('Unhandled', e);
+                    return;
+            }
+
+            this.emit(eventName, eventObject);
+        });
     }
 
-    setupHandlers(){
-        this.eventSource.addEventListener('touchstart', function(){
-            console.log(arguments);
+    setupTouchHandlers(): void {
+        let elem = this.eventSource;
+
+        let startX: number;
+        let startY: number;
+
+        this.eventSource.addEventListener('touchstart', e => {
+            e.preventDefault();
+
+            let touch = e.changedTouches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
         });
 
-        this.eventSource.addEventListener('touchend', function(){
-            console.log(arguments);
-        })
+        this.eventSource.addEventListener('touchend', e => {
+            e.preventDefault();
+
+            let touch = e.changedTouches[0];
+            let endX = touch.clientX;
+            let endY = touch.clientY;
+
+            console.log(startX, startY, endX, endY, endX - startX, endY - startY);
+        });
+    }
+
+    update(): void {
+        let height = this.eventSource.clientHeight;
+
+        this.rotateAreaY = height * 0.95;
+
+        // TODO: Continue here
     }
 }
 
+export const input = new Input(canvasWrapper);
 
-export function getActiveInput(){
-    return new TouchInput(canvasWrapper);
-}
+window.addEventListener('resize', () => {
+    input.update();
+});
