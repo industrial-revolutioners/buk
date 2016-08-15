@@ -1,5 +1,11 @@
 import { EventEmitter } from "events";
-import { canvasWrapper } from './settings';
+import {
+    canvasWrapper,
+    rotateAreaY,
+    rotateSwipeThreshold, moveSwipeThreshold,
+    frontRange, backRange, leftRange, rightRange,
+    zoom
+} from './settings';
 
 export const CLASS_NAME: string = 'event-source';
 
@@ -13,20 +19,21 @@ export const events = Object.freeze({
     }
 });
 
-export const enum playerDirections {
+export enum playerDirections {
     FRONT, BACK, LEFT, RIGHT
 }
 
-export const enum cameraDirections {
+export enum cameraDirections {
     CW, CCW
 }
 
-export const enum cameraAttributes {
+export enum cameraAttributes {
     ZOOM
 }
 
 export interface PlayerEvent {
     direction: playerDirections,
+    angle: number
 }
 
 export interface CameraDirectionEvent {
@@ -128,36 +135,126 @@ class Input extends EventEmitter {
     }
 
     setupTouchHandlers(): void {
-        let elem = this.eventSource;
-
         let startX: number;
         let startY: number;
 
+        let dropEvent: boolean = false;
+        let isPinch: boolean = false;
+        let lastDistance: number;
+
         this.eventSource.addEventListener('touchstart', e => {
             e.preventDefault();
+
+            dropEvent = false;
+            isPinch = e.touches.length > 1;
 
             let touch = e.changedTouches[0];
             startX = touch.clientX;
             startY = touch.clientY;
         });
 
+        this.eventSource.addEventListener('touchmove', e => {
+            e.preventDefault();
+
+            if(isPinch){
+                let eventObject = <CameraAttributeEvent>{attribute: cameraAttributes.ZOOM};
+                let touch0 = e.touches[0];
+                let touch1 = e.touches[1];
+
+                var distance = Math.sqrt(
+                    Math.pow(touch0.clientX - touch1.clientX, 2) +
+                    Math.pow(touch0.clientY - touch0.clientY, 2)
+                );
+
+                if(!lastDistance){
+                    lastDistance = distance;
+                }
+
+                let distanceDelta = distance - lastDistance;
+                lastDistance = distance;
+
+                if(distanceDelta >= 0.4){
+                    eventObject.value = zoom;
+                    this.emit(events.camera.ZOOM, eventObject);
+                }
+                else if(distanceDelta <= -0.4) {
+                    eventObject.value = -1 * zoom;
+                    this.emit(events.camera.ZOOM, eventObject);
+                }
+            }
+        });
+
         this.eventSource.addEventListener('touchend', e => {
             e.preventDefault();
 
-            let touch = e.changedTouches[0];
-            let endX = touch.clientX;
-            let endY = touch.clientY;
+            if(isPinch){
+                isPinch = e.touches.length > 1;
+                if(!isPinch){
+                    lastDistance = null;
+                    dropEvent = true;
+                }
+                return;
+            }
 
-            console.log(startX, startY, endX, endY, endX - startX, endY - startY);
+            if(!dropEvent){
+                let touch = e.changedTouches[0];
+                let endX = touch.clientX;
+                let endY = touch.clientY;
+
+                let deltaX = endX - startX;
+                let deltaY = endY - startY;
+                if(startY >= this.rotateAreaY){
+                    if(Math.abs(deltaX) >= rotateSwipeThreshold){
+                        let eventName = events.camera.ROTATE;
+                        let eventObject = <CameraDirectionEvent>{};
+                        if(deltaX > 0){
+                            eventObject.direction = cameraDirections.CCW;
+                        }
+                        else {
+                            eventObject.direction = cameraDirections.CW;
+                        }
+
+                        this.emit(eventName, eventObject);
+                    }
+                }
+                else {
+                    let r = Math.sqrt(Math.abs(deltaX * deltaX) + Math.abs(deltaY * deltaY));
+                    let angle = -1 * ((Math.atan2(deltaY, deltaX) * (180 / Math.PI)));
+                    if(angle < 0){
+                        angle += 360;
+                    }
+
+                    if(r > moveSwipeThreshold){
+                        let eventName = events.player.MOVE;
+                        let eventObject = <PlayerEvent>{angle: angle};
+
+                        if(angle >= frontRange.from && angle < frontRange.to){
+                            eventObject.direction = playerDirections.FRONT;
+                        }
+                        else if(angle >= backRange.from && angle < backRange.to){
+                            eventObject.direction = playerDirections.BACK;
+                        }
+                        else if(angle >= leftRange.from && angle < leftRange.to){
+                            eventObject.direction = playerDirections.LEFT;
+                        }
+                        else if(angle >= rightRange.from && angle < rightRange.to){
+                            eventObject.direction = playerDirections.RIGHT;
+                        }
+                        else {
+                            throw new Error(`Angle ${angle} should never appear.`);
+                        }
+
+                        this.emit(eventName, eventObject);
+                    }
+                }
+            }
         });
     }
 
     update(): void {
         let height = this.eventSource.clientHeight;
 
-        this.rotateAreaY = height * 0.95;
-
-        // TODO: Continue here
+        this.rotateAreaY = height * rotateAreaY;
     }
 }
 

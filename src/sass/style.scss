@@ -22,7 +22,7 @@ body {
 }
 
 .event-source::after {
-  content: 'event-source';
+  content: attr(data-name);
   display: flex;
   width: 100%;
   align-items: center;
