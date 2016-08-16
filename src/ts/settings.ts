@@ -1,3 +1,11 @@
+/**
+ *
+ * settings.ts
+ * Defaults and constants for rendering and gesture handling
+ *
+ * @author Slapec
+ */
+
 import { WebGLRendererParameters } from 'three';
 
 export let rendererSettings: WebGLRendererParameters = {

@@ -1,5 +1,7 @@
 /**
- * Input events
+ * input.ts
+ *
+ * Input handles classes.
  * 
  * @author Slapec
  */
@@ -53,7 +55,7 @@ export interface CameraAttributeEvent {
     value: any
 }
 
-/** Input events */
+/** The default input handler. Handles keyboard and touch events */
 class Input extends EventEmitter {
     private eventSource: HTMLElement;
     private rotateAreaY: number;

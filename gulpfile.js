@@ -5,10 +5,18 @@ const browserSync = require('browser-sync').create();
 const errorify = require('errorify');
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
+const preprocess = require('gulp-preprocess');
 const sass = require('gulp-sass');
 const tsify = require('tsify');
+const vinylBuffer = require('vinyl-buffer');
 const vinylSourceStream = require('vinyl-source-stream');
 const watchify = require('watchify');
+
+const DEBUG_CONTEXT = {
+    context: {
+        DEBUG: true
+    }
+};
 
 // html ------------------------------------------------------------------------
 gulp.task('build-html', () => {
@@ -66,6 +74,8 @@ gulp.task('watch-ts', () => {
         return b
             .bundle()
             .pipe(vinylSourceStream('main.js'))
+            .pipe(vinylBuffer())
+            .pipe(preprocess(DEBUG_CONTEXT))
             .pipe(gulp.dest('./dist/assets'))
             .pipe(browserSync.stream({match: '**/*.js'}));
     }

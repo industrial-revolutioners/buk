@@ -33,7 +33,7 @@ class AvatarAnimations {
             .onComplete(function () {
                 if (DEBUG)
                     console.log("done");
-                Events.animationEvents.animationDone("event.mock");
+                // Events.animationEvents.animationDone("event.mock");
             })
             .start();
 

@@ -1,16 +1,14 @@
+/**
+ * main.ts
+ *
+ * buk - a cube rolling puzzle
+ *
+ * @author Caiwan
+ * @author Slapec
+ */
 
-import {
-    events, input, AvatarEvent,
-    CameraDirectionEvent, CameraAttributeEvent,
-    cameraDirections, cameraAttributes, avatarDirections} from './input';
-import * as TWEEN from 'tween.js';
 
-import { canvasWrapper } from './settings';
-
-import * as faszopm from './events'
-
-const DEBUG = false;
-
+import './events';
 
 
 /** Event sending mock and test stub */
@@ -35,5 +33,3 @@ const DEBUG = false;
 //         .then(newDelay(input.sendEvent))
 //         .then(newDelay(input.sendEvent));
 // }
-
-console.log(input);
