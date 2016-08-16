@@ -1,21 +1,49 @@
 import * as THREE from 'three';
+import * as TWEEN from 'tween.js';
 
+import { EventEmitter } from 'events';
+
+import { input, names } from './events'
+
+import { scene } from './objects'
 import { renderer } from './renderer';
 import { camera } from './camera';
 
-let scene = new THREE.Scene();
-
-let geometry = new THREE.BoxGeometry(1, 1, 1);
-let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-let cube = new THREE.Mesh(geometry, material);
-
-scene.add(cube);
+const DEBUG = false; 
 
 camera.position.z = 5;
 
-let render = () => {
-    requestAnimationFrame(render);
-    renderer.render(scene, camera);
+/** 
+ * Test all the events 
+ */
+
+/** Event delay mock */
+function newDelay(event: (any: any) => void) : () => Promise<{}>{
+    return function () : Promise<{}> {
+        return new Promise(function (resolve: () => void) {
+            console.log("invoke");
+            event.apply(input, arguments);
+            input.on(names.animation.done, function(){
+                if (DEBUG)
+                    console.log("resolve");
+                resolve();
+            })
+        });
+    }
 };
 
-render();
+newDelay(input.sendEvent)()
+    .then(newDelay(input.sendEvent))
+    .then(newDelay(input.sendEvent))
+    .then(newDelay(input.sendEvent));
+
+let render = function (time: number) {
+
+    TWEEN.update(time);
+
+    renderer.render(scene, camera);
+
+    requestAnimationFrame(render);
+};
+
+render(performance.now());
