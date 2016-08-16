@@ -1,14 +1,14 @@
 import {
-    events, input, PlayerEvent,
+    events, input, AvatarEvent,
     CameraDirectionEvent, CameraAttributeEvent,
-    cameraDirections, cameraAttributes, playerDirections} from './input';
+    cameraDirections, cameraAttributes, avatarDirections} from './input';
 
 import { canvasWrapper } from './settings';
 
 
-input.on(events.player.MOVE, (e: PlayerEvent) => {
-    console.log('player.MOVE', e);
-    canvasWrapper.dataset['name'] = `player.MOVE; direction=${playerDirections[e.direction]}`;
+input.on(events.avatar.MOVE, (e: AvatarEvent) => {
+    console.log('avatar.MOVE', e);
+    canvasWrapper.dataset['name'] = `avatar.MOVE; direction=${avatarDirections[e.direction]}`;
 });
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {

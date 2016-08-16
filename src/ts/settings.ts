@@ -25,3 +25,4 @@ export const rightRange: directionRange = {from: 270, to: 360};
 export const leftRange: directionRange = {from: 90, to: 180};
 
 export const zoom = 0.1;
+export const zoomThreshold = 0.4;

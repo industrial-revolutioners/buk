@@ -4,7 +4,7 @@ import {
     rotateAreaY,
     rotateSwipeThreshold, moveSwipeThreshold,
     frontRange, backRange, leftRange, rightRange,
-    zoom
+    zoom, zoomThreshold
 } from './settings';
 
 export const CLASS_NAME: string = 'event-source';
@@ -14,12 +14,12 @@ export const events = Object.freeze({
         ROTATE: 'camera.rotate',
         ZOOM: 'camera.zoom'
     },
-    player: {
-        MOVE: 'player.move'
+    avatar: {
+        MOVE: 'avatar.move'
     }
 });
 
-export enum playerDirections {
+export enum avatarDirections {
     FRONT, BACK, LEFT, RIGHT
 }
 
@@ -31,8 +31,8 @@ export enum cameraAttributes {
     ZOOM
 }
 
-export interface PlayerEvent {
-    direction: playerDirections,
+export interface AvatarEvent {
+    direction: avatarDirections,
     angle: number
 }
 
@@ -46,7 +46,6 @@ export interface CameraAttributeEvent {
 }
 
 class Input extends EventEmitter {
-    public zoomDelta = 0.1;
     private eventSource: HTMLElement;
     private rotateAreaY: number;
 
@@ -85,23 +84,23 @@ class Input extends EventEmitter {
             switch(e.key){
                 case 'w':
                 case 'ArrowUp':
-                    eventName = events.player.MOVE;
-                    eventObject = <PlayerEvent>{direction: playerDirections.FRONT};
+                    eventName = events.avatar.MOVE;
+                    eventObject = <AvatarEvent>{direction: avatarDirections.FRONT};
                     break;
                 case 's':
                 case 'ArrowDown':
-                    eventName = events.player.MOVE;
-                    eventObject = <PlayerEvent>{direction: playerDirections.BACK};
+                    eventName = events.avatar.MOVE;
+                    eventObject = <AvatarEvent>{direction: avatarDirections.BACK};
                     break;
                 case 'a':
                 case 'ArrowLeft':
-                    eventName = events.player.MOVE;
-                    eventObject = <PlayerEvent>{direction: playerDirections.LEFT};
+                    eventName = events.avatar.MOVE;
+                    eventObject = <AvatarEvent>{direction: avatarDirections.LEFT};
                     break;
                 case 'd':
                 case 'ArrowRight':
-                    eventName = events.player.MOVE;
-                    eventObject = <PlayerEvent>{direction: playerDirections.RIGHT};
+                    eventName = events.avatar.MOVE;
+                    eventObject = <AvatarEvent>{direction: avatarDirections.RIGHT};
                     break;
                 case 'A':
                     eventName = events.camera.ROTATE;
@@ -115,14 +114,14 @@ class Input extends EventEmitter {
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
                         attribute: cameraAttributes.ZOOM,
-                        value: this.zoomDelta
+                        value: zoom
                     };
                     break;
                 case 'S':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
                         attribute: cameraAttributes.ZOOM,
-                        value: -1 * this.zoomDelta
+                        value: -1 * zoom
                     };
                     break;
                 default:
@@ -158,10 +157,10 @@ class Input extends EventEmitter {
 
             if(isPinch){
                 let eventObject = <CameraAttributeEvent>{attribute: cameraAttributes.ZOOM};
+
                 let touch0 = e.touches[0];
                 let touch1 = e.touches[1];
-
-                var distance = Math.sqrt(
+                let distance = Math.sqrt(
                     Math.pow(touch0.clientX - touch1.clientX, 2) +
                     Math.pow(touch0.clientY - touch0.clientY, 2)
                 );
@@ -173,11 +172,11 @@ class Input extends EventEmitter {
                 let distanceDelta = distance - lastDistance;
                 lastDistance = distance;
 
-                if(distanceDelta >= 0.4){
+                if(distanceDelta >= zoomThreshold){
                     eventObject.value = zoom;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
-                else if(distanceDelta <= -0.4) {
+                else if(distanceDelta <= -1 * zoomThreshold){
                     eventObject.value = -1 * zoom;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
@@ -225,20 +224,20 @@ class Input extends EventEmitter {
                     }
 
                     if(r > moveSwipeThreshold){
-                        let eventName = events.player.MOVE;
-                        let eventObject = <PlayerEvent>{angle: angle};
+                        let eventName = events.avatar.MOVE;
+                        let eventObject = <AvatarEvent>{angle: angle};
 
                         if(angle >= frontRange.from && angle < frontRange.to){
-                            eventObject.direction = playerDirections.FRONT;
+                            eventObject.direction = avatarDirections.FRONT;
                         }
                         else if(angle >= backRange.from && angle < backRange.to){
-                            eventObject.direction = playerDirections.BACK;
+                            eventObject.direction = avatarDirections.BACK;
                         }
                         else if(angle >= leftRange.from && angle < leftRange.to){
-                            eventObject.direction = playerDirections.LEFT;
+                            eventObject.direction = avatarDirections.LEFT;
                         }
                         else if(angle >= rightRange.from && angle < rightRange.to){
-                            eventObject.direction = playerDirections.RIGHT;
+                            eventObject.direction = avatarDirections.RIGHT;
                         }
                         else {
                             throw new Error(`Angle ${angle} should never appear.`);
