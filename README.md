@@ -23,3 +23,29 @@ the application on your phone easily.
 ## Release build
 
 Simply run `npm run build`. The result will be written in `dist/`
+
+# Controls
+
+## Keyboard
+
+Shortcuts are case sensitive
+
+-   Avatar
+    -   `w` or `up arrow` - Move forward
+    -   `s` or `down arrow` - Move back
+    -   `a` or `left arrow` - Move left
+    -   `d` or `right arrow` - Move right
+-   Camera
+    -   `A` - Rotate clockwise
+    -   `D` - Rotate counterclockwise
+    -   `W` - Zoom in
+    -   `S` - Zoom out
+    
+## Touch
+
+-   Avatar
+    Swipe up, down, left or right to move.
+-   Camera
+    -   Swipe left or right in the bottom 5% of the screen to rotate
+        the camera
+    -   Pinch to zoom
