@@ -1,3 +1,9 @@
+/**
+ * Input events
+ * 
+ * @author Slapec
+ */
+
 import { EventEmitter } from "events";
 import {
     canvasWrapper,
@@ -6,6 +12,8 @@ import {
     frontRange, backRange, leftRange, rightRange,
     zoom, zoomThreshold
 } from './settings';
+
+const DEBUG = true;
 
 export const CLASS_NAME: string = 'event-source';
 
@@ -45,6 +53,7 @@ export interface CameraAttributeEvent {
     value: any
 }
 
+/** Input events */
 class Input extends EventEmitter {
     private eventSource: HTMLElement;
     private rotateAreaY: number;
@@ -255,6 +264,21 @@ class Input extends EventEmitter {
 
         this.rotateAreaY = height * rotateAreaY;
     }
+}
+
+/** Mock input events */
+class InputMock extends EventEmitter {
+    constructor() {
+        super();
+    }
+
+    /** Dumy event */
+    sendEvent(): void {
+        if (DEBUG)
+            console.log("emit");
+        this.emit("event.mock", "cica");
+    }
+
 }
 
 export const input = new Input(canvasWrapper);

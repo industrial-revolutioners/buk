@@ -8,8 +8,9 @@ canvasWrapper.appendChild(renderer.domElement);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+
 window.addEventListener('resize', () => {
-    console.log('hey');
+    // console.log('hey');
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 

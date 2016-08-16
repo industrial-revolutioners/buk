@@ -2,7 +2,8 @@
   "files": [
     "src/ts/main.ts",
     "src/ts/input.ts",
-    "src/ts/input/touch.ts",
+    "src/ts/events.ts",
+    "src/ts/animation.ts",
     "typings/index.d.ts"
   ],
   "compilerOptions": {
