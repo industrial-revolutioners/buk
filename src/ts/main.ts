@@ -16,7 +16,9 @@ input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
     canvasWrapper.dataset['name'] = `camera.ROTATE; direction=${cameraDirections[e.direction]}`;
 });
 
+let zoomTest = document.getElementById('zoom-test');
 input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
     console.log('camera.ZOOM', e);
     canvasWrapper.dataset['name'] = `camera.ZOOM; attribute=${cameraAttributes[e.attribute]}, value=${e.value}`;
+    zoomTest.style.zoom = (parseFloat(zoomTest.style.zoom) || 0) + e.value;
 });

@@ -1,5 +1,4 @@
 import { WebGLRendererParameters } from 'three';
-import { playerDirections } from "./input";
 
 export let rendererSettings: WebGLRendererParameters = {
     alpha: true,
