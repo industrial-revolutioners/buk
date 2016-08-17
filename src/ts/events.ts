@@ -6,9 +6,9 @@
  */
 
 import {
-    events, input, AvatarEvent,
+    events, input, ControlEvent,
     CameraDirectionEvent, CameraAttributeEvent,
-    cameraDirections, cameraAttributes, avatarDirections} from './input';
+    cameraDirections, cameraAttributes, controlDirections} from './input';
 
 import {} from './animations';
 
@@ -29,7 +29,7 @@ let lock = false;
  * Define mock event actions
  */
 
-input.on(events.avatar.MOVE, (e: AvatarEvent) => {
+input.on(events.avatar.MOVE, (e: ControlEvent) => {
     if (lock) {
         if (DEBUG)
             console.info("locked");
@@ -39,7 +39,7 @@ input.on(events.avatar.MOVE, (e: AvatarEvent) => {
     // lock = true;
 
     console.log('avatar.MOVE', e);
-    canvasWrapper.dataset['name'] = `avatar.MOVE; direction=${avatarDirections[e.direction]}`;
+    canvasWrapper.dataset['name'] = `avatar.MOVE; direction=${controlDirections[e.direction]}`;
 });
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {

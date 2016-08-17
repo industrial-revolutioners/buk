@@ -29,7 +29,7 @@ export const events = Object.freeze({
     }
 });
 
-export enum avatarDirections {
+export enum controlDirections {
     FRONT, BACK, LEFT, RIGHT
 }
 
@@ -41,8 +41,8 @@ export enum cameraAttributes {
     ZOOM
 }
 
-export interface AvatarEvent {
-    direction: avatarDirections,
+export interface ControlEvent {
+    direction: controlDirections,
     angle: number
 }
 
@@ -96,22 +96,22 @@ class Input extends EventEmitter {
                 case 'w':
                 case 'ArrowUp':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.FRONT};
+                    eventObject = <ControlEvent>{direction: controlDirections.FRONT};
                     break;
                 case 's':
                 case 'ArrowDown':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.BACK};
+                    eventObject = <ControlEvent>{direction: controlDirections.BACK};
                     break;
                 case 'a':
                 case 'ArrowLeft':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.LEFT};
+                    eventObject = <ControlEvent>{direction: controlDirections.LEFT};
                     break;
                 case 'd':
                 case 'ArrowRight':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.RIGHT};
+                    eventObject = <ControlEvent>{direction: controlDirections.RIGHT};
                     break;
                 case 'A':
                     eventName = events.camera.ROTATE;
@@ -236,19 +236,19 @@ class Input extends EventEmitter {
 
                     if(r > moveSwipeThreshold){
                         let eventName = events.avatar.MOVE;
-                        let eventObject = <AvatarEvent>{angle: angle};
+                        let eventObject = <ControlEvent>{angle: angle};
 
                         if(angle >= frontRange.from && angle < frontRange.to){
-                            eventObject.direction = avatarDirections.FRONT;
+                            eventObject.direction = controlDirections.FRONT;
                         }
                         else if(angle >= backRange.from && angle < backRange.to){
-                            eventObject.direction = avatarDirections.BACK;
+                            eventObject.direction = controlDirections.BACK;
                         }
                         else if(angle >= leftRange.from && angle < leftRange.to){
-                            eventObject.direction = avatarDirections.LEFT;
+                            eventObject.direction = controlDirections.LEFT;
                         }
                         else if(angle >= rightRange.from && angle < rightRange.to){
-                            eventObject.direction = avatarDirections.RIGHT;
+                            eventObject.direction = controlDirections.RIGHT;
                         }
                         else {
                             throw new Error(`Angle ${angle} should never appear.`);

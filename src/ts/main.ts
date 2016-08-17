@@ -9,6 +9,9 @@
 
 
 import './events';
+import { Avatar } from './avatar';
+
+
 
 
 /** Event sending mock and test stub */

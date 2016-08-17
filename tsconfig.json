@@ -1,9 +1,15 @@
 {
   "files": [
-    "src/ts/main.ts",
-    "src/ts/input.ts",
-    "src/ts/events.ts",
     "src/ts/animation.ts",
+    "src/ts/avatar.ts",
+    "src/ts/camera.ts",
+    "src/ts/events.ts",
+    "src/ts/input.ts",
+    "src/ts/main.ts",
+    "src/ts/objects.ts",
+    "src/ts/renderer.ts",
+    "src/ts/settings.ts",
+    "src/ts/tiles",
     "typings/index.d.ts"
   ],
   "compilerOptions": {
