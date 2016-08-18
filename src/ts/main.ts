@@ -7,9 +7,8 @@
  * @author Slapec
  */
 
-
+import './renderer';
 import './events';
-
 
 /** Event sending mock and test stub */
 // if (false) {
@@ -33,3 +32,5 @@ import './events';
 //         .then(newDelay(input.sendEvent))
 //         .then(newDelay(input.sendEvent));
 // }
+
+
