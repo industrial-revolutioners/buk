@@ -6,6 +6,7 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
 import { EventEmitter } from "events";
 import {
     canvasWrapper,

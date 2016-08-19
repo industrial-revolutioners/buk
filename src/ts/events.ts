@@ -5,6 +5,7 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
 import {
     events, input, AvatarEvent,
     CameraDirectionEvent, CameraAttributeEvent,

@@ -1,3 +1,8 @@
+/**
+ * Contains the main renderer functions 
+ */
+
+/// <reference path="../../typings/index.d.ts" />
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 

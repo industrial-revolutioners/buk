@@ -6,8 +6,20 @@
     "src/ts/animation.ts",
     "typings/index.d.ts"
   ],
+  "filesGlob": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "!./node_modules/**"
+  ],
   "compilerOptions": {
     "noImplicitAny": true,
-    "target": "es6"
+    "target": "es6",
+    "module": "commonjs",
+    "removeComments": true,
+    "noLib": false,
+    "preserveConstEnums": true,
+    "declaration": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "sourceMap": true
   }
 }

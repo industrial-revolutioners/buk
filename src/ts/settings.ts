@@ -6,6 +6,7 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
 import { WebGLRendererParameters } from 'three';
 
 export let rendererSettings: WebGLRendererParameters = {
