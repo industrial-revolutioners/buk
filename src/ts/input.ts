@@ -1,12 +1,14 @@
 /**
  * input.ts
  *
- * Input handles classes.
+ * Input handler classes.
  * 
+ * @author Caiwan
  * @author Slapec
  */
 
 /// <reference path="../../typings/index.d.ts" />
+
 import { EventEmitter } from "events";
 import {
     canvasWrapper,
@@ -15,8 +17,6 @@ import {
     frontRange, backRange, leftRange, rightRange,
     zoom, zoomThreshold
 } from './settings';
-
-const DEBUG = true;
 
 export const CLASS_NAME: string = 'event-source';
 
@@ -30,7 +30,7 @@ export const events = Object.freeze({
     }
 });
 
-export enum avatarDirections {
+export enum controlDirections {
     FRONT, BACK, LEFT, RIGHT
 }
 
@@ -42,8 +42,8 @@ export enum cameraAttributes {
     ZOOM
 }
 
-export interface AvatarEvent {
-    direction: avatarDirections,
+export interface ControlEvent {
+    direction: controlDirections,
     angle: number
 }
 
@@ -56,19 +56,14 @@ export interface CameraAttributeEvent {
     value: any
 }
 
-/** The default input handler. Handles keyboard and touch events */
-class Input extends EventEmitter {
-    private eventSource: HTMLElement;
-    private rotateAreaY: number;
+
+abstract class InputBase extends EventEmitter {
+    protected eventSource: HTMLElement;
 
     constructor(eventSourceElement: HTMLElement){
         super();
 
         this.setEventSource(eventSourceElement);
-
-        this.update();
-        this.setupKeyboardHandlers();
-        this.setupTouchHandlers();
     }
 
     getEventSource(): HTMLElement {
@@ -86,6 +81,22 @@ class Input extends EventEmitter {
         this.eventSource = eventSourceElement;
     }
 
+    abstract update(): void;
+}
+
+
+/** The default input handler. Handles keyboard and touch events */
+class Input extends InputBase {
+    private rotateAreaY: number;
+
+    constructor(eventSourceElement: HTMLElement){
+        super(eventSourceElement);
+
+        this.update();
+        this.setupKeyboardHandlers();
+        this.setupTouchHandlers();
+    }
+
     setupKeyboardHandlers(): void{
         let elem = this.eventSource;
 
@@ -97,22 +108,22 @@ class Input extends EventEmitter {
                 case 'w':
                 case 'ArrowUp':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.FRONT};
+                    eventObject = <ControlEvent>{direction: controlDirections.FRONT};
                     break;
                 case 's':
                 case 'ArrowDown':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.BACK};
+                    eventObject = <ControlEvent>{direction: controlDirections.BACK};
                     break;
                 case 'a':
                 case 'ArrowLeft':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.LEFT};
+                    eventObject = <ControlEvent>{direction: controlDirections.LEFT};
                     break;
                 case 'd':
                 case 'ArrowRight':
                     eventName = events.avatar.MOVE;
-                    eventObject = <AvatarEvent>{direction: avatarDirections.RIGHT};
+                    eventObject = <ControlEvent>{direction: controlDirections.RIGHT};
                     break;
                 case 'A':
                     eventName = events.camera.ROTATE;
@@ -137,7 +148,9 @@ class Input extends EventEmitter {
                     };
                     break;
                 default:
+                    // @if DEBUG
                     console.warn('Unhandled', e);
+                    // @endif
                     return;
             }
 
@@ -237,19 +250,19 @@ class Input extends EventEmitter {
 
                     if(r > moveSwipeThreshold){
                         let eventName = events.avatar.MOVE;
-                        let eventObject = <AvatarEvent>{angle: angle};
+                        let eventObject = <ControlEvent>{angle: angle};
 
                         if(angle >= frontRange.from && angle < frontRange.to){
-                            eventObject.direction = avatarDirections.FRONT;
+                            eventObject.direction = controlDirections.FRONT;
                         }
                         else if(angle >= backRange.from && angle < backRange.to){
-                            eventObject.direction = avatarDirections.BACK;
+                            eventObject.direction = controlDirections.BACK;
                         }
                         else if(angle >= leftRange.from && angle < leftRange.to){
-                            eventObject.direction = avatarDirections.LEFT;
+                            eventObject.direction = controlDirections.LEFT;
                         }
                         else if(angle >= rightRange.from && angle < rightRange.to){
-                            eventObject.direction = avatarDirections.RIGHT;
+                            eventObject.direction = controlDirections.RIGHT;
                         }
                         else {
                             throw new Error(`Angle ${angle} should never appear.`);
@@ -269,22 +282,38 @@ class Input extends EventEmitter {
     }
 }
 
-/** Mock input events */
-class InputMock extends EventEmitter {
-    constructor() {
-        super();
+export let input: InputBase;
+
+//? if(DEBUG){
+import { random } from './utils';
+
+class InputMock extends InputBase {
+    /** This class emits random input events automatically */
+    public mockControlEvents:Array<ControlEvent> = [
+        {direction: controlDirections.FRONT, angle: 0},
+        {direction: controlDirections.BACK, angle: 0},
+        {direction: controlDirections.LEFT, angle: 0},
+        {direction: controlDirections.RIGHT, angle: 0}
+    ];
+
+    constructor(eventSourceElement: HTMLElement){
+        super(eventSourceElement);
+
+        setInterval(() => {
+            let randomDirection = random.choice(this.mockControlEvents);
+            this.emit(events.avatar.MOVE, randomDirection);
+        }, 1000)
     }
 
-    /** Dumy event */
-    sendEvent(): void {
-        if (DEBUG)
-            console.log("emit");
-        this.emit("event.mock", "cica");
-    }
-
+    update(): void {}
 }
+//? }
 
-export const input = new Input(canvasWrapper);
+//? if(DEBUG){
+input = new InputMock(canvasWrapper);
+//? } else {
+input = new Input(canvasWrapper);
+//? }
 
 window.addEventListener('resize', () => {
     input.update();
