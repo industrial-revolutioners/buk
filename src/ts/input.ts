@@ -18,6 +18,8 @@ import {
     zoom, zoomThreshold
 } from './settings';
 
+import {random} from './utils';
+
 export const CLASS_NAME: string = 'event-source';
 
 export const events = Object.freeze({
@@ -284,9 +286,7 @@ class Input extends InputBase {
 
 export let input: InputBase;
 
-//? if(DEBUG){
-import {random} from './utils';
-
+//? if(DEBUG) {
 class InputMock extends InputBase {
     /** This class emits random input events automatically */
     public mockControlEvents: Array<ControlEvent> = [
@@ -301,20 +301,14 @@ class InputMock extends InputBase {
 
         let count = 0;
 
-        //? if(0){
-        // random event
         setInterval(() => {
-            let randomDirection = random.choice(this.mockControlEvents);
-            this.emit(events.avatar.MOVE, randomDirection);
-        }, 1000);
-        //? } else {
-        // iterate through them in sequence too
-        setInterval(() => {
-            let evt = this.mockControlEvents[count % this.mockControlEvents.length];
+			// let evt = random.choice(this.mockControlEvents);
+            // const rnd = count % this.mockControlEvents.length
+            const rnd = 0;
+            let evt = this.mockControlEvents[rnd];
             this.emit(events.avatar.MOVE, evt);
             count++;
         }, 1000);
-        //? }
     }
 
     update(): void {
