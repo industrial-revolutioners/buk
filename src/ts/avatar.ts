@@ -6,6 +6,8 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
+
 import { Tile } from './tiles';
 import { controlDirections, ControlEvent } from "./input";
 

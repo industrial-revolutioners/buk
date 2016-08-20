@@ -5,18 +5,16 @@ const browserSync = require('browser-sync').create();
 const errorify = require('errorify');
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
-const preprocess = require('gulp-preprocess');
+const metascript = require('metascript');
 const sass = require('gulp-sass');
+const stream = require('stream');
 const tsify = require('tsify');
 const vinylBuffer = require('vinyl-buffer');
 const vinylSourceStream = require('vinyl-source-stream');
 const watchify = require('watchify');
 
-const DEBUG_CONTEXT = {
-    context: {
-        DEBUG: false
-    }
-};
+const DEBUG_CONTEXT = {DEBUG: true};
+const RELEASE_CONTEXT = {DEBUG: false};
 
 // html ------------------------------------------------------------------------
 gulp.task('build-html', () => {
@@ -50,10 +48,25 @@ gulp.task('watch-sass', ['build-sass'], () => {
 
 // ts --------------------------------------------------------------------------
 gulp.task('build-ts', () => {
-    let browserified = browserify('./src/ts/main.ts').plugin(tsify);
+    return browserify('./src/ts/main.ts')
+        .plugin(tsify)
+        .transform(() => {
+            let data  = '';
 
-    return browserified.bundle()
+            return new stream.Transform({
+                transform: (chunk, encoding, callback) => {
+                    data += chunk;
+                    callback();
+                },
+                flush: function(callback){
+                    this.push(metascript.transform(data, RELEASE_CONTEXT));
+                    callback();
+                }
+            })
+        })
+        .bundle()
         .pipe(vinylSourceStream('main.js'))
+        .pipe(vinylBuffer())
         .pipe(gulp.dest('./dist/assets'));
 });
 
@@ -72,10 +85,22 @@ gulp.task('watch-ts', () => {
 
     function bundle(){
         return b
+            .transform((filename) => {
+                let data  = '';
+
+                return new stream.Transform({
+                    transform: (chunk, encoding, callback) => {
+                        data += chunk;
+                        callback();
+                    },
+                    flush: function(callback){
+                        this.push(metascript.transform(data, DEBUG_CONTEXT));
+                        callback();
+                    }
+                })
+            })
             .bundle()
             .pipe(vinylSourceStream('main.js'))
-            .pipe(vinylBuffer())
-            // .pipe(preprocess(DEBUG_CONTEXT))
             .pipe(gulp.dest('./dist/assets'))
             .pipe(browserSync.stream({match: '**/*.js'}));
     }

@@ -7,6 +7,7 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
 
 const enum Tiles {
     VOID

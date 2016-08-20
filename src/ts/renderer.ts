@@ -1,8 +1,13 @@
 /**
- * Contains the main renderer functions 
+ * renderer.ts
+ *
+ * Contains the main renderer functions
+ *
+ * @author Caiwan
  */
 
 /// <reference path="../../typings/index.d.ts" />
+
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
@@ -16,7 +21,6 @@ canvasWrapper.appendChild(renderer.domElement);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 window.addEventListener('resize', () => {
-    // console.log('hey');
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
@@ -25,7 +29,7 @@ window.addEventListener('resize', () => {
 
 function renderScene():void {
     renderer.render(scene, camera);
-} 
+}
 
 function render():void {
     requestAnimationFrame(render);
