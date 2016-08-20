@@ -2,14 +2,14 @@
  * input.ts
  *
  * Input handler classes.
- * 
+ *
  * @author Caiwan
  * @author Slapec
  */
 
 /// <reference path="../../typings/index.d.ts" />
 
-import { EventEmitter } from "events";
+import {EventEmitter} from "events";
 import {
     canvasWrapper,
     rotateAreaY,
@@ -108,30 +108,30 @@ class Input extends InputBase {
                 case 'w':
                 case 'ArrowUp':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.FRONT };
+                    eventObject = <ControlEvent>{direction: controlDirections.FRONT};
                     break;
                 case 's':
                 case 'ArrowDown':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.BACK };
+                    eventObject = <ControlEvent>{direction: controlDirections.BACK};
                     break;
                 case 'a':
                 case 'ArrowLeft':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.LEFT };
+                    eventObject = <ControlEvent>{direction: controlDirections.LEFT};
                     break;
                 case 'd':
                 case 'ArrowRight':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.RIGHT };
+                    eventObject = <ControlEvent>{direction: controlDirections.RIGHT};
                     break;
                 case 'A':
                     eventName = events.camera.ROTATE;
-                    eventObject = <CameraDirectionEvent>{ direction: cameraDirections.CCW };
+                    eventObject = <CameraDirectionEvent>{direction: cameraDirections.CCW};
                     break;
                 case 'D':
                     eventName = events.camera.ROTATE;
-                    eventObject = <CameraDirectionEvent>{ direction: cameraDirections.CW };
+                    eventObject = <CameraDirectionEvent>{direction: cameraDirections.CW};
                     break;
                 case 'W':
                     eventName = events.camera.ZOOM;
@@ -181,7 +181,7 @@ class Input extends InputBase {
             e.preventDefault();
 
             if (isPinch) {
-                let eventObject = <CameraAttributeEvent>{ attribute: cameraAttributes.ZOOM };
+                let eventObject = <CameraAttributeEvent>{attribute: cameraAttributes.ZOOM};
 
                 let touch0 = e.touches[0];
                 let touch1 = e.touches[1];
@@ -250,7 +250,7 @@ class Input extends InputBase {
 
                     if (r > moveSwipeThreshold) {
                         let eventName = events.avatar.MOVE;
-                        let eventObject = <ControlEvent>{ angle: angle };
+                        let eventObject = <ControlEvent>{angle: angle};
 
                         if (angle >= frontRange.from && angle < frontRange.to) {
                             eventObject.direction = controlDirections.FRONT;
@@ -285,15 +285,15 @@ class Input extends InputBase {
 export let input: InputBase;
 
 //? if(DEBUG){
-import { random } from './utils';
+import {random} from './utils';
 
 class InputMock extends InputBase {
     /** This class emits random input events automatically */
     public mockControlEvents: Array<ControlEvent> = [
-        { direction: controlDirections.FRONT, angle: 0 },
-        { direction: controlDirections.BACK, angle: 0 },
-        { direction: controlDirections.LEFT, angle: 0 },
-        { direction: controlDirections.RIGHT, angle: 0 }
+        {direction: controlDirections.FRONT, angle: 0},
+        {direction: controlDirections.BACK, angle: 0},
+        {direction: controlDirections.LEFT, angle: 0},
+        {direction: controlDirections.RIGHT, angle: 0}
     ];
 
     constructor(eventSourceElement: HTMLElement) {
@@ -317,7 +317,8 @@ class InputMock extends InputBase {
         //? }
     }
 
-    update(): void { }
+    update(): void {
+    }
 }
 //? }
 

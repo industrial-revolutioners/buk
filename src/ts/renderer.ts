@@ -11,7 +11,7 @@
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
-import { rendererSettings, canvasWrapper } from './settings';
+import {rendererSettings, canvasWrapper} from './settings';
 import {camera, updateCamera} from './camera';
 import {scene, cube} from './objects';
 
@@ -27,15 +27,15 @@ setupSize();
 
 window.addEventListener('resize', setupSize);
 
-function renderScene():void {
+function renderScene(): void {
     renderer.render(scene, camera);
 }
 
-function render():void {
+function render(): void {
     requestAnimationFrame(render);
 
     TWEEN.update();
     renderScene();
-} 
+}
 
 render();
