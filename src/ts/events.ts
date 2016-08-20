@@ -29,20 +29,7 @@ input.on(events.avatar.MOVE, (e: ControlEvent) => {
     console.log(`avatar.MOVE; direction=${controlDirections[e.direction]}`);
     // @endif
 
-    switch (e.direction) {
-        case controlDirections.FRONT:
-            avatarAnimations.animateForward();
-            break;
-        case controlDirections.BACK:
-            break;
-        case controlDirections.LEFT:
-            break;
-        case controlDirections.RIGHT:
-            break;
-
-        default:
-            throw e;
-    }
+    avatarAnimations.move(e.direction);
 });
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
