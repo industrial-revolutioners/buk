@@ -10,12 +10,10 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {
-    events, input, ControlEvent,
+    events, input,
     CameraDirectionEvent, CameraAttributeEvent,
-    cameraDirections, cameraAttributes, controlDirections
+    cameraDirections, cameraAttributes
 } from './input';
-
-import { avatarAnimations, cameraAnimations } from './animations';
 
 
 /**
@@ -23,27 +21,6 @@ import { avatarAnimations, cameraAnimations } from './animations';
  * Event action definitions
  * ============================================================================
  */
-
-input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    // @if DEBUG
-    console.log(`avatar.MOVE; direction=${controlDirections[e.direction]}`);
-    // @endif
-
-    switch (e.direction) {
-        case controlDirections.FRONT:
-            avatarAnimations.animateForward();
-            break;
-        case controlDirections.BACK:
-            break;
-        case controlDirections.LEFT:
-            break;
-        case controlDirections.RIGHT:
-            break;
-
-        default:
-            throw e;
-    }
-});
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
     // @if DEBUG

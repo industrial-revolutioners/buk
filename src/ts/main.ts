@@ -11,6 +11,22 @@
 
 import './renderer';
 import './events';
-
 import { Avatar } from './avatar';
+import { StartTile, Tile } from './tiles';
+import { events, input, ControlEvent, controlDirections } from './input';
 
+
+let start = new StartTile();
+start.front = new Tile();
+start.back = new Tile();
+start.left = new Tile();
+start.right = new Tile();
+
+let avatar = new Avatar(start);
+
+input.on(events.avatar.MOVE, (e: ControlEvent) => {
+    // @if DEBUG
+    console.log(`avatar.MOVE; direction=${controlDirections[e.direction]}`);
+    // @endif
+    avatar.move(e);
+});

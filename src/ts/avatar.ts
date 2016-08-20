@@ -8,8 +8,9 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import { Tile } from './tiles';
+import { StartTile, BaseTile } from './tiles';
 import { controlDirections, ControlEvent } from "./input";
+import { avatarAnimations } from './animations';
 
 
 enum AvatarFaces {
@@ -28,25 +29,31 @@ interface Faces {
 
 export interface AvatarState {
     face: AvatarFaces;
-    accept: Function
+    accept: (target: BaseTile) => void;
 }
 
 
 export class Avatar {
-    private tile: Tile;
+    private tile: BaseTile;
     private faces: Faces;
 
-    constructor(startTile: Tile){
-        this.tile = startTile;
+    constructor(startTile: StartTile){
+        if(!(startTile instanceof StartTile)){
+            throw new Error(`Expected StartTile, got ${startTile.constructor.name} instead.`);
+        }
+
         this.faces = <Faces>{
             top: AvatarFaces.TOP, bottom: AvatarFaces.BOTTOM,
             left: AvatarFaces.LEFT, right: AvatarFaces.RIGHT,
             front: AvatarFaces.FRONT, back: AvatarFaces.BACK
-        }
+        };
+
+        this.setTile(startTile);
     }
 
     delegateState(e: ControlEvent){
         let faces = Object.assign({}, this.faces);
+        let animation: Function;
 
         let temp = faces.top;
         switch(e.direction){
@@ -55,54 +62,70 @@ export class Avatar {
                 faces.front = faces.bottom;
                 faces.bottom = faces.back;
                 faces.back = temp;
+
+                animation = avatarAnimations.animateForward;
                 break;
             case controlDirections.BACK:
                 faces.top = faces.back;
                 faces.back = faces.bottom;
                 faces.bottom = faces.front;
                 faces.front = temp;
+
+                animation = avatarAnimations.animateBack;
                 break;
             case controlDirections.LEFT:
                 faces.top = faces.right;
                 faces.right = faces.bottom;
                 faces.bottom = faces.left;
                 faces.left = temp;
+
+                animation = avatarAnimations.animateLeft;
                 break;
             case controlDirections.RIGHT:
                 faces.top = faces.left;
                 faces.left = faces.bottom;
                 faces.bottom = faces.right;
                 faces.right = temp;
+
+                animation = avatarAnimations.animateRight;
                 break;
         }
 
         return <AvatarState>{
             face: faces.bottom,
-            accept: () => {
-                console.log('AvatarState.accept');
-                // TODO: This part depends on animation code
+            accept: (target) => {
+                this.faces = faces;
+                this.setTile(target);
+                animation.call(avatarAnimations);
             }
         }
     }
 
     move(e: ControlEvent){
         let stateDelegate = this.delegateState(e);
+        let target: BaseTile;
 
         switch(e.direction){
             case controlDirections.FRONT:
-                console.log('avatar.FRONT', stateDelegate);
+                target = this.tile.front;
                 break;
             case controlDirections.BACK:
-                console.log('avatar.BACK', stateDelegate);
+                target = this.tile.back;
                 break;
             case controlDirections.LEFT:
-                console.log('avatar.LEFT', stateDelegate);
+                target = this.tile.left;
                 break;
             case controlDirections.RIGHT:
-                console.log('avatar.RIGHT', stateDelegate);
+                target = this.tile.right;
                 break;
             default:
                 throw e;
         }
+
+        target.action(stateDelegate);
+    }
+
+    setTile(tile: BaseTile){
+        this.tile = tile;
     }
 }

@@ -9,13 +9,30 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
+import { AvatarState } from "./avatar";
+
 const enum Tiles {
     VOID
 }
 
 
-export class Tile {
-    constructor(){
+export abstract class BaseTile {
+    front: BaseTile;
+    back: BaseTile;
+    left: BaseTile;
+    right: BaseTile;
 
+    abstract action(state: AvatarState): void;
+}
+
+
+export class Tile extends BaseTile {
+    action(state: AvatarState){
+        state.accept(this);
     }
+}
+
+
+export class StartTile extends Tile {
+
 }
