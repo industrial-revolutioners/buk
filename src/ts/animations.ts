@@ -14,52 +14,26 @@ import * as TWEEN from 'tween.js';
 
 import { cube } from './objects';
 
+const ANIM_DURATION = 1000;
 
-// @if DEBUG
-// enable toggle module-level debugging to avoid console spam
-const DEBUG = false; 
-// @endif
+/**
+ * Custom tween ease which makes a value "rotated around" a point in a semi-circle
+ */
 
+
+
+let node = cube;
 let lock = false;
 
 /** Animation clips for the avatar */
 class AvatarAnimations {
 
     animateForward(): void {
-
-        if (lock) {
-            //?if(DEBUG)
-                console.info("locked");
-            //?
-            return;
-        }
-
-        lock = true;
-
         const p0 = { x: 0, y: 0 }; // mock position
         const d = this.getForwardDirection(false);
         const p1 = { x: p0.x + d.x, y: p0.y + d.y }; // next position on the map
 
-
-        cube.rotation.x = 0;
-        var tween = new TWEEN.Tween(cube.rotation)
-            .to({ x: Math.PI / 2 }, 1000)
-            .onUpdate(function () {
-                // @if DEBUG
-                if (DEBUG)
-                    console.log(this.x, this.y);
-                // @endif
-            })
-            .onComplete(function () {
-                // @if DEBUG
-                    console.log("done");
-                // @endif
-                // Events.animationEvents.animationDone("event.mock");
-                lock = false;
-            })
-            .start();
-
-        // folykov.
+        this.setupTweens();
     }
 
     animateBack(): void {
@@ -79,7 +53,7 @@ class AvatarAnimations {
      * (back:= -forward)
      * @param {boolean} inv invert to get the oppositye direction
     */
-    getForwardDirection(inv: boolean): { x: number, y: number } {
+    private getForwardDirection(inv: boolean): { x: number, y: number } {
         let x = 0;  // mock direction
         let y = 1;
 
@@ -95,7 +69,7 @@ class AvatarAnimations {
      * Get right direction of the character in relation of the camera position
      * @param {boolean} inv invert to get the oppositye direction
     */
-    getRightDirection(inv: boolean): { x: number, y: number } {
+    private getRightDirection(inv: boolean): { x: number, y: number } {
         let x = 1; // mock direction
         let y = 0;
 
@@ -105,6 +79,48 @@ class AvatarAnimations {
             x: inv ? -x : x,
             y: inv ? -y : y
         };
+    }
+
+    private semiCircularEase(k: number): number {
+        const t = 2 * k - 1;
+        return Math.sqrt(1 - t * t);
+    }
+
+        /** Common setup method for tweens */
+    private setupTweens() {
+        if (lock) {
+            //? if(DEBUG){
+                console.info("locked");
+            //? }
+            return;
+        }
+
+        lock = true;
+
+        node.rotation.x = 0;
+        var t_rotation = new TWEEN.Tween(cube.rotation)
+            .to({ x: Math.PI / 2 }, ANIM_DURATION)
+
+        node.position.y = 0;
+        var t_elevation = new TWEEN.Tween(node.position)
+            .to({ y: Math.SQRT2 * .5 }, ANIM_DURATION)
+            .easing(this.semiCircularEase);
+
+        node.position.z = 0;
+        var t_move = new TWEEN.Tween(node.position)
+            .to({ z: 1 }, ANIM_DURATION);
+        
+        var t_move2 = new TWEEN.Tween(node.position)
+            .to({ z: 0 }, ANIM_DURATION);
+
+        // --- start
+        t_elevation.start();
+        t_move.chain(t_move2).start();
+        t_rotation.start()
+            .onComplete(function () {
+                lock = false;
+            });
+        
     }
 }
 
