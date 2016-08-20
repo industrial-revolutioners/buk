@@ -12,20 +12,20 @@ import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
 import { rendererSettings, canvasWrapper } from './settings';
-import {camera} from './camera';
+import {camera, updateCamera} from './camera';
 import {scene, cube} from './objects';
 
 export let renderer = new THREE.WebGLRenderer(rendererSettings);
 canvasWrapper.appendChild(renderer.domElement);
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
+function setupSize() {
+    updateCamera(window.innerWidth, window.innerHeight);
     renderer.setSize(window.innerWidth, window.innerHeight);
-});
+}
+
+setupSize();
+
+window.addEventListener('resize', setupSize);
 
 function renderScene():void {
     renderer.render(scene, camera);
