@@ -20,7 +20,6 @@ camera.zoom = 1./3;
 
 export function updateCamera(w: number, h: number): void {
     // --- orthographic camera
-    
     let wh : number;
     let hw : number;
 
@@ -41,8 +40,6 @@ export function updateCamera(w: number, h: number): void {
     // --- perspective camera
     // camera.aspect = w / h;
 
-    // camera.updateMatrix();
     camera.updateProjectionMatrix();
 }
 
-// updateCamera(window.innerWidth, window.innerHeight);
