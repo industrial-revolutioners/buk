@@ -1,6 +1,6 @@
 /**
  * Contains all the animation tasks that being invoked bz the event dispatchers
- * 
+ *
  * @author Caiwan
  */
 
@@ -13,15 +13,26 @@ import { cube } from './objects';
 
 const DEBUG = true;
 
+let lock = false;
+
 /** Animation clips for the avatar */
 class AvatarAnimations {
 
     animateForward(): void {
+
+        if (lock) {
+            // @if DEBUG
+            console.info("locked");
+            // @endif
+            return;
+        }
+
+        lock = true;
+
         const p0 = { x: 0, y: 0 }; // mock mosition
         const d = this.getForwardDirection(false);
-        const p1 = { x: p0.x + d.x, y: p0.y + d.y }; // next position on the map 
+        const p1 = { x: p0.x + d.x, y: p0.y + d.y }; // next position on the map
 
-        // tobb lepest hogyan lehet? 
 
         cube.rotation.x = 0;
         var tween = new TWEEN.Tween(cube.rotation)
@@ -34,10 +45,11 @@ class AvatarAnimations {
                 if (DEBUG)
                     console.log("done");
                 // Events.animationEvents.animationDone("event.mock");
+                lock = false;
             })
             .start();
 
-        // folykov. 
+        // folykov.
     }
 
     animateBack(): void {
@@ -52,7 +64,7 @@ class AvatarAnimations {
         const d = this.getForwardDirection(true);
     }
 
-    /** 
+    /**
      * Get forward direction of the character in relation of the camera position (back:= -forward)
      * @param {boolean} inv invert to get the oppositye direction
     */
@@ -60,7 +72,7 @@ class AvatarAnimations {
         let x = 0;  // mock direction
         let y = 1;
 
-        // ... 
+        // ...
 
         return {
             x: inv ? -x : x,
@@ -68,15 +80,15 @@ class AvatarAnimations {
         };
     }
 
-    /** 
+    /**
      * Get right direction of the character in relation of the camera position
-     * @param {boolean} inv invert to get the oppositye direction 
+     * @param {boolean} inv invert to get the oppositye direction
     */
     getRightDirection(inv: boolean): { x: number, y: number } {
         let x = 1; // mock direction
         let y = 0;
 
-        // ... 
+        // ...
 
         return {
             x: inv ? -x : x,
@@ -93,3 +105,5 @@ class CameraAnimations {
 }
 
 /** Export beans of the animation objecs */
+export const avatarAnimations = new AvatarAnimations();
+export const cameraAnimations = new CameraAnimations();

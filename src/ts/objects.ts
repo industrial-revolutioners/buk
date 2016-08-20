@@ -2,6 +2,7 @@
  * Contains all the 3d object and scenes 
  */
 
+/// <reference path="../../typings/index.d.ts" />
 import * as THREE from 'three';
 
 export let scene = new THREE.Scene();

@@ -7,10 +7,10 @@
  * @author Slapec
  */
 
-
+/// <reference path="../../typings/index.d.ts" />
+import './renderer';
 import './events';
 import { Avatar } from './avatar';
-
 
 
 
@@ -36,3 +36,5 @@ import { Avatar } from './avatar';
 //         .then(newDelay(input.sendEvent))
 //         .then(newDelay(input.sendEvent));
 // }
+
+

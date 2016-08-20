@@ -14,7 +14,7 @@ const watchify = require('watchify');
 
 const DEBUG_CONTEXT = {
     context: {
-        DEBUG: true
+        DEBUG: false
     }
 };
 
@@ -75,7 +75,7 @@ gulp.task('watch-ts', () => {
             .bundle()
             .pipe(vinylSourceStream('main.js'))
             .pipe(vinylBuffer())
-            .pipe(preprocess(DEBUG_CONTEXT))
+            // .pipe(preprocess(DEBUG_CONTEXT))
             .pipe(gulp.dest('./dist/assets'))
             .pipe(browserSync.stream({match: '**/*.js'}));
     }

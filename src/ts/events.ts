@@ -5,12 +5,13 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
 import {
     events, input, ControlEvent,
     CameraDirectionEvent, CameraAttributeEvent,
     cameraDirections, cameraAttributes, controlDirections} from './input';
 
-import {} from './animations';
+import {avatarAnimations, cameraAnimations} from './animations';
 
 import { canvasWrapper } from './settings';
 
@@ -30,26 +31,39 @@ let lock = false;
  */
 
 input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    if (lock) {
-        if (DEBUG)
-            console.info("locked");
-        return;
-    }
-
-    // lock = true;
-
+    // @if DEBUG
     console.log('avatar.MOVE', e);
+    // @endif
     canvasWrapper.dataset['name'] = `avatar.MOVE; direction=${controlDirections[e.direction]}`;
+
+    switch (e.direction) {
+        case controlDirections.FRONT:
+            avatarAnimations.animateForward();
+            break;
+        case controlDirections.BACK:
+            break;
+        case controlDirections.LEFT:
+            break;
+        case controlDirections.RIGHT:
+            break;
+
+        default:
+            throw e;
+    }
 });
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
+    // @if DEBUG
     console.log('camera.ROTATE', e);
+    // @endif
     canvasWrapper.dataset['name'] = `camera.ROTATE; direction=${cameraDirections[e.direction]}`;
 });
 
 let zoomTest = document.getElementById('zoom-test');
 input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
+    // @if DEBUG
     console.log('camera.ZOOM', e);
+    // @endif 
     canvasWrapper.dataset['name'] = `camera.ZOOM; attribute=${cameraAttributes[e.attribute]}, value=${e.value}`;
     zoomTest.style.zoom = (parseFloat(zoomTest.style.zoom) || 0) + e.value;
 });
