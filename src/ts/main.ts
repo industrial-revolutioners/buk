@@ -18,9 +18,9 @@ import { events, input, ControlEvent, controlDirections } from './input';
 
 let start = new StartTile();
 start.front = new Tile();
-start.back = new Tile();
+start.front.back = start;
 start.left = new Tile();
-start.right = new Tile();
+start.left.right = start;
 
 let avatar = new Avatar(start);
 

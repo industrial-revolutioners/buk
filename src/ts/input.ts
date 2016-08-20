@@ -290,10 +290,10 @@ export let input: InputBase;
 class InputMock extends InputBase {
     /** This class emits random input events automatically */
     public mockControlEvents: Array<ControlEvent> = [
-        {direction: controlDirections.FRONT, angle: 0},
-        {direction: controlDirections.BACK, angle: 0},
-        {direction: controlDirections.LEFT, angle: 0},
-        {direction: controlDirections.RIGHT, angle: 0}
+        {direction: controlDirections.FRONT, angle: 0}, // 0
+        {direction: controlDirections.BACK, angle: 0},  // 1
+        {direction: controlDirections.LEFT, angle: 0},  // 2
+        {direction: controlDirections.RIGHT, angle: 0}  // 3
     ];
 
     constructor(eventSourceElement: HTMLElement) {
@@ -303,8 +303,8 @@ class InputMock extends InputBase {
 
         setInterval(() => {
 			// let evt = random.choice(this.mockControlEvents);
-            // const rnd = count % this.mockControlEvents.length
-            const rnd = 0;
+            const rnd = count % this.mockControlEvents.length
+            // const rnd = 0;
             let evt = this.mockControlEvents[rnd];
             this.emit(events.avatar.MOVE, evt);
             count++;

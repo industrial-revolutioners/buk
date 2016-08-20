@@ -53,7 +53,6 @@ export class Avatar {
 
     delegateState(e: ControlEvent){
         let faces = Object.assign({}, this.faces);
-        let animation: Function;
 
         let temp = faces.top;
         switch(e.direction){
@@ -62,32 +61,24 @@ export class Avatar {
                 faces.front = faces.bottom;
                 faces.bottom = faces.back;
                 faces.back = temp;
-
-                animation = avatarAnimations.animateForward;
                 break;
             case controlDirections.BACK:
                 faces.top = faces.back;
                 faces.back = faces.bottom;
                 faces.bottom = faces.front;
                 faces.front = temp;
-
-                animation = avatarAnimations.animateBack;
                 break;
             case controlDirections.LEFT:
                 faces.top = faces.right;
                 faces.right = faces.bottom;
                 faces.bottom = faces.left;
                 faces.left = temp;
-
-                animation = avatarAnimations.animateLeft;
                 break;
             case controlDirections.RIGHT:
                 faces.top = faces.left;
                 faces.left = faces.bottom;
                 faces.bottom = faces.right;
                 faces.right = temp;
-
-                animation = avatarAnimations.animateRight;
                 break;
         }
 
@@ -96,7 +87,7 @@ export class Avatar {
             accept: (target) => {
                 this.faces = faces;
                 this.setTile(target);
-                animation.call(avatarAnimations);
+                avatarAnimations.move(e.direction);
             }
         }
     }
