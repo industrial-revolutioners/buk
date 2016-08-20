@@ -4,6 +4,7 @@
  * Contains all the animation tasks that being invoked by the event dispatchers
  *
  * @author Caiwan
+ * 
  */
 
 /// <reference path="../../typings/index.d.ts" />
@@ -14,6 +15,11 @@ import * as TWEEN from 'tween.js';
 import { cube } from './objects';
 
 
+// @if DEBUG
+// enable toggle module-level debugging to avoid console spam
+const DEBUG = false; 
+// @endif
+
 let lock = false;
 
 /** Animation clips for the avatar */
@@ -23,7 +29,7 @@ class AvatarAnimations {
 
         if (lock) {
             //?if(DEBUG)
-            console.info("locked");
+                console.info("locked");
             //?
             return;
         }
@@ -40,6 +46,7 @@ class AvatarAnimations {
             .to({ x: Math.PI / 2 }, 1000)
             .onUpdate(function () {
                 // @if DEBUG
+                if (DEBUG)
                     console.log(this.x, this.y);
                 // @endif
             })
@@ -68,7 +75,8 @@ class AvatarAnimations {
     }
 
     /**
-     * Get forward direction of the character in relation of the camera position (back:= -forward)
+     * Get forward direction of the character in relation of the camera position 
+     * (back:= -forward)
      * @param {boolean} inv invert to get the oppositye direction
     */
     getForwardDirection(inv: boolean): { x: number, y: number } {
@@ -107,6 +115,7 @@ class CameraAnimations {
     zoom(direction: number): void { }
 }
 
+// ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
 export const avatarAnimations = new AvatarAnimations();
 export const cameraAnimations = new CameraAnimations();

@@ -2,14 +2,14 @@
  * input.ts
  *
  * Input handler classes.
- * 
+ *
  * @author Caiwan
  * @author Slapec
  */
 
 /// <reference path="../../typings/index.d.ts" />
 
-import { EventEmitter } from "events";
+import {EventEmitter} from "events";
 import {
     canvasWrapper,
     rotateAreaY,
@@ -60,7 +60,7 @@ export interface CameraAttributeEvent {
 abstract class InputBase extends EventEmitter {
     protected eventSource: HTMLElement;
 
-    constructor(eventSourceElement: HTMLElement){
+    constructor(eventSourceElement: HTMLElement) {
         super();
 
         this.setEventSource(eventSourceElement);
@@ -71,7 +71,7 @@ abstract class InputBase extends EventEmitter {
     }
 
     setEventSource(eventSourceElement: HTMLElement): void {
-        if(!(eventSourceElement instanceof HTMLElement)){
+        if (!(eventSourceElement instanceof HTMLElement)) {
             throw new Error("Argument 'eventSourceElement' must be an HTMLElement instance.");
         }
 
@@ -89,7 +89,7 @@ abstract class InputBase extends EventEmitter {
 class Input extends InputBase {
     private rotateAreaY: number;
 
-    constructor(eventSourceElement: HTMLElement){
+    constructor(eventSourceElement: HTMLElement) {
         super(eventSourceElement);
 
         this.update();
@@ -97,14 +97,14 @@ class Input extends InputBase {
         this.setupTouchHandlers();
     }
 
-    setupKeyboardHandlers(): void{
+    setupKeyboardHandlers(): void {
         let elem = this.eventSource;
 
         elem.addEventListener('keydown', e => {
             let eventName: string;
             let eventObject: Object;
 
-            switch(e.key){
+            switch (e.key) {
                 case 'w':
                 case 'ArrowUp':
                     eventName = events.avatar.MOVE;
@@ -180,7 +180,7 @@ class Input extends InputBase {
         this.eventSource.addEventListener('touchmove', e => {
             e.preventDefault();
 
-            if(isPinch){
+            if (isPinch) {
                 let eventObject = <CameraAttributeEvent>{attribute: cameraAttributes.ZOOM};
 
                 let touch0 = e.touches[0];
@@ -190,18 +190,18 @@ class Input extends InputBase {
                     Math.pow(touch0.clientY - touch0.clientY, 2)
                 );
 
-                if(!lastDistance){
+                if (!lastDistance) {
                     lastDistance = distance;
                 }
 
                 let distanceDelta = distance - lastDistance;
                 lastDistance = distance;
 
-                if(distanceDelta >= zoomThreshold){
+                if (distanceDelta >= zoomThreshold) {
                     eventObject.value = zoom;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
-                else if(distanceDelta <= -1 * zoomThreshold){
+                else if (distanceDelta <= -1 * zoomThreshold) {
                     eventObject.value = -1 * zoom;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
@@ -211,27 +211,27 @@ class Input extends InputBase {
         this.eventSource.addEventListener('touchend', e => {
             e.preventDefault();
 
-            if(isPinch){
+            if (isPinch) {
                 isPinch = e.touches.length > 1;
-                if(!isPinch){
+                if (!isPinch) {
                     lastDistance = null;
                     dropEvent = true;
                 }
                 return;
             }
 
-            if(!dropEvent){
+            if (!dropEvent) {
                 let touch = e.changedTouches[0];
                 let endX = touch.clientX;
                 let endY = touch.clientY;
 
                 let deltaX = endX - startX;
                 let deltaY = endY - startY;
-                if(startY >= this.rotateAreaY){
-                    if(Math.abs(deltaX) >= rotateSwipeThreshold){
+                if (startY >= this.rotateAreaY) {
+                    if (Math.abs(deltaX) >= rotateSwipeThreshold) {
                         let eventName = events.camera.ROTATE;
                         let eventObject = <CameraDirectionEvent>{};
-                        if(deltaX > 0){
+                        if (deltaX > 0) {
                             eventObject.direction = cameraDirections.CCW;
                         }
                         else {
@@ -244,24 +244,24 @@ class Input extends InputBase {
                 else {
                     let r = Math.sqrt(Math.abs(deltaX * deltaX) + Math.abs(deltaY * deltaY));
                     let angle = -1 * ((Math.atan2(deltaY, deltaX) * (180 / Math.PI)));
-                    if(angle < 0){
+                    if (angle < 0) {
                         angle += 360;
                     }
 
-                    if(r > moveSwipeThreshold){
+                    if (r > moveSwipeThreshold) {
                         let eventName = events.avatar.MOVE;
                         let eventObject = <ControlEvent>{angle: angle};
 
-                        if(angle >= frontRange.from && angle < frontRange.to){
+                        if (angle >= frontRange.from && angle < frontRange.to) {
                             eventObject.direction = controlDirections.FRONT;
                         }
-                        else if(angle >= backRange.from && angle < backRange.to){
+                        else if (angle >= backRange.from && angle < backRange.to) {
                             eventObject.direction = controlDirections.BACK;
                         }
-                        else if(angle >= leftRange.from && angle < leftRange.to){
+                        else if (angle >= leftRange.from && angle < leftRange.to) {
                             eventObject.direction = controlDirections.LEFT;
                         }
-                        else if(angle >= rightRange.from && angle < rightRange.to){
+                        else if (angle >= rightRange.from && angle < rightRange.to) {
                             eventObject.direction = controlDirections.RIGHT;
                         }
                         else {
@@ -285,27 +285,40 @@ class Input extends InputBase {
 export let input: InputBase;
 
 //? if(DEBUG){
-import { random } from './utils';
+import {random} from './utils';
 
 class InputMock extends InputBase {
     /** This class emits random input events automatically */
-    public mockControlEvents:Array<ControlEvent> = [
+    public mockControlEvents: Array<ControlEvent> = [
         {direction: controlDirections.FRONT, angle: 0},
         {direction: controlDirections.BACK, angle: 0},
         {direction: controlDirections.LEFT, angle: 0},
         {direction: controlDirections.RIGHT, angle: 0}
     ];
 
-    constructor(eventSourceElement: HTMLElement){
+    constructor(eventSourceElement: HTMLElement) {
         super(eventSourceElement);
 
+        let count = 0;
+
+        //? if(0){
+        // random event
         setInterval(() => {
             let randomDirection = random.choice(this.mockControlEvents);
             this.emit(events.avatar.MOVE, randomDirection);
-        }, 1000)
+        }, 1000);
+        //? } else {
+        // iterate through them in sequence too
+        setInterval(() => {
+            let evt = this.mockControlEvents[count % this.mockControlEvents.length];
+            this.emit(events.avatar.MOVE, evt);
+            count++;
+        }, 1000);
+        //? }
     }
 
-    update(): void {}
+    update(): void {
+    }
 }
 //? }
 

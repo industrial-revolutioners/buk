@@ -11,4 +11,6 @@
 
 import './renderer';
 import './events';
+
 import { Avatar } from './avatar';
+
