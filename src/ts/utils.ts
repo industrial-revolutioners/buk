@@ -26,11 +26,9 @@ export namespace concurrence {
         }
         push(): void {
             this.count++;
-            // console.log("push" + this.count);
         }
         pop(): void {
             this.count--;
-            // console.log("pop" + this.count);
         }
         isLocked(): boolean {
             return this.count != 0;
