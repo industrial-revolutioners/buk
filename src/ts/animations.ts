@@ -8,6 +8,7 @@
  */
 
 /// <reference path="../../typings/index.d.ts" />
+import {EventEmitter} from "events";
 
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
@@ -15,21 +16,59 @@ import * as TWEEN from 'tween.js';
 import {
     cameraDirections, cameraAttributes, controlDirections
 } from './input';
-
+import { concurrence } from './utils'
 import { cube } from './objects';
+import { camera } from './camera';
 
 const ANIM_DURATION = 250;
 
-/**
- * Custom tween ease which makes a value "rotated around" a point in a semi-circle
- */
+export const ANIMATION_START_EVT_NAME = "animation.start";
 
-let node = cube;
-let lock = false;
+class AnimationEvent extends EventEmitter {
+    constructor() {
+        super();
+    }
+
+    emitAnimationStart() {
+        this.emit(ANIMATION_START_EVT_NAME);
+    }
+}
+
+export let animationEvent = new AnimationEvent();
+
+/** Common stuff and interface for all kind of animations */
+class AnimationBase {
+    constructor() {
+        this.lock = new concurrence.Lock();
+    }
+
+    protected lock: concurrence.Lock;
+
+    /** @return True if any animations are running */
+    isAnimationRunning(): boolean {
+        //? if(DEBUG){
+        if (this.lock.isLocked() != (TWEEN.getAll().length > 0)) {
+            const msg = "Semaphore is not unlocked properly. Lock=" + this.lock.isLocked() + ", TweenQueue=" + (TWEEN.getAll().length > 0);
+            // console.log(msg);
+            throw msg;
+        }
+        //? }
+
+        return this.lock.isLocked();
+    }
+}
 
 /** Animation clips for the avatar */
-class AvatarAnimations {
+class AvatarAnimations extends AnimationBase {
 
+    constructor(node: THREE.Object3D) {
+        super();
+        this.node = node;
+    }
+
+    protected node: THREE.Object3D;
+
+    /** Moves the avatar node towards the given direction */
     move(dir: controlDirections): void {
         // the floor under the cube is the {X, Z} plane. 
         let moveDir: { x: number; z: number };
@@ -101,60 +140,102 @@ class AvatarAnimations {
         };
     }
 
+    /**
+     * Custom tween ease which makes a value "rotated around" a point in a semi-circle
+     */
     private semiCircularEase(k: number): number {
         const t = 2 * k - 1;
         return Math.sqrt(1 - t * t);
     }
 
     /** Common setup method for tweens */
+    private masterTween: TWEEN.Tween;
     private setupTweens(mov: { x: number, z: number }, rot: { x: number, z: number }) {
-        if (lock) {
+        if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
             //? }
             return;
         }
 
-        lock = true;
+        let lock = this.lock;
+        let lockPop = function () {
+            lock.pop();
+        }
 
         // --- rotation
-        node.rotation.set(0, 0, 0);
+        this.node.rotation.set(0, 0, 0);
         var t_rotation = new TWEEN.Tween(cube.rotation)
             .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, ANIM_DURATION)
+            .onComplete(lockPop);
 
         // --- bump
-        node.position.set(0, 0, 0);
-        var t_elevation = new TWEEN.Tween(node.position)
+        this.node.position.set(0, 0, 0);
+        var t_elevation = new TWEEN.Tween(this.node.position)
             .to({ y: Math.SQRT2 * .125 }, ANIM_DURATION)
-            .easing(this.semiCircularEase);
+            .easing(this.semiCircularEase)
+            .onComplete(lockPop);
 
         // --- move
-        var t_move = new TWEEN.Tween(node.position)
-            .to({ x: mov.x, z: mov.z }, ANIM_DURATION);
+        var t_move = new TWEEN.Tween(this.node.position)
+            .to({ x: mov.x, z: mov.z }, ANIM_DURATION)
+            .onComplete(lockPop);
 
         // move back, tmep
-        var t_move2 = new TWEEN.Tween(node.position)
-            .to({ x: 0, z: 0 }, ANIM_DURATION);
+        var t_move2 = new TWEEN.Tween(this.node.position)
+            .to({ x: 0, z: 0 }, ANIM_DURATION)
+            .onComplete(lockPop);
 
         // --- start
-        t_elevation.start();
-        t_move.chain(t_move2).start();
-        t_rotation.start()
-            .onComplete(function () {
-                lock = false;
-            });
 
+        lock.push();
+        t_elevation.start();
+
+        lock.push();
+        lock.push();
+        t_move.chain(t_move2).start();
+
+        lock.push();
+        t_rotation.start();
+
+        animationEvent.emitAnimationStart();
     }
 }
 
 /** Animation for the camera */
-class CameraAnimations {
-    animateCw(): void { }
-    aniumateCcw(): void { }
-    zoom(direction: number): void { }
+class CameraAnimations extends AnimationBase {
+
+    private camera: THREE.Camera;
+
+    constructor(camera: THREE.Camera) {
+        super();
+        this.camera = camera;
+    }
+
+    rotate(): void {
+        // ... 
+    }
+
+    zoom(direction: number): void {
+        // ... 
+    }
+
 }
 
 // ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
-export const avatarAnimations = new AvatarAnimations();
-export const cameraAnimations = new CameraAnimations();
+export const avatarAnimations = new AvatarAnimations(cube);
+export const cameraAnimations = new CameraAnimations(camera);
+
+/** Steps all the animations if any
+ * @return true if those are running
+ */
+export function updateAnimations(): boolean {
+    TWEEN.update();
+
+    const b = avatarAnimations.isAnimationRunning() ||
+        cameraAnimations.isAnimationRunning() ||
+        false;
+
+    return b;
+}
