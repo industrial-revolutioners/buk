@@ -308,7 +308,7 @@ class InputMock extends InputBase {
             let evt = this.mockControlEvents[rnd];
             this.emit(events.avatar.MOVE, evt);
             count++;
-        }, 1000);
+        }, 25);
     }
 
     update(): void {
