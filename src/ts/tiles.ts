@@ -17,6 +17,7 @@ const enum Tiles {
 
 
 export abstract class BaseTile {
+    /** TODO: Finalize interface */
     front: BaseTile;
     back: BaseTile;
     left: BaseTile;

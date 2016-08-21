@@ -82,13 +82,16 @@ export class Avatar {
                 break;
         }
 
+        /** TODO: Delegate more events */
         return <AvatarState>{
             face: faces.bottom,
             accept: (target) => {
-                console.log(faces);
                 this.faces = faces;
                 this.setTile(target);
                 avatarAnimations.move(e.direction);
+                //? if(DEBUG){
+                console.log(this);
+                //? }
             }
         }
     }
