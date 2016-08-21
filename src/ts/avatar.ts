@@ -85,6 +85,7 @@ export class Avatar {
         return <AvatarState>{
             face: faces.bottom,
             accept: (target) => {
+                console.log(faces);
                 this.faces = faces;
                 this.setTile(target);
                 avatarAnimations.move(e.direction);
