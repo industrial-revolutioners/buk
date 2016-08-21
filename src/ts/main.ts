@@ -25,8 +25,8 @@ start.left.right = start;
 let avatar = new Avatar(start);
 
 input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    // @if DEBUG
+    //? if(DEBUG){
     console.log(`avatar.MOVE; direction=${controlDirections[e.direction]}`);
-    // @endif
+    //? }
     avatar.move(e);
 });

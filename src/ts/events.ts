@@ -23,13 +23,13 @@ import {
  */
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
-    // @if DEBUG
+    //? if(DEBUG){
     console.log(`camera.ROTATE; direction=${cameraDirections[e.direction]}`);
-    // @endif
+    //? }
 });
 
 input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
-    // @if DEBUG
+    //? if(DEBUG){
     console.log(`camera.ZOOM; attribute=${cameraAttributes[e.attribute]}, value=${e.value}`);
-    // @endif
+    //? }
 });

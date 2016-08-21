@@ -18,8 +18,6 @@ import {
     zoom, zoomThreshold
 } from './settings';
 
-import {random} from './utils';
-
 export const CLASS_NAME: string = 'event-source';
 
 export const events = Object.freeze({
@@ -87,7 +85,7 @@ abstract class InputBase extends EventEmitter {
 }
 
 
-/** The default input handler. Handles keyboard and touch events */
+/** The default input handler of keyboard and touch events */
 class Input extends InputBase {
     private rotateAreaY: number;
 
@@ -150,9 +148,9 @@ class Input extends InputBase {
                     };
                     break;
                 default:
-                    // @if DEBUG
+                    //? if(DEBUG){
                     console.warn('Unhandled', e);
-                    // @endif
+                    //? }
                     return;
             }
 
@@ -284,11 +282,9 @@ class Input extends InputBase {
     }
 }
 
-export let input: InputBase;
-
 //? if(DEBUG) {
 class InputMock extends InputBase {
-    /** This class emits random input events automatically */
+    /** This class emits [FRONT, BACK, LEFT, RIGHT] input events periodically */
     public mockControlEvents: Array<ControlEvent> = [
         {direction: controlDirections.FRONT, angle: 0}, // 0
         {direction: controlDirections.BACK, angle: 0},  // 1
@@ -302,11 +298,11 @@ class InputMock extends InputBase {
         let count = 0;
 
         setInterval(() => {
-			// let evt = random.choice(this.mockControlEvents);
-            const rnd = count % this.mockControlEvents.length
-            // const rnd = 0;
+            const rnd = count % this.mockControlEvents.length;
             let evt = this.mockControlEvents[rnd];
+
             this.emit(events.avatar.MOVE, evt);
+
             count++;
         }, 1000);
     }
@@ -314,12 +310,10 @@ class InputMock extends InputBase {
     update(): void {
     }
 }
-//? }
 
-//? if(DEBUG){
-input = new InputMock(canvasWrapper);
+export const input = new InputMock(canvasWrapper);
 //? } else {
-input = new Input(canvasWrapper);
+export const input = new Input(canvasWrapper);
 //? }
 
 window.addEventListener('resize', () => {

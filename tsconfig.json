@@ -1,32 +1,19 @@
 {
   "files": [
-    "src/ts/animation.ts",
-    "src/ts/avatar.ts",
-    "src/ts/camera.ts",
-    "src/ts/events.ts",
-    "src/ts/input.ts",
-    "src/ts/main.ts",
-    "src/ts/objects.ts",
-    "src/ts/renderer.ts",
-    "src/ts/settings.ts",
-    "src/ts/tiles.ts",
-    "src/ts/utils.ts",
     "typings/index.d.ts"
   ],
   "filesGlob": [
-    "./src/**/*.ts",
-    "./src/**/*.tsx",
+    "./build/**/*.ts",
+    "./build/**/*.tsx",
     "!./node_modules/**"
   ],
   "compilerOptions": {
     "noImplicitAny": true,
     "target": "es6",
     "module": "commonjs",
-    "removeComments": false,
     "noLib": false,
     "preserveConstEnums": true,
     "declaration": false,
-    "suppressImplicitAnyIndexErrors": true,
-    "sourceMap": false
+    "suppressImplicitAnyIndexErrors": true
   }
 }
