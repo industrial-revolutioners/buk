@@ -4,11 +4,11 @@ const browserify = require('browserify');
 const browserSync = require('browser-sync').create();
 const errorify = require('errorify');
 const gulp = require('gulp');
-const gulpUtil = require('gulp-util');
-const metascript = require('metascript');
+const metascript = require('gulp-metascript');
 const sass = require('gulp-sass');
 const stream = require('stream');
 const tsify = require('tsify');
+const util = require('gulp-util');
 const vinylBuffer = require('vinyl-buffer');
 const vinylSourceStream = require('vinyl-source-stream');
 const watchify = require('watchify');
@@ -48,62 +48,50 @@ gulp.task('watch-sass', ['build-sass'], () => {
 
 // ts --------------------------------------------------------------------------
 gulp.task('build-ts', () => {
-    return browserify('./src/ts/main.ts')
-        .plugin(tsify)
-        .transform(() => {
-            let data  = '';
-
-            return new stream.Transform({
-                transform: (chunk, encoding, callback) => {
-                    data += chunk;
-                    callback();
-                },
-                flush: function(callback){
-                    this.push(metascript.transform(data, RELEASE_CONTEXT));
-                    callback();
-                }
-            })
-        })
-        .bundle()
-        .pipe(vinylSourceStream('main.js'))
-        .pipe(vinylBuffer())
-        .pipe(gulp.dest('./dist/assets'));
+    return gulp.src('./src/ts/*.ts')
+        .pipe(metascript(RELEASE_CONTEXT))
+        .pipe(gulp.dest('./build/ts'))
+        .on('end', () =>{
+            return browserify('./build/ts/main.ts')
+            .plugin(tsify)
+            .bundle()
+            .pipe(vinylSourceStream('main.js'))
+            .pipe(vinylBuffer())
+            .pipe(gulp.dest('./dist/assets'));
+        });
 });
 
 gulp.task('watch-ts', () => {
-    let b = browserify({
-        entries: ['./src/ts/main.ts'],
-        cache: {},
-        packageCache: {},
-        plugin: [tsify, watchify, errorify],
-        debug: true,
+    gulp.watch('./src/ts/*.ts', () => {
+        return gulp.src('./src/ts/*.ts')
+            .pipe(metascript(DEBUG_CONTEXT))
+            .pipe(gulp.dest('./build/ts'))
     });
 
-    b.on('update', bundle);
-    b.on('log', gulpUtil.log);
-    bundle();
+    gulp.src('./src/ts/*.ts')
+        .pipe(metascript(DEBUG_CONTEXT))
+        .pipe(gulp.dest('./build/ts'))
+        .on('end', () => {
+            let b = browserify({
+                entries: ['./build/ts/main.ts'],
+                cache: {},
+                packageCache: {},
+                plugin: [tsify, watchify, errorify],
+                debug: true
+            });
 
-    function bundle(){
-        return b
-            .transform((filename) => {
-                let data  = '';
+            b.on('update', bundle);
+            b.on('log', util.log);
+            bundle();
 
-                return new stream.Transform({
-                    transform: (chunk, encoding, callback) => {
-                        data += chunk;
-                        callback();
-                    },
-                    flush: function(callback){
-                        this.push(metascript.transform(data, DEBUG_CONTEXT));
-                        callback();
-                    }
-                })
-            })
-            .bundle()
-            .pipe(vinylSourceStream('main.js'))
-            .pipe(gulp.dest('./dist/assets'))
-            .pipe(browserSync.stream({match: '**/*.js'}));
-    }
+            function bundle(){
+                return b
+                    .bundle()
+                    .pipe(vinylSourceStream('main.js'))
+                    .pipe(gulp.dest('./dist/assets'))
+                    .pipe(browserSync.stream({match: '**/*.js'}));
+            }
+        });
 });
 
 // main tasks ------------------------------------------------------------------

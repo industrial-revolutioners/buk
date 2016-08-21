@@ -10,12 +10,10 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {
-    events, input, ControlEvent,
+    events, input,
     CameraDirectionEvent, CameraAttributeEvent,
-    cameraDirections, cameraAttributes, controlDirections
+    cameraDirections, cameraAttributes
 } from './input';
-
-import { avatarAnimations, cameraAnimations } from './animations';
 
 
 /**
@@ -24,22 +22,14 @@ import { avatarAnimations, cameraAnimations } from './animations';
  * ============================================================================
  */
 
-input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    // @if DEBUG
-    console.log(`avatar.MOVE; direction=${controlDirections[e.direction]}`);
-    // @endif
-
-    avatarAnimations.move(e.direction);
-});
-
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
-    // @if DEBUG
+    //? if(DEBUG){
     console.log(`camera.ROTATE; direction=${cameraDirections[e.direction]}`);
-    // @endif
+    //? }
 });
 
 input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
-    // @if DEBUG
+    //? if(DEBUG){
     console.log(`camera.ZOOM; attribute=${cameraAttributes[e.attribute]}, value=${e.value}`);
-    // @endif
+    //? }
 });

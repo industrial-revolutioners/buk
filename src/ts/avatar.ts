@@ -8,8 +8,9 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import { Tile } from './tiles';
+import { StartTile, BaseTile } from './tiles';
 import { controlDirections, ControlEvent } from "./input";
+import { avatarAnimations } from './animations';
 
 
 enum AvatarFaces {
@@ -28,21 +29,26 @@ interface Faces {
 
 export interface AvatarState {
     face: AvatarFaces;
-    accept: Function
+    accept: (target: BaseTile) => void;
 }
 
 
 export class Avatar {
-    private tile: Tile;
+    private tile: BaseTile;
     private faces: Faces;
 
-    constructor(startTile: Tile){
-        this.tile = startTile;
+    constructor(startTile: StartTile){
+        if(!(startTile instanceof StartTile)){
+            throw new Error(`Expected StartTile, got ${startTile.constructor.name} instead.`);
+        }
+
         this.faces = <Faces>{
             top: AvatarFaces.TOP, bottom: AvatarFaces.BOTTOM,
             left: AvatarFaces.LEFT, right: AvatarFaces.RIGHT,
             front: AvatarFaces.FRONT, back: AvatarFaces.BACK
-        }
+        };
+
+        this.setTile(startTile);
     }
 
     delegateState(e: ControlEvent){
@@ -76,33 +82,54 @@ export class Avatar {
                 break;
         }
 
+        /** TODO: Delegate more events */
         return <AvatarState>{
             face: faces.bottom,
-            accept: () => {
-                console.log('AvatarState.accept');
-                // TODO: This part depends on animation code
+            accept: (target) => {
+                this.faces = faces;
+                this.setTile(target);
+                avatarAnimations.move(e.direction);
+                //? if(DEBUG){
+                console.log(this);
+                //? }
             }
         }
     }
 
     move(e: ControlEvent){
         let stateDelegate = this.delegateState(e);
+        let target: BaseTile;
 
         switch(e.direction){
             case controlDirections.FRONT:
-                console.log('avatar.FRONT', stateDelegate);
+                target = this.tile.front;
                 break;
             case controlDirections.BACK:
-                console.log('avatar.BACK', stateDelegate);
+                target = this.tile.back;
                 break;
             case controlDirections.LEFT:
-                console.log('avatar.LEFT', stateDelegate);
+                target = this.tile.left;
                 break;
             case controlDirections.RIGHT:
-                console.log('avatar.RIGHT', stateDelegate);
+                target = this.tile.right;
                 break;
             default:
                 throw e;
         }
+
+        //? if(DEBUG){
+        try {
+            target.action(stateDelegate);
+        }
+        catch(err){
+            console.warn(`Move skipped: no ${controlDirections[e.direction]} neighbor for tile`, this.tile);
+        }
+        //? } else {
+            target.action(stateDelegate);
+        //? }
+    }
+
+    setTile(tile: BaseTile){
+        this.tile = tile;
     }
 }
