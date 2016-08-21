@@ -10,11 +10,13 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import * as TWEEN from 'tween.js';
-import './renderer';
+
 import './events';
+import './renderer';
 import { Avatar } from './avatar';
-import { StartTile, Tile } from './tiles';
+import { avatarAnimations } from './animations';
 import { events, input, ControlEvent, controlDirections } from './input';
+import { StartTile, Tile } from './tiles';
 
 
 let start = new StartTile();
@@ -26,15 +28,7 @@ start.left.right = start;
 let avatar = new Avatar(start);
 
 input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    if(TWEEN.getAll().length === 0){
-        //? if(DEBUG){
-        console.log(`avatar.MOVE; direction=${controlDirections[e.direction]}`);
-        //? }
+    if(!avatarAnimations.isAnimationRunning()){
         avatar.move(e);
     }
-    //? if(DEBUG){
-    else {
-        console.log('Animation is in progress');
-    }
-    //? }
 });

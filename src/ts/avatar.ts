@@ -117,7 +117,16 @@ export class Avatar {
                 throw e;
         }
 
-        target.action(stateDelegate);
+        //? if(DEBUG){
+        try {
+            target.action(stateDelegate);
+        }
+        catch(err){
+            console.warn(`Move skipped: no ${controlDirections[e.direction]} neighbor for tile`, this.tile);
+        }
+        //? } else {
+            target.action(stateDelegate);
+        //? }
     }
 
     setTile(tile: BaseTile){
