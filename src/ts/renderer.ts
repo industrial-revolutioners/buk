@@ -14,6 +14,10 @@ import * as TWEEN from 'tween.js';
 import {rendererSettings, canvasWrapper} from './settings';
 import {camera, updateCamera} from './camera';
 import {scene, cube} from './objects';
+import {
+    updateAnimations, animationEvent, 
+    ANIMATION_START_EVT_NAME
+} from './animations';
 
 export let renderer = new THREE.WebGLRenderer(rendererSettings);
 canvasWrapper.appendChild(renderer.domElement);
@@ -32,10 +36,12 @@ function renderScene(): void {
 }
 
 function render(): void {
-    requestAnimationFrame(render);
+    if (updateAnimations())
+        requestAnimationFrame(render);
 
-    TWEEN.update();
     renderScene();
 }
+
+animationEvent.on(ANIMATION_START_EVT_NAME, render);
 
 render();
