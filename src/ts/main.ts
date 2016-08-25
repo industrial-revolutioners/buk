@@ -7,29 +7,28 @@
  * @author Slapec
  */
 
+/// <reference path="../../typings/index.d.ts" />
+
+import * as TWEEN from 'tween.js';
 
 import './events';
+import './renderer';
+import { Avatar } from './avatar';
+import { avatarAnimations } from './animations';
+import { events, input, ControlEvent, controlDirections } from './input';
+import { StartTile, Tile } from './tiles';
 
 
-/** Event sending mock and test stub */
-// if (false) {
-//     /** Event delay mock */
-//     function newDelay(event: (any: any) => void): () => Promise<{}> {
-//         return function (): Promise<{}> {
-//             return new Promise(function (resolve: () => void) {
-//                 console.log("invoke");
-//                 event.apply(input, arguments);
-//                 input.on(names.animation.done, function () {
-//                     if (DEBUG)
-//                         console.log("resolve");
-//                     resolve();
-//                 })
-//             });
-//         }
-//     };
+let start = new StartTile();
+start.front = new Tile();
+start.front.back = start;
+start.left = new Tile();
+start.left.right = start;
 
-//     newDelay(input.sendEvent)()
-//         .then(newDelay(input.sendEvent))
-//         .then(newDelay(input.sendEvent))
-//         .then(newDelay(input.sendEvent));
-// }
+let avatar = new Avatar(start);
+
+input.on(events.avatar.MOVE, (e: ControlEvent) => {
+    if(!avatarAnimations.isAnimationRunning()){
+        avatar.move(e);
+    }
+});

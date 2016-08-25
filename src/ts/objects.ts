@@ -1,6 +1,12 @@
 /**
- * Contains all the 3d object and scenes 
+ * objects.ts
+ *
+ * Contains all the 3d object and scenes
+ *
+ * @author Caiwan
  */
+
+/// <reference path="../../typings/index.d.ts" />
 
 import * as THREE from 'three';
 

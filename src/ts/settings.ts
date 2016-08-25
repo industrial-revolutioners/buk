@@ -1,10 +1,12 @@
 /**
- *
  * settings.ts
+ *
  * Defaults and constants for rendering and gesture handling
  *
  * @author Slapec
  */
+
+/// <reference path="../../typings/index.d.ts" />
 
 import { WebGLRendererParameters } from 'three';
 

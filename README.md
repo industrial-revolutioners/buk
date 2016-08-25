@@ -20,6 +20,13 @@ Any change you make in the `src/` directory will trigger the browser
 to reload. The server is available externally to so you can access
 the application on your phone easily.
 
+*To set it up in VS code check 
+[these](https://gist.github.com/caiwan/c23ee4b06e6c90748b2da58a9ea98e38) 
+sample jsons.* Also please note that
+`/// <reference path="../../typings/index.d.ts" />` line seems to be
+mandatory before any includes to make it work with it *(But also YMMW)*.
+Please don't remove them.
+
 ## Release build
 
 Simply run `npm run build`. The result will be written in `dist/`
