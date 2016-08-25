@@ -11,6 +11,8 @@
 
 import {PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 
+import {ControlEvent, controlDirections} from './input';
+
 // export let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 export let camera = new OrthographicCamera(-1, 1, 1, -1, 0, 100);
 camera.position.set(5, 5, 5);
@@ -43,3 +45,99 @@ export function updateCamera(w: number, h: number): void {
     camera.updateProjectionMatrix();
 }
 
+/** ------------------------------------------------------------------------
+ * Camera
+ * ------------------------------------------------------------------------- */
+
+export enum AbsDirection {
+    NORTH, EAST, SOUTH, WEST
+}
+
+export enum CameraOrientation {
+    SE, SW, NW, NE
+}
+
+interface CamRotDir<T> {
+    from: T, to: T
+}
+
+interface StructCamData {
+    name: string;
+    rad: number;
+    orientation: CameraOrientation;
+    absoluteDirections: Array<AbsDirection>;
+}
+
+// angle is in radian, where value is n*PI/4
+const camData = ([
+    { name: "SE", rad: 7, orientation: CameraOrientation.SE, absoluteDirections: [AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST] },
+    { name: "SW", rad: 5, orientation: CameraOrientation.SW, absoluteDirections: [AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH] },
+    { name: "NW", rad: 3, orientation: CameraOrientation.NW, absoluteDirections: [AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST] },
+    { name: "NE", rad: 1, orientation: CameraOrientation.NE, absoluteDirections: [AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH] }
+]);
+
+/** Model of the camera */
+class CameraModel {
+    /** Index of current camera status */
+    private status: number;
+    private prevStatus: number;
+
+    constructor() {
+        this.status = 0;
+        this.prevStatus = 0;
+    }
+
+    roateCw(): void {
+        this.prevStatus = this.status;
+        this.status = ++this.status % 4;
+    }
+
+    roateCcw(): void {
+        this.prevStatus = this.status;
+        this.status = --this.status % 4;
+    }
+
+    getAbsoluteDirection(evt: ControlEvent): AbsDirection {
+        let k = 0;
+        switch (evt.direction) {
+            case controlDirections.FRONT:
+                k = 0;
+                break;
+            case controlDirections.RIGHT:
+                k = 1;
+                break;
+            case controlDirections.BACK:
+                k = 2;
+                break;
+            case controlDirections.LEFT:
+                k = 3;
+                break;
+            default:
+                throw "Nincs ilyen";
+        }
+        return camData[this.status].absoluteDirections[k];
+    }
+
+    private getInternalState(): CamRotDir<StructCamData> {
+        return <CamRotDir<StructCamData>>{
+            to: camData[this.status],
+            from: camData[this.prevStatus],
+        }
+    }
+
+    getAngle(): CamRotDir<number> {
+        const status = this.getInternalState();
+        return <CamRotDir<number>>{
+            from: status.from.rad * Math.PI / 4,
+            to: status.to.rad * Math.PI / 4
+        }
+    }
+
+    getStatus(): CamRotDir<CameraOrientation> {
+        const status = this.getInternalState();
+        return <CamRotDir<CameraOrientation>>{
+            from: status.from.orientation,
+            to: status.to.orientation
+        }
+    }
+}

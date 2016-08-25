@@ -36,6 +36,11 @@ class AnimationEvent extends EventEmitter {
 
 export let animationEvent = new AnimationEvent();
 
+interface Direction{
+    x: number;
+    z: number;
+}
+
 /** Common stuff and interface for all kind of animations */
 class AnimationBase {
     constructor() {
@@ -71,8 +76,8 @@ class AvatarAnimations extends AnimationBase {
     /** Moves the avatar node towards the given direction */
     move(dir: controlDirections): void {
         // the floor under the cube is the {X, Z} plane. 
-        let moveDir: { x: number; z: number };
-        let rotateEdge: { x: number; z: number };
+        let moveDir: Direction;
+        let rotateEdge: Direction;
         let invRotEdge: boolean;
         switch (dir) {
             case controlDirections.FRONT:
@@ -107,6 +112,9 @@ class AvatarAnimations extends AnimationBase {
 
         this.setupTweens(moveDir, rotateEdge);
     }
+
+    /** TODO cleanup */
+
     /**
      * Get forward direction of the character in relation of the camera position 
      * (back:= -forward)
@@ -150,7 +158,7 @@ class AvatarAnimations extends AnimationBase {
 
     /** Common setup method for tweens */
     private masterTween: TWEEN.Tween;
-    private setupTweens(mov: { x: number, z: number }, rot: { x: number, z: number }) {
+    private setupTweens(mov: Direction, rot: Direction) {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
