@@ -16,7 +16,7 @@ import * as TWEEN from 'tween.js';
 import * as SETTINGS from './settings';
 
 import {
-    cameraDirections, cameraAttributes, controlDirections
+    cameraDirections, cameraAttributes, controlDirections, cameraZoomDirection
 } from './input';
 import { concurrence } from './utils'
 import { avatarModel, AvatarModel} from './objects';
@@ -212,7 +212,7 @@ class CameraAnimations extends AnimationBase {
     private camera: THREE.Camera;
     private cameraModel: CameraModel;
 
-    private t: { t: number } = { t: 0 };
+    // private t: { t: number } = { t: 0 };
 
     constructor(cameraModel: CameraModel) {
         super();
@@ -232,13 +232,14 @@ class CameraAnimations extends AnimationBase {
         let angle = cameraModel.getAngle();
         angle.to = angle.from + ((d == cameraDirections.CCW) ? -1 : +1) * Math.PI / 2;
 
-        this.t.t = angle.from;
+        // this.t.t = angle.from;
+        let t = { t: angle.from };
         
         let camera = this.cameraModel;
-        let tween = new TWEEN.Tween(this.t)
+        let tween = new TWEEN.Tween(t)
             .to({ t: angle.to }, SETTINGS.animationDuration)
             .onUpdate(function () {
-                camera.setAngle(this.t);
+                camera.setViewAngle(this.t);
             })
             .onComplete(() => {this.lock.pop()});
 
@@ -248,7 +249,7 @@ class CameraAnimations extends AnimationBase {
         animationEvent.emitAnimationStart();
     }
 
-    zoom(direction: number): void {
+    zoom(direction: cameraZoomDirection): void {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
@@ -256,12 +257,24 @@ class CameraAnimations extends AnimationBase {
             return;
         }
 
-        /// TODO WTF, where is the zoom property
-        // let zoomlevel = Math.round(1. / this.camera.zoom) + ((direction < 0) ? -1 : +1);
-        // TODO clamp min and max level
+        /// TODO clamp to
+        const zoom = this.cameraModel.getZoom();
+        const zoomTo = zoom + SETTINGS.zoomLevelStep * (direction == cameraZoomDirection.ZOOM_OUT ? -1 : 1);
 
-        // ... 
+        let t = {t:zoom};
+        let camera = this.cameraModel;
 
+        let tween = new TWEEN.Tween(t)
+        .to({t : zoomTo}, SETTINGS.animationDuration)
+        .onUpdate(function(){
+            camera.setZoom(this.t);
+        })
+        .onComplete(()=>{this.lock.pop()});
+
+        this.lock.push();
+        tween.start();
+
+        animationEvent.emitAnimationStart();
     }
 
 }

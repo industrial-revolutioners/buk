@@ -48,7 +48,7 @@ export class CameraModel {
 
         this.camera.lookAt(this.center);
 
-        this.camera.zoom = 1. / 3;
+        this.setZoom(SETTINGS.zoom.default);
 
         this.status = 0;
         this.prevStatus = 0;
@@ -90,14 +90,18 @@ export class CameraModel {
         { name: "NE", rad: 1, orientation: CameraOrientation.NE, absoluteDirections: [AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH] }
     ]);
 
-
-    zoom(z: number) {
+    setZoom(z: number) {
         if (z < 0.000001)
             z = 1.;
         this.camera.zoom = 1. / z;
+        this.camera.updateProjectionMatrix();
     }
 
-    setAngle(phi: number) {
+    getZoom() : number {
+        return 1./this.camera.zoom;
+    }
+
+    setViewAngle(phi: number) {
         const x = Math.cos(phi) * SETTINGS.cameraRotationRadius;
         const y = Math.sin(phi) * SETTINGS.cameraRotationRadius;
 
@@ -112,6 +116,7 @@ export class CameraModel {
         this.camera.lookAt(this.center);
     }
 
+    /** Rotate camera model */
     rotate(d: cameraDirections): void {
         this.prevStatus = this.status;
         switch (d) {
