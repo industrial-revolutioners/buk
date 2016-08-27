@@ -18,7 +18,8 @@ import {
 } from './input';
 import { concurrence } from './utils'
 import { cube } from './objects';
-import { camera } from './camera';
+import { camera, cameraModel, CameraModel } from './camera';
+import * as SETTINGS from './settings';
 
 const ANIM_DURATION = 250;
 
@@ -36,7 +37,7 @@ class AnimationEvent extends EventEmitter {
 
 export let animationEvent = new AnimationEvent();
 
-interface Direction{
+interface Direction {
     x: number;
     z: number;
 }
@@ -51,14 +52,6 @@ class AnimationBase {
 
     /** @return True if any animations are running */
     isAnimationRunning(): boolean {
-        //? if(DEBUG){
-        if (this.lock.isLocked() != (TWEEN.getAll().length > 0)) {
-            const msg = "Semaphore is not unlocked properly. Lock=" + this.lock.isLocked() + ", TweenQueue=" + (TWEEN.getAll().length > 0);
-            // console.log(msg);
-            throw msg;
-        }
-        //? }
-
         return this.lock.isLocked();
     }
 }
@@ -166,9 +159,8 @@ class AvatarAnimations extends AnimationBase {
             return;
         }
 
-        let lock = this.lock;
-        let lockPop = function () {
-            lock.pop();
+        let lockPop = () => {
+            this.lock.pop();
         }
 
         // --- rotation
@@ -196,14 +188,14 @@ class AvatarAnimations extends AnimationBase {
 
         // --- start
 
-        lock.push();
+        this.lock.push();
         t_elevation.start();
 
-        lock.push();
-        lock.push();
+        this.lock.push();
+        this.lock.push();
         t_move.chain(t_move2).start();
 
-        lock.push();
+        this.lock.push();
         t_rotation.start();
 
         animationEvent.emitAnimationStart();
@@ -214,18 +206,69 @@ class AvatarAnimations extends AnimationBase {
 class CameraAnimations extends AnimationBase {
 
     private camera: THREE.Camera;
+    private cameraModel: CameraModel;
 
-    constructor(camera: THREE.Camera) {
+    private t: { t: number } = { t: 0 };
+
+    constructor(camera: THREE.Camera, cameraModel: CameraModel) {
         super();
         this.camera = camera;
+        this.cameraModel = cameraModel;
     }
 
-    rotate(): void {
-        // ... 
+    rotate(d: cameraDirections): void {
+
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+
+        let angle = cameraModel.getAngle();
+        angle.to = angle.from + ((d == cameraDirections.CCW) ? -1 : +1) * Math.PI / 2;
+
+        this.t.t = angle.from;
+        this.lock.push();
+
+        let camera = this.camera;
+
+        let tween = new TWEEN.Tween(this.t)
+            .to({ t: angle.to }, ANIM_DURATION)
+            .onUpdate(function () {
+                const x = Math.cos(this.t) * SETTINGS.cameraRotationRadius;
+                const y = Math.sin(this.t) * SETTINGS.cameraRotationRadius;
+
+                camera.position.x = x;
+                camera.position.z = y;
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+            })
+            .onComplete(
+            () => {
+                this.lock.pop()
+            });
+        // .start();
+
+        tween.start();
+
+        animationEvent.emitAnimationStart();
     }
 
     zoom(direction: number): void {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+
+        /// TODO WTF, where is the zoom property
+        // let zoomlevel = Math.round(1. / this.camera.zoom) + ((direction < 0) ? -1 : +1);
+        // TODO clamp min and max level
+
         // ... 
+
     }
 
 }
@@ -233,7 +276,7 @@ class CameraAnimations extends AnimationBase {
 // ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
 export const avatarAnimations = new AvatarAnimations(cube);
-export const cameraAnimations = new CameraAnimations(camera);
+export const cameraAnimations = new CameraAnimations(camera, cameraModel);
 
 /** Steps all the animations if any
  * @return true if those are running
@@ -243,7 +286,15 @@ export function updateAnimations(): boolean {
 
     const b = avatarAnimations.isAnimationRunning() ||
         cameraAnimations.isAnimationRunning() ||
-        false;
+        true;
+
+    //? if(DEBUG){
+    // if (false && b != (TWEEN.getAll().length > 0)) {
+    //     const msg = "Semaphore is not unlocked properly. Lock=" + b + ", TweenQueue=" + (TWEEN.getAll().length > 0);
+    //     // console.log(msg);
+    //     throw msg;
+    // }
+    //? }
 
     return b;
 }
