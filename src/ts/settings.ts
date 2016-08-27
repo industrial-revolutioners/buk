@@ -36,3 +36,6 @@ export const leftRange: directionRange = {from: 90, to: 180};
 
 export const zoom = 0.1;
 export const zoomThreshold = 0.4;
+
+export const cameraRotationRadius = 5 * Math.SQRT2;
+export const cameraHeight = 5;
