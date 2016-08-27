@@ -35,7 +35,7 @@ export abstract class BaseTile {
      * Here the class can make a decision based on its own and the avatar's future state
      * and then call some of the delegated methods (see the `AvatarState` interface).
      */
-    abstract action(state: AvatarState): void;
+    abstract action(state: AvatarState): any;
 
     /**
      * If the derived class is expected to be statefull (like it's going to track how many
@@ -108,11 +108,15 @@ export class Gate extends Tile {
     }
 
     action(state: AvatarState): any{
+        //? if(!DEBUG){
         if(state.face === this.face){
             state.accept(this);
             return true;
         }
         return false;
+        //? } else {
+            state.accept(this);
+        //? }
     }
 }
 

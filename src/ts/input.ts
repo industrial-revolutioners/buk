@@ -9,7 +9,7 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import {EventEmitter} from "events";
+import { EventEmitter } from "events";
 import {
     canvasWrapper,
     rotateAreaY,
@@ -30,13 +30,12 @@ export const events = Object.freeze({
     }
 });
 
-/** CW order, same as camera order, do not change */
 export enum controlDirections {
     FRONT, RIGHT, BACK, LEFT
 }
 
 export enum cameraDirections {
-    CW, CCW, CICA
+    CW, CCW
 }
 
 export enum cameraAttributes {
@@ -284,52 +283,54 @@ class Input extends InputBase {
 }
 
 //? if(DEBUG) {
-/** This class emits [FRONT, BACK, LEFT, RIGHT] input events periodically */
+/** This class periodically emits:
+ *      - [FRONT, BACK, LEFT, RIGHT] ControlEvents
+ *      - [CW, CW, CW, CW, CCW, CCW, CCW, CCW] CameraDirectionEvents
+ *          (that's 2 whole round around the avatar)
+ */
 class InputMock extends InputBase {
     public mockControlEvents: Array<ControlEvent> = [
         {direction: controlDirections.FRONT, angle: 0},
+        {direction: controlDirections.RIGHT, angle: 0},
         {direction: controlDirections.BACK, angle: 0},
-        {direction: controlDirections.LEFT, angle: 0},
-        {direction: controlDirections.RIGHT, angle: 0}
+        {direction: controlDirections.LEFT, angle: 0}
     ];
 
-    public mockCameraEvents: Array<CameraDirectionEvent> = [
-        { direction: cameraDirections.CW }
-        // {direction: cameraDirections.CW},
-        // {direction: cameraDirections.CW},
-        // {direction: cameraDirections.CW},
-        // {direction: cameraDirections.CCW},
-        // {direction: cameraDirections.CCW},
-        // {direction: cameraDirections.CCW},
-        // {direction: cameraDirections.CCW}
+    public mockCameraDirectionEvents: Array<CameraDirectionEvent> = [
+        {direction: cameraDirections.CW},
+        {direction: cameraDirections.CW},
+        {direction: cameraDirections.CW},
+        {direction: cameraDirections.CW},
+        {direction: cameraDirections.CCW},
+        {direction: cameraDirections.CCW},
+        {direction: cameraDirections.CCW},
+        {direction: cameraDirections.CCW}
     ];
 
-    constructor(eventSourceElement: HTMLElement){
+    constructor(eventSourceElement: HTMLElement, controlEventFrequency=1000, cameraDirectionEventFrequency=1000){
         super(eventSourceElement);
+        if(controlEventFrequency > 0){
+            let controlEventCounter = 0;
 
-        let count = 0;
+            setInterval(() => {
+                let i = controlEventCounter % this.mockControlEvents.length;
+                this.emit(events.avatar.MOVE, this.mockControlEvents[i]);
+                controlEventCounter++;
+            }, controlEventFrequency);
+        }
 
-        setInterval(() => {
-            const rnd = count % this.mockControlEvents.length;
-            let evt = this.mockControlEvents[rnd];
+        if(cameraDirectionEventFrequency > 0){
+            let cameraDirectionEventCounter = 0;
 
-            this.emit(events.avatar.MOVE, evt);
-
-            count++;
-        }, 300 + 500*Math.random() );
-
-        setInterval(() => {
-            const i = count % this.mockCameraEvents.length;
-            let evt = this.mockCameraEvents[i];
-
-            this.emit(events.camera.ROTATE, evt);
-
-            count++;
-        }, 300 + 500*Math.random());
+            setInterval(() => {
+                let i = cameraDirectionEventCounter % this.mockCameraDirectionEvents.length;
+                this.emit(events.camera.ROTATE, this.mockCameraDirectionEvents[i]);
+                cameraDirectionEventCounter++;
+            }, cameraDirectionEventFrequency);
+        }
     }
 
-    update(): void {
-    }
+    update(): void {}
 }
 
 export const input = new InputMock(canvasWrapper);

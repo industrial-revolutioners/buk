@@ -9,19 +9,18 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import * as TWEEN from 'tween.js';
-
 import './renderer';
 import {Avatar, AvatarFaces} from './avatar';
-import { cameraModel } from './camera';
-import { avatarAnimations, cameraAnimations } from './animations';
+import { avatarAnimations } from './animations';
 
-import { events, input, ControlEvent, controlDirections,
+import { events, input, ControlEvent,
     CameraDirectionEvent, CameraAttributeEvent,
     cameraDirections, cameraAttributes
 } from './input';
 
 import { Start, Tile } from './tiles';
+import {cameraModel} from "./camera";
+import {cameraAnimations} from "../../build/ts/animations";
 
 
 let start = new Start(AvatarFaces.BLUE);
@@ -47,14 +46,10 @@ input.on(events.avatar.MOVE, (e: ControlEvent) => {
 });
 
 input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
-    //? if(DEBUG){
-    console.log(`camera.ROTATE; direction=${cameraDirections[e.direction]}`);
-    //? }
-    if (!cameraAnimations.isAnimationRunning()) {
+    if (!avatarAnimations.isAnimationRunning()){
         cameraModel.rotate(e.direction);
         cameraAnimations.rotate(e.direction);
     }
-
 });
 
 input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
