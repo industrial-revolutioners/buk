@@ -8,13 +8,13 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import { StartTile, BaseTile } from './tiles';
+import { Start, BaseTile } from './tiles';
 import { controlDirections, ControlEvent } from "./input";
 import { avatarAnimations } from './animations';
 
 
-enum AvatarFaces {
-    TOP, BOTTOM, LEFT, RIGHT, FRONT, BACK
+export enum AvatarFaces {
+    WHITE, YELLOW, RED, ORANGE, GREEN, BLUE
 }
 
 interface Faces {
@@ -30,6 +30,9 @@ interface Faces {
 export interface AvatarState {
     face: AvatarFaces;
     accept: (target: BaseTile) => void;
+    kill: (target: BaseTile) => void;
+    finish: (target: BaseTile) => void;
+    checkpoint: (target: BaseTile) => void;
 }
 
 
@@ -37,15 +40,15 @@ export class Avatar {
     private tile: BaseTile;
     private faces: Faces;
 
-    constructor(startTile: StartTile){
-        if(!(startTile instanceof StartTile)){
-            throw new Error(`Expected StartTile, got ${startTile.constructor.name} instead.`);
+    constructor(startTile: Start){
+        if(!(startTile instanceof Start)){
+            throw new Error(`Expected Start, got ${startTile.constructor.name} instead.`);
         }
 
         this.faces = <Faces>{
-            top: AvatarFaces.TOP, bottom: AvatarFaces.BOTTOM,
-            left: AvatarFaces.LEFT, right: AvatarFaces.RIGHT,
-            front: AvatarFaces.FRONT, back: AvatarFaces.BACK
+            top: AvatarFaces.WHITE, bottom: AvatarFaces.YELLOW,
+            left: AvatarFaces.GREEN, right: AvatarFaces.BLUE,
+            front: AvatarFaces.RED, back: AvatarFaces.ORANGE
         };
 
         this.setTile(startTile);
