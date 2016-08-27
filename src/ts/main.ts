@@ -25,10 +25,18 @@ import { Start, Tile } from './tiles';
 
 
 let start = new Start(AvatarFaces.BLUE);
-start.front = new Tile();
-start.front.back = start;
-start.left = new Tile();
-start.left.right = start;
+let front = new Tile();
+let right = new Tile();
+let back = new Tile();
+
+start.front = front;
+front.back = start;
+front.right = right;
+right.left = front;
+right.back = back;
+back.front = right;
+back.left = start;
+start.right = back;
 
 let avatar = new Avatar(start);
 

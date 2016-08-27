@@ -13,15 +13,15 @@ import {EventEmitter} from "events";
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
+import * as SETTINGS from './settings';
+
 import {
     cameraDirections, cameraAttributes, controlDirections
 } from './input';
 import { concurrence } from './utils'
-import { cube } from './objects';
-import { camera, cameraModel, CameraModel } from './camera';
-import * as SETTINGS from './settings';
+import { avatarModel, AvatarModel} from './objects';
+import { cameraModel, CameraModel } from './camera';
 
-const ANIM_DURATION = 250;
 
 export const ANIMATION_START_EVT_NAME = "animation.start";
 
@@ -59,12 +59,14 @@ class AnimationBase {
 /** Animation clips for the avatar */
 class AvatarAnimations extends AnimationBase {
 
-    constructor(node: THREE.Object3D) {
-        super();
-        this.node = node;
-    }
+    private avatarModel: AvatarModel;
+    private node: THREE.Object3D;
 
-    protected node: THREE.Object3D;
+    constructor(avatarModel_: AvatarModel) {
+        super();
+        this.avatarModel = avatarModel_;
+        this.node = avatarModel_.avatar;
+    }
 
     /** Moves the avatar node towards the given direction */
     move(dir: controlDirections): void {
@@ -163,27 +165,29 @@ class AvatarAnimations extends AnimationBase {
             this.lock.pop();
         }
 
+        const duration = SETTINGS.animationDuration;
+
         // --- rotation
         this.node.rotation.set(0, 0, 0);
-        var t_rotation = new TWEEN.Tween(cube.rotation)
-            .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, ANIM_DURATION)
+        var t_rotation = new TWEEN.Tween(this.node.rotation)
+            .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, duration)
             .onComplete(lockPop);
 
         // --- bump
         this.node.position.set(0, 0, 0);
         var t_elevation = new TWEEN.Tween(this.node.position)
-            .to({ y: Math.SQRT2 * .125 }, ANIM_DURATION)
+            .to({ y: Math.SQRT2 * .125 }, duration)
             .easing(this.semiCircularEase)
             .onComplete(lockPop);
 
         // --- move
         var t_move = new TWEEN.Tween(this.node.position)
-            .to({ x: mov.x, z: mov.z }, ANIM_DURATION)
+            .to({ x: mov.x, z: mov.z }, duration)
             .onComplete(lockPop);
 
         // move back, tmep
         var t_move2 = new TWEEN.Tween(this.node.position)
-            .to({ x: 0, z: 0 }, ANIM_DURATION)
+            .to({ x: 0, z: 0 }, duration)
             .onComplete(lockPop);
 
         // --- start
@@ -210,10 +214,10 @@ class CameraAnimations extends AnimationBase {
 
     private t: { t: number } = { t: 0 };
 
-    constructor(camera: THREE.Camera, cameraModel: CameraModel) {
+    constructor(cameraModel: CameraModel) {
         super();
-        this.camera = camera;
         this.cameraModel = cameraModel;
+        this.camera = cameraModel.camera;
     }
 
     rotate(d: cameraDirections): void {
@@ -229,27 +233,16 @@ class CameraAnimations extends AnimationBase {
         angle.to = angle.from + ((d == cameraDirections.CCW) ? -1 : +1) * Math.PI / 2;
 
         this.t.t = angle.from;
-        this.lock.push();
-
-        let camera = this.camera;
-
+        
+        let camera = this.cameraModel;
         let tween = new TWEEN.Tween(this.t)
-            .to({ t: angle.to }, ANIM_DURATION)
+            .to({ t: angle.to }, SETTINGS.animationDuration)
             .onUpdate(function () {
-                const x = Math.cos(this.t) * SETTINGS.cameraRotationRadius;
-                const y = Math.sin(this.t) * SETTINGS.cameraRotationRadius;
-
-                camera.position.x = x;
-                camera.position.z = y;
-                camera.lookAt(new THREE.Vector3(0, 0, 0));
-
+                camera.setAngle(this.t);
             })
-            .onComplete(
-            () => {
-                this.lock.pop()
-            });
-        // .start();
+            .onComplete(() => {this.lock.pop()});
 
+        this.lock.push();
         tween.start();
 
         animationEvent.emitAnimationStart();
@@ -275,8 +268,8 @@ class CameraAnimations extends AnimationBase {
 
 // ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
-export const avatarAnimations = new AvatarAnimations(cube);
-export const cameraAnimations = new CameraAnimations(camera, cameraModel);
+export const avatarAnimations = new AvatarAnimations(avatarModel);
+export const cameraAnimations = new CameraAnimations(cameraModel);
 
 /** Steps all the animations if any
  * @return true if those are running
@@ -287,14 +280,6 @@ export function updateAnimations(): boolean {
     const b = avatarAnimations.isAnimationRunning() ||
         cameraAnimations.isAnimationRunning() ||
         true;
-
-    //? if(DEBUG){
-    // if (false && b != (TWEEN.getAll().length > 0)) {
-    //     const msg = "Semaphore is not unlocked properly. Lock=" + b + ", TweenQueue=" + (TWEEN.getAll().length > 0);
-    //     // console.log(msg);
-    //     throw msg;
-    // }
-    //? }
 
     return b;
 }
