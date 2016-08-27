@@ -9,45 +9,10 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import {PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
+import * as THREE from 'three';
 
+import * as SETTINGS from './settings';
 import {ControlEvent, controlDirections, cameraDirections} from './input';
-
-// export let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-export let camera = new OrthographicCamera(-1, 1, 1, -1, 0, 100);
-camera.position.set(5, 5, 5);
-// camera.position.set(5, 0, 0);
-camera.lookAt(new Vector3(0, 0, 0));
-
-camera.zoom = 1. / 3;
-
-export function updateCamera(w: number, h: number): void {
-    // --- orthographic camera
-    let wh: number;
-    let hw: number;
-
-    if (w > h) {
-        hw = h / w;
-        wh = 1;
-    } else {
-        hw = 1;
-        wh = w / h;
-    }
-
-    camera.top = hw;
-    camera.bottom = -hw;
-    camera.left = -wh;
-    camera.right = wh;
-
-    // --- perspective camera
-    // camera.aspect = w / h;
-
-    camera.updateProjectionMatrix();
-}
-
-/** ------------------------------------------------------------------------
- * Camera
- * ------------------------------------------------------------------------- */
 
 export enum AbsDirection {
     NORTH, EAST, SOUTH, WEST
@@ -68,23 +33,83 @@ interface StructCamData {
     absoluteDirections: Array<AbsDirection>;
 }
 
-// angle is in radian, where value is n*PI/4
-const camData = ([
-    { name: "SE", rad: 7, orientation: CameraOrientation.SE, absoluteDirections: [AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST] },
-    { name: "SW", rad: 5, orientation: CameraOrientation.SW, absoluteDirections: [AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH] },
-    { name: "NW", rad: 3, orientation: CameraOrientation.NW, absoluteDirections: [AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST] },
-    { name: "NE", rad: 1, orientation: CameraOrientation.NE, absoluteDirections: [AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH] }
-]);
-
-/** Model of the camera */
+/** ------------------------------------------------------------------------
+ * Camera wrapper
+ * ------------------------------------------------------------------------- */
 export class CameraModel {
+    public camera: THREE.OrthographicCamera;
+
+    private center: THREE.Vector3;
+
+    constructor() {
+        this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 100);
+        this.camera.position.set(5, 5, 5);
+        this.center = new THREE.Vector3(0, 0, 0);
+
+        this.camera.lookAt(this.center);
+
+        this.camera.zoom = 1. / 3;
+
+        this.status = 0;
+        this.prevStatus = 0;
+    }
+
+    updateCamera(w: number, h: number): void {
+        // --- orthographic camera
+        let wh: number;
+        let hw: number;
+
+        if (w > h) {
+            hw = h / w;
+            wh = 1;
+        } else {
+            hw = 1;
+            wh = w / h;
+        }
+
+        this.camera.top = hw;
+        this.camera.bottom = -hw;
+        this.camera.left = -wh;
+        this.camera.right = wh;
+
+        // --- perspective camera
+        // camera.aspect = w / h;
+
+        this.camera.updateProjectionMatrix();
+    }
+
     /** Index of current camera status */
     private status: number;
     private prevStatus: number;
 
-    constructor() {
-        this.status = 0;
-        this.prevStatus = 0;
+    // angle is in radian, where value is n*PI/4
+    private camData = ([
+        { name: "SE", rad: 7, orientation: CameraOrientation.SE, absoluteDirections: [AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST] },
+        { name: "SW", rad: 5, orientation: CameraOrientation.SW, absoluteDirections: [AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH] },
+        { name: "NW", rad: 3, orientation: CameraOrientation.NW, absoluteDirections: [AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST] },
+        { name: "NE", rad: 1, orientation: CameraOrientation.NE, absoluteDirections: [AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH] }
+    ]);
+
+
+    zoom(z: number) {
+        if (z < 0.000001)
+            z = 1.;
+        this.camera.zoom = 1. / z;
+    }
+
+    setAngle(phi: number) {
+        const x = Math.cos(phi) * SETTINGS.cameraRotationRadius;
+        const y = Math.sin(phi) * SETTINGS.cameraRotationRadius;
+
+        this.camera.position.x = x;
+        this.camera.position.z = y;
+        this.camera.lookAt(this.center);
+    }
+
+    setCenter(x: number, y: number) {
+        this.center.x = x;
+        this.center.z = y;
+        this.camera.lookAt(this.center);
     }
 
     rotate(d: cameraDirections): void {
@@ -100,17 +125,16 @@ export class CameraModel {
                 break;
         }
 
-        console.log("status id", this.status);
     }
 
     getAbsoluteDirection(evt: ControlEvent): AbsDirection {
-        return camData[this.status].absoluteDirections[evt.direction];
+        return this.camData[this.status].absoluteDirections[evt.direction];
     }
 
     private getInternalState(): CamRotDir<StructCamData> {
         return <CamRotDir<StructCamData>>{
-            to: camData[this.status],
-            from: camData[this.prevStatus],
+            to: this.camData[this.status],
+            from: this.camData[this.prevStatus],
         }
     }
 

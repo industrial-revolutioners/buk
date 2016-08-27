@@ -13,13 +13,16 @@ import {EventEmitter} from "events";
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
+import * as SETTINGS from './settings';
+
 import {
     cameraDirections, cameraAttributes, controlDirections
 } from './input';
 import { concurrence } from './utils'
-import { cube } from './objects';
-import { camera, cameraModel, CameraModel } from './camera';
-import * as SETTINGS from './settings';
+import { avatarModel, AvatarModel} from './objects';
+import { cameraModel, CameraModel } from './camera';
+
+
 
 const ANIM_DURATION = 250;
 
@@ -59,12 +62,14 @@ class AnimationBase {
 /** Animation clips for the avatar */
 class AvatarAnimations extends AnimationBase {
 
-    constructor(node: THREE.Object3D) {
-        super();
-        this.node = node;
-    }
+    private avatarModel: AvatarModel;
+    private node: THREE.Object3D;
 
-    protected node: THREE.Object3D;
+    constructor(avatarModel_: AvatarModel) {
+        super();
+        this.avatarModel = avatarModel_;
+        this.node = avatarModel_.avatar;
+    }
 
     /** Moves the avatar node towards the given direction */
     move(dir: controlDirections): void {
@@ -165,7 +170,7 @@ class AvatarAnimations extends AnimationBase {
 
         // --- rotation
         this.node.rotation.set(0, 0, 0);
-        var t_rotation = new TWEEN.Tween(cube.rotation)
+        var t_rotation = new TWEEN.Tween(this.node.rotation)
             .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, ANIM_DURATION)
             .onComplete(lockPop);
 
@@ -210,10 +215,10 @@ class CameraAnimations extends AnimationBase {
 
     private t: { t: number } = { t: 0 };
 
-    constructor(camera: THREE.Camera, cameraModel: CameraModel) {
+    constructor(cameraModel: CameraModel) {
         super();
-        this.camera = camera;
         this.cameraModel = cameraModel;
+        this.camera = cameraModel.camera;
     }
 
     rotate(d: cameraDirections): void {
@@ -275,8 +280,8 @@ class CameraAnimations extends AnimationBase {
 
 // ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
-export const avatarAnimations = new AvatarAnimations(cube);
-export const cameraAnimations = new CameraAnimations(camera, cameraModel);
+export const avatarAnimations = new AvatarAnimations(avatarModel);
+export const cameraAnimations = new CameraAnimations(cameraModel);
 
 /** Steps all the animations if any
  * @return true if those are running
@@ -287,14 +292,6 @@ export function updateAnimations(): boolean {
     const b = avatarAnimations.isAnimationRunning() ||
         cameraAnimations.isAnimationRunning() ||
         true;
-
-    //? if(DEBUG){
-    // if (false && b != (TWEEN.getAll().length > 0)) {
-    //     const msg = "Semaphore is not unlocked properly. Lock=" + b + ", TweenQueue=" + (TWEEN.getAll().length > 0);
-    //     // console.log(msg);
-    //     throw msg;
-    // }
-    //? }
 
     return b;
 }

@@ -29,10 +29,10 @@ interface directionRange {
     to: number
 }
 
-export const frontRange: directionRange = {from: 0, to: 90};
-export const backRange: directionRange = {from: 180, to: 270};
-export const rightRange: directionRange = {from: 270, to: 360};
-export const leftRange: directionRange = {from: 90, to: 180};
+export const frontRange: directionRange = { from: 0, to: 90 };
+export const backRange: directionRange = { from: 180, to: 270 };
+export const rightRange: directionRange = { from: 270, to: 360 };
+export const leftRange: directionRange = { from: 90, to: 180 };
 
 export const zoom = 0.1;
 export const zoomThreshold = 0.4;

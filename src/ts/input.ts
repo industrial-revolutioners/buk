@@ -298,10 +298,10 @@ class InputMock extends InputBase {
         {direction: cameraDirections.CW},
         {direction: cameraDirections.CW},
         {direction: cameraDirections.CW},
-        {direction: cameraDirections.CCW},
-        {direction: cameraDirections.CCW},
-        {direction: cameraDirections.CCW},
-        {direction: cameraDirections.CCW}
+        // {direction: cameraDirections.CCW},
+        // {direction: cameraDirections.CCW},
+        // {direction: cameraDirections.CCW},
+        // {direction: cameraDirections.CCW}
     ];
 
     constructor(eventSourceElement: HTMLElement) {
