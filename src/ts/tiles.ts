@@ -79,7 +79,7 @@ export class Void extends BaseTile {
 export class Checkpoint extends Tile {
     protected reached = false;
 
-    constructor(protected face){
+    constructor(protected face: AvatarFaces){
         super();
     }
 
@@ -107,7 +107,7 @@ export class Gate extends Tile {
         super();
     }
 
-    action(state: AvatarState){
+    action(state: AvatarState): any{
         if(state.face === this.face){
             state.accept(this);
             return true;

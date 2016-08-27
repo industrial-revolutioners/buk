@@ -12,7 +12,7 @@
 import * as TWEEN from 'tween.js';
 
 import './renderer';
-import { Avatar } from './avatar';
+import {Avatar, AvatarFaces} from './avatar';
 import { cameraModel } from './camera';
 import { avatarAnimations, cameraAnimations } from './animations';
 
@@ -21,10 +21,10 @@ import { events, input, ControlEvent, controlDirections,
     cameraDirections, cameraAttributes
 } from './input';
 
-import { StartTile, Tile } from './tiles';
+import { Start, Tile } from './tiles';
 
 
-let start = new StartTile();
+let start = new Start(AvatarFaces.BLUE);
 start.front = new Tile();
 start.front.back = start;
 start.left = new Tile();

@@ -284,13 +284,13 @@ class Input extends InputBase {
 }
 
 //? if(DEBUG) {
+/** This class emits [FRONT, BACK, LEFT, RIGHT] input events periodically */
 class InputMock extends InputBase {
-    /** This class emits [FRONT, BACK, LEFT, RIGHT] input events periodically */
     public mockControlEvents: Array<ControlEvent> = [
-        { direction: controlDirections.FRONT, angle: 0 }, // 0
-        { direction: controlDirections.BACK, angle: 0 },  // 1
-        { direction: controlDirections.LEFT, angle: 0 },  // 2
-        { direction: controlDirections.RIGHT, angle: 0 }  // 3
+        {direction: controlDirections.FRONT, angle: 0},
+        {direction: controlDirections.BACK, angle: 0},
+        {direction: controlDirections.LEFT, angle: 0},
+        {direction: controlDirections.RIGHT, angle: 0}
     ];
 
     public mockCameraEvents: Array<CameraDirectionEvent> = [
@@ -304,7 +304,7 @@ class InputMock extends InputBase {
         {direction: cameraDirections.CCW}
     ];
 
-    constructor(eventSourceElement: HTMLElement) {
+    constructor(eventSourceElement: HTMLElement){
         super(eventSourceElement);
 
         let count = 0;
