@@ -15,7 +15,7 @@ import {
     rotateAreaY,
     rotateSwipeThreshold, moveSwipeThreshold,
     frontRange, backRange, leftRange, rightRange,
-    zoom, zoomThreshold
+    zoomThreshold
 } from './settings';
 
 export const CLASS_NAME: string = 'event-source';
@@ -36,11 +36,15 @@ export enum controlDirections {
 }
 
 export enum cameraDirections {
-    CW, CCW, CICA
+    CW, CCW
 }
 
 export enum cameraAttributes {
     ZOOM
+}
+
+export enum cameraZoomDirection {
+    ZOOM_IN = 1, ZOOM_OUT = -1
 }
 
 export interface ControlEvent {
@@ -138,14 +142,14 @@ class Input extends InputBase {
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
                         attribute: cameraAttributes.ZOOM,
-                        value: zoom
+                        value: cameraZoomDirection.ZOOM_IN
                     };
                     break;
                 case 'S':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
                         attribute: cameraAttributes.ZOOM,
-                        value: -1 * zoom
+                        value: cameraZoomDirection.ZOOM_OUT
                     };
                     break;
                 default:
@@ -199,11 +203,11 @@ class Input extends InputBase {
                 lastDistance = distance;
 
                 if (distanceDelta >= zoomThreshold) {
-                    eventObject.value = zoom;
+                    eventObject.value = cameraZoomDirection.ZOOM_IN;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
                 else if (distanceDelta <= -1 * zoomThreshold) {
-                    eventObject.value = -1 * zoom;
+                    eventObject.value = cameraZoomDirection.ZOOM_OUT;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
             }
@@ -294,38 +298,54 @@ class InputMock extends InputBase {
     ];
 
     public mockCameraEvents: Array<CameraDirectionEvent> = [
-        { direction: cameraDirections.CW }
-        // {direction: cameraDirections.CW},
-        // {direction: cameraDirections.CW},
-        // {direction: cameraDirections.CW},
-        // {direction: cameraDirections.CCW},
-        // {direction: cameraDirections.CCW},
-        // {direction: cameraDirections.CCW},
-        // {direction: cameraDirections.CCW}
+        { direction: cameraDirections.CW },
+        { direction: cameraDirections.CW },
+        { direction: cameraDirections.CW },
+        { direction: cameraDirections.CW },
+        { direction: cameraDirections.CCW },
+        { direction: cameraDirections.CCW },
+        { direction: cameraDirections.CCW },
+        { direction: cameraDirections.CCW }
+    ];
+
+    public mockCameraAttribEvents: Array<CameraAttributeEvent> = [
+        { attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_IN },
+        { attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_OUT }
     ];
 
     constructor(eventSourceElement: HTMLElement) {
         super(eventSourceElement);
 
-        let count = 0;
-
+        let count0 = 0;
         setInterval(() => {
-            const rnd = count % this.mockControlEvents.length;
+            const rnd = count0 % this.mockControlEvents.length;
             let evt = this.mockControlEvents[rnd];
 
             this.emit(events.avatar.MOVE, evt);
 
-            count++;
-        }, 300 + 500*Math.random() );
+            count0++;
+        }, 300 + 500 * Math.random());
 
+        let count1 = 0;
         setInterval(() => {
-            const i = count % this.mockCameraEvents.length;
+            const i = count1 % this.mockCameraEvents.length;
             let evt = this.mockCameraEvents[i];
 
             this.emit(events.camera.ROTATE, evt);
 
-            count++;
-        }, 300 + 500*Math.random());
+            count1++;
+        }, 300 + 500 * Math.random());
+
+        let count2 = 0;
+        setInterval(() => {
+            const i = count2 % this.mockCameraAttribEvents.length;
+            let evt = this.mockCameraAttribEvents[i];
+
+            this.emit(events.camera.ZOOM, evt);
+
+            count2++;
+        }, 300 + 500 * Math.random());
+
     }
 
     update(): void {
