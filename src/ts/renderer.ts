@@ -25,6 +25,7 @@ canvasWrapper.appendChild(renderer.domElement);
 function setupSize() {
     updateCamera(window.innerWidth, window.innerHeight);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    render();
 }
 
 setupSize();
