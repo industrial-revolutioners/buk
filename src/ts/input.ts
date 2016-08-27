@@ -294,10 +294,10 @@ class InputMock extends InputBase {
     ];
 
     public mockCameraEvents: Array<CameraDirectionEvent> = [
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CW},
+        { direction: cameraDirections.CW }
+        // {direction: cameraDirections.CW},
+        // {direction: cameraDirections.CW},
+        // {direction: cameraDirections.CW},
         // {direction: cameraDirections.CCW},
         // {direction: cameraDirections.CCW},
         // {direction: cameraDirections.CCW},
@@ -309,14 +309,14 @@ class InputMock extends InputBase {
 
         let count = 0;
 
-        // setInterval(() => {
-        //     const rnd = count % this.mockControlEvents.length;
-        //     let evt = this.mockControlEvents[rnd];
+        setInterval(() => {
+            const rnd = count % this.mockControlEvents.length;
+            let evt = this.mockControlEvents[rnd];
 
-        //     this.emit(events.avatar.MOVE, evt);
+            this.emit(events.avatar.MOVE, evt);
 
-        //     count++;
-        // }, 25);
+            count++;
+        }, 300 + 500*Math.random() );
 
         setInterval(() => {
             const i = count % this.mockCameraEvents.length;
@@ -325,7 +325,7 @@ class InputMock extends InputBase {
             this.emit(events.camera.ROTATE, evt);
 
             count++;
-        }, 1250);
+        }, 300 + 500*Math.random());
     }
 
     update(): void {

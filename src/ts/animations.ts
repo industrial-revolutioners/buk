@@ -23,9 +23,6 @@ import { avatarModel, AvatarModel} from './objects';
 import { cameraModel, CameraModel } from './camera';
 
 
-
-const ANIM_DURATION = 250;
-
 export const ANIMATION_START_EVT_NAME = "animation.start";
 
 class AnimationEvent extends EventEmitter {
@@ -168,27 +165,29 @@ class AvatarAnimations extends AnimationBase {
             this.lock.pop();
         }
 
+        const duration = SETTINGS.animationDuration;
+
         // --- rotation
         this.node.rotation.set(0, 0, 0);
         var t_rotation = new TWEEN.Tween(this.node.rotation)
-            .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, ANIM_DURATION)
+            .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, duration)
             .onComplete(lockPop);
 
         // --- bump
         this.node.position.set(0, 0, 0);
         var t_elevation = new TWEEN.Tween(this.node.position)
-            .to({ y: Math.SQRT2 * .125 }, ANIM_DURATION)
+            .to({ y: Math.SQRT2 * .125 }, duration)
             .easing(this.semiCircularEase)
             .onComplete(lockPop);
 
         // --- move
         var t_move = new TWEEN.Tween(this.node.position)
-            .to({ x: mov.x, z: mov.z }, ANIM_DURATION)
+            .to({ x: mov.x, z: mov.z }, duration)
             .onComplete(lockPop);
 
         // move back, tmep
         var t_move2 = new TWEEN.Tween(this.node.position)
-            .to({ x: 0, z: 0 }, ANIM_DURATION)
+            .to({ x: 0, z: 0 }, duration)
             .onComplete(lockPop);
 
         // --- start
@@ -234,27 +233,16 @@ class CameraAnimations extends AnimationBase {
         angle.to = angle.from + ((d == cameraDirections.CCW) ? -1 : +1) * Math.PI / 2;
 
         this.t.t = angle.from;
-        this.lock.push();
-
-        let camera = this.camera;
-
+        
+        let camera = this.cameraModel;
         let tween = new TWEEN.Tween(this.t)
-            .to({ t: angle.to }, ANIM_DURATION)
+            .to({ t: angle.to }, SETTINGS.animationDuration)
             .onUpdate(function () {
-                const x = Math.cos(this.t) * SETTINGS.cameraRotationRadius;
-                const y = Math.sin(this.t) * SETTINGS.cameraRotationRadius;
-
-                camera.position.x = x;
-                camera.position.z = y;
-                camera.lookAt(new THREE.Vector3(0, 0, 0));
-
+                camera.setAngle(this.t);
             })
-            .onComplete(
-            () => {
-                this.lock.pop()
-            });
-        // .start();
+            .onComplete(() => {this.lock.pop()});
 
+        this.lock.push();
         tween.start();
 
         animationEvent.emitAnimationStart();

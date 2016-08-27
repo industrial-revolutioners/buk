@@ -39,3 +39,5 @@ export const zoomThreshold = 0.4;
 
 export const cameraRotationRadius = 5 * Math.SQRT2;
 export const cameraHeight = 5;
+
+export const animationDuration = 1250;
