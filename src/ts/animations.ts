@@ -234,14 +234,14 @@ class CameraAnimations extends AnimationBase {
 
         // this.t.t = angle.from;
         let t = { t: angle.from };
-        
+
         let camera = this.cameraModel;
         let tween = new TWEEN.Tween(t)
             .to({ t: angle.to }, SETTINGS.animationDuration)
             .onUpdate(function () {
                 camera.setViewAngle(this.t);
             })
-            .onComplete(() => {this.lock.pop()});
+            .onComplete(() => { this.lock.pop() });
 
         this.lock.push();
         tween.start();
@@ -257,19 +257,25 @@ class CameraAnimations extends AnimationBase {
             return;
         }
 
-        /// TODO clamp to
         const zoom = this.cameraModel.getZoom();
         const zoomTo = zoom + SETTINGS.zoomLevelStep * (direction == cameraZoomDirection.ZOOM_OUT ? -1 : 1);
 
-        let t = {t:zoom};
+        if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
+            //? if(DEBUG){
+            console.info("zoom min or max reached", zoomTo);
+            //? }
+            return;
+        }
+
+        let t = { t: zoom };
         let camera = this.cameraModel;
 
         let tween = new TWEEN.Tween(t)
-        .to({t : zoomTo}, SETTINGS.animationDuration)
-        .onUpdate(function(){
-            camera.setZoom(this.t);
-        })
-        .onComplete(()=>{this.lock.pop()});
+            .to({ t: zoomTo }, SETTINGS.animationDuration)
+            .onUpdate(function () {
+                camera.setZoom(this.t);
+            })
+            .onComplete(() => { this.lock.pop() });
 
         this.lock.push();
         tween.start();
