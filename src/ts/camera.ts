@@ -11,7 +11,7 @@
 
 import {PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 
-import {ControlEvent, controlDirections} from './input';
+import {ControlEvent, controlDirections, cameraDirections} from './input';
 
 // export let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 export let camera = new OrthographicCamera(-1, 1, 1, -1, 0, 100);
@@ -77,7 +77,7 @@ const camData = ([
 ]);
 
 /** Model of the camera */
-class CameraModel {
+export class CameraModel {
     /** Index of current camera status */
     private status: number;
     private prevStatus: number;
@@ -87,35 +87,24 @@ class CameraModel {
         this.prevStatus = 0;
     }
 
-    roateCw(): void {
+    rotate(d: cameraDirections): void {
         this.prevStatus = this.status;
-        this.status = ++this.status % 4;
-    }
+        switch (d) {
+            case cameraDirections.CCW:
+                this.status = --this.status % 4;
+                if (this.status == -1) this.status = 3;
+                break;
 
-    roateCcw(): void {
-        this.prevStatus = this.status;
-        this.status = --this.status % 4;
+            case cameraDirections.CW:
+                this.status = ++this.status % 4;
+                break;
+        }
+
+        console.log("status id", this.status);
     }
 
     getAbsoluteDirection(evt: ControlEvent): AbsDirection {
-        let k = 0;
-        switch (evt.direction) {
-            case controlDirections.FRONT:
-                k = 0;
-                break;
-            case controlDirections.RIGHT:
-                k = 1;
-                break;
-            case controlDirections.BACK:
-                k = 2;
-                break;
-            case controlDirections.LEFT:
-                k = 3;
-                break;
-            default:
-                throw "Nincs ilyen";
-        }
-        return camData[this.status].absoluteDirections[k];
+        return camData[this.status].absoluteDirections[evt.direction];
     }
 
     private getInternalState(): CamRotDir<StructCamData> {
@@ -141,3 +130,6 @@ class CameraModel {
         }
     }
 }
+
+/** Instantitate camera */
+export let cameraModel = new CameraModel();
