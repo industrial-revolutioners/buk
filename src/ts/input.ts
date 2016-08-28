@@ -302,10 +302,10 @@ class InputMock extends InputBase {
         { direction: cameraDirections.CW },
         { direction: cameraDirections.CW },
         { direction: cameraDirections.CW },
-        { direction: cameraDirections.CCW },
-        { direction: cameraDirections.CCW },
-        { direction: cameraDirections.CCW },
-        { direction: cameraDirections.CCW }
+        // { direction: cameraDirections.CCW },
+        // { direction: cameraDirections.CCW },
+        // { direction: cameraDirections.CCW },
+        // { direction: cameraDirections.CCW }
     ];
 
     public mockCameraAttribEvents: Array<CameraAttributeEvent> = [
@@ -315,36 +315,42 @@ class InputMock extends InputBase {
 
     constructor(eventSourceElement: HTMLElement) {
         super(eventSourceElement);
+ 
+        // {
+        //     let count = 0;
+        //     setInterval(() => {
+        //         const rnd = count % this.mockControlEvents.length;
+        //         let evt = this.mockControlEvents[rnd];
 
-        let count0 = 0;
-        setInterval(() => {
-            const rnd = count0 % this.mockControlEvents.length;
-            let evt = this.mockControlEvents[rnd];
+        //         this.emit(events.avatar.MOVE, evt);
 
-            this.emit(events.avatar.MOVE, evt);
+        //         count++;
+        //     }, 300 + 500 * Math.random());
+        // }
 
-            count0++;
-        }, 300 + 500 * Math.random());
+        {
+            let count = 0;
+            setInterval(() => {
+                const i = count % this.mockCameraEvents.length;
+                let evt = this.mockCameraEvents[i];
 
-        let count1 = 0;
-        setInterval(() => {
-            const i = count1 % this.mockCameraEvents.length;
-            let evt = this.mockCameraEvents[i];
+                this.emit(events.camera.ROTATE, evt);
 
-            this.emit(events.camera.ROTATE, evt);
+                count++;
+            }, 300 + 500 * Math.random());
+        }
 
-            count1++;
-        }, 300 + 500 * Math.random());
+        // {
+        //     let count = 0;
+        //     setInterval(() => {
+        //         const i = count % this.mockCameraAttribEvents.length;
+        //         let evt = this.mockCameraAttribEvents[i];
 
-        let count2 = 0;
-        setInterval(() => {
-            const i = count2 % this.mockCameraAttribEvents.length;
-            let evt = this.mockCameraAttribEvents[i];
+        //         this.emit(events.camera.ZOOM, evt);
 
-            this.emit(events.camera.ZOOM, evt);
-
-            count2++;
-        }, 300 + 500 * Math.random());
+        //         count++;
+        //     }, 300 + 500 * Math.random());
+        // }
 
     }
 
