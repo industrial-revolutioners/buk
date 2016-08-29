@@ -1,282 +1,281 @@
 {
-    "object": {
-        "uuid": "3953F58D-9223-4D86-9650-B9DA7559C0D6",
-        "matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-        "children": [{
-            "name": "Cube",
-            "uuid": "F29D1AC4-D789-3D8E-BAB5-59DC1B758FE2",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "A9BA3428-3AC2-3258-A175-B0009B959CD0"
-        },{
-            "name": "Cube.001",
-            "uuid": "7E8B5B6C-C1E8-35F8-8CAD-F6CC57432E76",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "DD3E6612-7242-3550-A320-2A3438EDBA89"
-        },{
-            "name": "Cube.002",
-            "uuid": "6A298CF0-087E-3A53-B34F-A23A322F7458",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "F3DD1222-2DD4-3CC4-BDFF-2EDD86C851F4"
-        },{
-            "name": "Cube.003",
-            "uuid": "53B46322-3B17-3316-88D7-CEA9743B477E",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "A4DAEB56-9920-36A2-B407-749BCA0B94D2"
-        },{
-            "name": "Cube.004",
-            "uuid": "BA31721E-EE34-328E-9412-318ED73F522D",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "55A96465-1A3D-3E26-8804-96A3F4D215C0"
-        },{
-            "name": "Cube.005",
-            "uuid": "027BAAE9-4285-3177-8920-8DB01F96A1E7",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "77D673B4-BF79-3E12-9EAC-2D5C7B4CC29A"
-        }],
-        "type": "Scene"
-    },
-    "textures": [],
-    "metadata": {
-        "version": 4.3,
-        "type": "Object",
-        "generator": "io_three",
-        "sourceFile": "cube.blend"
-    },
-    "materials": [],
-    "geometries": [{
-        "uuid": "A4DAEB56-9920-36A2-B407-749BCA0B94D2",
-        "type": "Geometry",
-        "data": {
-            "name": "Cube.003Geometry.5",
-            "faces": [35,0,2,3,1,0,0,0,0,0],
-            "normals": [1,0,0],
-            "metadata": {
-                "generator": "io_three",
-                "faces": 1,
-                "materials": 1,
-                "vertices": 4,
-                "normals": 1,
-                "version": 3
-            },
-            "vertices": [1,1,-1,1,-1,-1,1,0.999999,1,0.999999,-1,1]
+    "animations":[{
+        "fps":24,
+        "tracks":[],
+        "name":"default"
+    }],
+    "textures":[],
+    "images":[],
+    "geometries":[{
+        "type":"Geometry",
+        "uuid":"0084019A-7463-3055-84C3-7BF9F0218712",
+        "data":{
+            "vertices":[1,1,-1,-1,1,-1,1,0.999999,1,-1,1,1],
+            "faces":[35,2,0,1,3,0,0,0,0,0],
+            "normals":[0,0,-1],
+            "name":"Cube.004Geometry",
+            "metadata":{
+                "version":3,
+                "normals":1,
+                "materials":1,
+                "vertices":4,
+                "generator":"io_three",
+                "faces":1
+            }
         },
-        "materials": [{
-            "DbgIndex": 1,
-            "depthWrite": true,
-            "DbgName": "cube.green",
-            "specularCoef": 50,
-            "shading": "phong",
-            "DbgColor": 15597568,
-            "depthTest": true,
-            "colorAmbient": [0.093185,0.64,0.0935],
-            "wireframe": false,
-            "colorEmissive": [0,0,0],
-            "visible": true,
-            "opacity": 1,
-            "colorSpecular": [0.5,0.5,0.5],
-            "colorDiffuse": [0.093185,0.64,0.0935],
-            "blending": "NormalBlending",
-            "transparent": false
+        "materials":[{
+            "depthWrite":true,
+            "colorDiffuse":[0.64,0.030947,0.037626],
+            "shading":"phong",
+            "opacity":1,
+            "depthTest":true,
+            "colorSpecular":[0.5,0.5,0.5],
+            "DbgName":"cube.red",
+            "specularCoef":50,
+            "DbgIndex":0,
+            "blending":"NormalBlending",
+            "transparent":false,
+            "colorEmissive":[0,0,0],
+            "wireframe":false,
+            "DbgColor":15658734,
+            "visible":true
         }]
     },{
-        "uuid": "F3DD1222-2DD4-3CC4-BDFF-2EDD86C851F4",
-        "type": "Geometry",
-        "data": {
-            "name": "Cube.002Geometry.5",
-            "faces": [35,0,2,3,1,0,0,0,0,1],
-            "normals": [0,-1,0,0,-0.999969,0],
-            "metadata": {
-                "generator": "io_three",
-                "faces": 1,
-                "materials": 1,
-                "vertices": 4,
-                "normals": 2,
-                "version": 3
-            },
-            "vertices": [1,-1,-1,-1,-1,-1,0.999999,-1,1,-1,-1,1]
+        "type":"Geometry",
+        "uuid":"3AECC395-6B51-351A-9182-43C1E99445FE",
+        "data":{
+            "vertices":[1,1,-1,1,-1,-1,1,0.999999,1,0.999999,-1,1],
+            "faces":[35,0,2,3,1,0,0,0,0,0],
+            "normals":[1,0,0],
+            "name":"Cube.003Geometry",
+            "metadata":{
+                "version":3,
+                "normals":1,
+                "materials":1,
+                "vertices":4,
+                "generator":"io_three",
+                "faces":1
+            }
         },
-        "materials": [{
-            "DbgIndex": 2,
-            "depthWrite": true,
-            "DbgName": "cube.orange",
-            "specularCoef": 50,
-            "shading": "phong",
-            "DbgColor": 60928,
-            "depthTest": true,
-            "colorAmbient": [0.64,0.215766,0.046914],
-            "wireframe": false,
-            "colorEmissive": [0,0,0],
-            "visible": true,
-            "opacity": 1,
-            "colorSpecular": [0.5,0.5,0.5],
-            "colorDiffuse": [0.64,0.215766,0.046914],
-            "blending": "NormalBlending",
-            "transparent": false
+        "materials":[{
+            "depthWrite":true,
+            "colorDiffuse":[0.093185,0.64,0.0935],
+            "shading":"phong",
+            "opacity":1,
+            "depthTest":true,
+            "colorSpecular":[0.5,0.5,0.5],
+            "DbgName":"cube.green",
+            "specularCoef":50,
+            "DbgIndex":1,
+            "blending":"NormalBlending",
+            "transparent":false,
+            "colorEmissive":[0,0,0],
+            "wireframe":false,
+            "DbgColor":15597568,
+            "visible":true
         }]
     },{
-        "uuid": "DD3E6612-7242-3550-A320-2A3438EDBA89",
-        "type": "Geometry",
-        "data": {
-            "name": "Cube.001Geometry.5",
-            "faces": [35,0,2,3,1,0,0,0,1,0],
-            "normals": [-1,0,0,-0.999969,0,0],
-            "metadata": {
-                "generator": "io_three",
-                "faces": 1,
-                "materials": 1,
-                "vertices": 4,
-                "normals": 2,
-                "version": 3
-            },
-            "vertices": [-1,-1,-1,-1,1,-1,-1,-1,1,-1,1,1]
+        "type":"Geometry",
+        "uuid":"7BF693DE-4279-35EB-887F-9622EACA32AB",
+        "data":{
+            "vertices":[-1,-1,-1,-1,1,-1,-1,-1,1,-1,1,1],
+            "faces":[35,0,2,3,1,0,0,0,0,0],
+            "normals":[-1,-0,-0],
+            "name":"Cube.001Geometry",
+            "metadata":{
+                "version":3,
+                "normals":1,
+                "materials":1,
+                "vertices":4,
+                "generator":"io_three",
+                "faces":1
+            }
         },
-        "materials": [{
-            "DbgIndex": 3,
-            "depthWrite": true,
-            "DbgName": "cube.blue",
-            "specularCoef": 50,
-            "shading": "phong",
-            "DbgColor": 238,
-            "depthTest": true,
-            "colorAmbient": [0.09002,0.095509,0.64],
-            "wireframe": false,
-            "colorEmissive": [0,0,0],
-            "visible": true,
-            "opacity": 1,
-            "colorSpecular": [0.5,0.5,0.5],
-            "colorDiffuse": [0.09002,0.095509,0.64],
-            "blending": "NormalBlending",
-            "transparent": false
+        "materials":[{
+            "depthWrite":true,
+            "colorDiffuse":[0.09002,0.095509,0.64],
+            "shading":"phong",
+            "opacity":1,
+            "depthTest":true,
+            "colorSpecular":[0.5,0.5,0.5],
+            "DbgName":"cube.blue",
+            "specularCoef":50,
+            "DbgIndex":3,
+            "blending":"NormalBlending",
+            "transparent":false,
+            "colorEmissive":[0,0,0],
+            "wireframe":false,
+            "DbgColor":238,
+            "visible":true
         }]
     },{
-        "uuid": "55A96465-1A3D-3E26-8804-96A3F4D215C0",
-        "type": "Geometry",
-        "data": {
-            "name": "Cube.004Geometry.5",
-            "faces": [35,2,0,1,3,0,0,0,1,0],
-            "normals": [0,1,0,0,0.999969,0],
-            "metadata": {
-                "generator": "io_three",
-                "faces": 1,
-                "materials": 1,
-                "vertices": 4,
-                "normals": 2,
-                "version": 3
-            },
-            "vertices": [1,1,-1,-1,1,-1,1,0.999999,1,-1,1,1]
+        "type":"Geometry",
+        "uuid":"177258CD-E805-3431-A0E7-E38A4302E26C",
+        "data":{
+            "vertices":[1,0.999999,1,0.999999,-1,1,-1,-1,1,-1,1,1],
+            "faces":[35,0,3,2,1,0,0,0,0,0],
+            "normals":[0,1,0],
+            "name":"Cube.005Geometry",
+            "metadata":{
+                "version":3,
+                "normals":1,
+                "materials":1,
+                "vertices":4,
+                "generator":"io_three",
+                "faces":1
+            }
         },
-        "materials": [{
-            "DbgIndex": 0,
-            "depthWrite": true,
-            "DbgName": "cube.red",
-            "specularCoef": 50,
-            "shading": "phong",
-            "DbgColor": 15658734,
-            "depthTest": true,
-            "colorAmbient": [0.64,0.030947,0.037626],
-            "wireframe": false,
-            "colorEmissive": [0,0,0],
-            "visible": true,
-            "opacity": 1,
-            "colorSpecular": [0.5,0.5,0.5],
-            "colorDiffuse": [0.64,0.030947,0.037626],
-            "blending": "NormalBlending",
-            "transparent": false
+        "materials":[{
+            "depthWrite":true,
+            "colorDiffuse":[0.64,0.64,0.64],
+            "shading":"phong",
+            "opacity":1,
+            "depthTest":true,
+            "colorSpecular":[0.5,0.5,0.5],
+            "DbgName":"cube.white",
+            "specularCoef":50,
+            "DbgIndex":4,
+            "blending":"NormalBlending",
+            "transparent":false,
+            "colorEmissive":[0,0,0],
+            "wireframe":false,
+            "DbgColor":15658496,
+            "visible":true
         }]
     },{
-        "uuid": "A9BA3428-3AC2-3258-A175-B0009B959CD0",
-        "type": "Geometry",
-        "data": {
-            "name": "CubeGeometry.9",
-            "faces": [35,0,1,2,3,0,0,1,1,1],
-            "normals": [0,0,-0.999969,0,0,-1],
-            "metadata": {
-                "generator": "io_three",
-                "faces": 1,
-                "materials": 1,
-                "vertices": 4,
-                "normals": 2,
-                "version": 3
-            },
-            "vertices": [1,1,-1,1,-1,-1,-1,-1,-1,-1,1,-1]
+        "type":"Geometry",
+        "uuid":"1AF06BCB-1B10-3B9B-B712-11022317988B",
+        "data":{
+            "vertices":[1,-1,-1,-1,-1,-1,0.999999,-1,1,-1,-1,1],
+            "faces":[35,0,2,3,1,0,0,0,0,0],
+            "normals":[-0,-0,1],
+            "name":"Cube.002Geometry",
+            "metadata":{
+                "version":3,
+                "normals":1,
+                "materials":1,
+                "vertices":4,
+                "generator":"io_three",
+                "faces":1
+            }
         },
-        "materials": [{
-            "DbgIndex": 5,
-            "depthWrite": true,
-            "DbgName": "cube.yellow",
-            "specularCoef": 50,
-            "shading": "phong",
-            "DbgColor": 61166,
-            "depthTest": true,
-            "colorAmbient": [0.64,0.458483,0.076675],
-            "wireframe": false,
-            "colorEmissive": [0,0,0],
-            "visible": true,
-            "opacity": 1,
-            "colorSpecular": [0.5,0.5,0.5],
-            "colorDiffuse": [0.64,0.458483,0.076675],
-            "blending": "NormalBlending",
-            "transparent": false
+        "materials":[{
+            "depthWrite":true,
+            "colorDiffuse":[0.64,0.215766,0.046914],
+            "shading":"phong",
+            "opacity":1,
+            "depthTest":true,
+            "colorSpecular":[0.5,0.5,0.5],
+            "DbgName":"cube.orange",
+            "specularCoef":50,
+            "DbgIndex":2,
+            "blending":"NormalBlending",
+            "transparent":false,
+            "colorEmissive":[0,0,0],
+            "wireframe":false,
+            "DbgColor":60928,
+            "visible":true
         }]
     },{
-        "uuid": "77D673B4-BF79-3E12-9EAC-2D5C7B4CC29A",
-        "type": "Geometry",
-        "data": {
-            "name": "Cube.005Geometry.5",
-            "faces": [35,0,3,2,1,0,0,0,0,0],
-            "normals": [0,0,1],
-            "metadata": {
-                "generator": "io_three",
-                "faces": 1,
-                "materials": 1,
-                "vertices": 4,
-                "normals": 1,
-                "version": 3
-            },
-            "vertices": [1,0.999999,1,0.999999,-1,1,-1,-1,1,-1,1,1]
+        "type":"Geometry",
+        "uuid":"FE46F7EB-A263-3807-8987-EB40ABE18EAA",
+        "data":{
+            "vertices":[1,1,-1,1,-1,-1,-1,-1,-1,-1,1,-1],
+            "faces":[35,0,1,2,3,0,0,0,0,0],
+            "normals":[0,-1,-0],
+            "name":"CubeGeometry",
+            "metadata":{
+                "version":3,
+                "normals":1,
+                "materials":1,
+                "vertices":4,
+                "generator":"io_three",
+                "faces":1
+            }
         },
-        "materials": [{
-            "DbgIndex": 4,
-            "depthWrite": true,
-            "DbgName": "cube.white",
-            "specularCoef": 50,
-            "shading": "phong",
-            "DbgColor": 15658496,
-            "depthTest": true,
-            "colorAmbient": [0.64,0.64,0.64],
-            "wireframe": false,
-            "colorEmissive": [0,0,0],
-            "visible": true,
-            "opacity": 1,
-            "colorSpecular": [0.5,0.5,0.5],
-            "colorDiffuse": [0.64,0.64,0.64],
-            "blending": "NormalBlending",
-            "transparent": false
+        "materials":[{
+            "depthWrite":true,
+            "colorDiffuse":[0.64,0.458483,0.076675],
+            "shading":"phong",
+            "opacity":1,
+            "depthTest":true,
+            "colorSpecular":[0.5,0.5,0.5],
+            "DbgName":"cube.yellow",
+            "specularCoef":50,
+            "DbgIndex":5,
+            "blending":"NormalBlending",
+            "transparent":false,
+            "colorEmissive":[0,0,0],
+            "wireframe":false,
+            "DbgColor":61166,
+            "visible":true
         }]
     }],
-    "images": []
+    "materials":[],
+    "metadata":{
+        "type":"Object",
+        "generator":"io_three",
+        "version":4.4,
+        "sourceFile":"cube.blend"
+    },
+    "object":{
+        "type":"Scene",
+        "uuid":"98D8CA9A-96C9-42B4-AA39-C0F57E9A1EF1",
+        "matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+        "children":[{
+            "name":"Cube",
+            "uuid":"F29D1AC4-D789-3D8E-BAB5-59DC1B758FE2",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"FE46F7EB-A263-3807-8987-EB40ABE18EAA"
+        },{
+            "name":"Cube.001",
+            "uuid":"7E8B5B6C-C1E8-35F8-8CAD-F6CC57432E76",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"7BF693DE-4279-35EB-887F-9622EACA32AB"
+        },{
+            "name":"Cube.002",
+            "uuid":"6A298CF0-087E-3A53-B34F-A23A322F7458",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"1AF06BCB-1B10-3B9B-B712-11022317988B"
+        },{
+            "name":"Cube.003",
+            "uuid":"53B46322-3B17-3316-88D7-CEA9743B477E",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"3AECC395-6B51-351A-9182-43C1E99445FE"
+        },{
+            "name":"Cube.004",
+            "uuid":"BA31721E-EE34-328E-9412-318ED73F522D",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"0084019A-7463-3055-84C3-7BF9F0218712"
+        },{
+            "name":"Cube.005",
+            "uuid":"027BAAE9-4285-3177-8920-8DB01F96A1E7",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"177258CD-E805-3431-A0E7-E38A4302E26C"
+        }]
+    }
 }
