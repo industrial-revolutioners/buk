@@ -3,10 +3,14 @@
 const browserify = require('browserify');
 const browserSync = require('browser-sync').create();
 const errorify = require('errorify');
+const File = require('vinyl');
 const gulp = require('gulp');
 const metascript = require('gulp-metascript');
+const path = require('path');
 const sass = require('gulp-sass');
 const stream = require('stream');
+const through2 = require('through2');
+const tmxParser = require('tmx-parser');
 const tsify = require('tsify');
 const util = require('gulp-util');
 const vinylBuffer = require('vinyl-buffer');
@@ -94,8 +98,50 @@ gulp.task('watch-ts', () => {
         });
 });
 
+// tmx -------------------------------------------------------------------------
+
+function tmxParserPlugin(outFile){
+    let levels = [];
+
+    function serialize(data){
+        // TODO: Add custom serialization logic here
+        return 'medve';
+    }
+
+    return through2.obj(
+        function(file, encoding, callback){
+            tmxParser.parse(file.contents.toString(), './tiled', (err, map) => {
+                if(err){
+                    throw err;
+                }
+
+                levels.push({
+                    name: path.parse(file.path).name,
+                    data: serialize(map)
+                });
+
+                callback();
+            });
+        },
+        function(callback){
+            this.push(new File({
+                path: outFile,
+                contents: new Buffer(JSON.stringify(levels))
+            }));
+            callback();
+        }
+    )
+}
+
+gulp.task('build-tmx', () => {
+    return gulp.src('./src/levels/*.tmx')
+        .pipe(tmxParserPlugin('levels.json'))
+        .pipe(gulp.dest('./dist/assets/'))
+});
+
+
 // main tasks ------------------------------------------------------------------
-gulp.task('default', ['build-html', 'build-sass', 'build-ts']);
+gulp.task('default', ['build-html', 'build-sass', 'build-ts', 'build-tmx']);
 gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts'], () => {
     browserSync.init({
         server: {
