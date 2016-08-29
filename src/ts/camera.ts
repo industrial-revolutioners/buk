@@ -84,10 +84,10 @@ export class CameraModel {
 
     // angle is in radian, where value is n*PI/4
     private camData = ([
-        { name: "SE", rad: 7, orientation: CameraOrientation.SE, absoluteDirections: [AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST] },
-        { name: "SW", rad: 5, orientation: CameraOrientation.SW, absoluteDirections: [AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH] },
-        { name: "NW", rad: 3, orientation: CameraOrientation.NW, absoluteDirections: [AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST] },
-        { name: "NE", rad: 1, orientation: CameraOrientation.NE, absoluteDirections: [AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH] }
+        { name: "SE", rad: 1, orientation: CameraOrientation.SE, absoluteDirections: [AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST] },
+        { name: "SW", rad: 3, orientation: CameraOrientation.SW, absoluteDirections: [AbsDirection.EAST, AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH] },
+        { name: "NW", rad: 5, orientation: CameraOrientation.NW, absoluteDirections: [AbsDirection.SOUTH, AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST] },
+        { name: "NE", rad: 7, orientation: CameraOrientation.NE, absoluteDirections: [AbsDirection.WEST, AbsDirection.NORTH, AbsDirection.EAST, AbsDirection.SOUTH] }
     ]);
 
     setZoom(z: number) {
@@ -97,8 +97,8 @@ export class CameraModel {
         this.camera.updateProjectionMatrix();
     }
 
-    getZoom() : number {
-        return 1./this.camera.zoom;
+    getZoom(): number {
+        return 1. / this.camera.zoom;
     }
 
     setViewAngle(phi: number) {
@@ -137,10 +137,11 @@ export class CameraModel {
     }
 
     private getInternalState(): CamRotDir<StructCamData> {
-        return <CamRotDir<StructCamData>>{
+        const r = <CamRotDir<StructCamData>>{
             to: this.camData[this.status],
             from: this.camData[this.prevStatus],
-        }
+        };
+        return r;
     }
 
     getAngle(): CamRotDir<number> {
