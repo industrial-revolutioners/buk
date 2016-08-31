@@ -54,7 +54,7 @@
  </tile>
  <tile id="9">
   <properties>
-   <property name="type" value="border"/>
+   <property name="type" value="bonus"/>
   </properties>
  </tile>
  <tile id="10">

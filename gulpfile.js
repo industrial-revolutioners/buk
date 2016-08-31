@@ -110,9 +110,15 @@ function tmxParserPlugin(outFile){
             width: width,
             height: data.height,
             bonus: 0,
-            tiles: []
+            startId: null,
+            finishId: null,
+            tileWidth: data.tileWidth,
+            tileHeight: data.tileHeight,
+            tiles: [],
+            models: []
         };
 
+        /** Merging tile layers --------------------------------------------- */
         let layers = {};
         data.layers.forEach((layer) => {
             layers[layer.name] = layer;
@@ -125,7 +131,7 @@ function tmxParserPlugin(outFile){
                 let type = tile.properties.type;
 
                 if(type !== 'base' && type !== 'border'){
-                    throw new Error(`'base' and 'border' tiles are allowed on the base layer (got '${type}' instead)`)
+                    throw new Error(`'base' and 'border' tiles are allowed on the base layer (got '${type}' instead)`);
                 }
 
                 flattened[i] = {
@@ -147,7 +153,7 @@ function tmxParserPlugin(outFile){
 
                 let type = tile.properties.type;
                 if(type !== 'gate'){
-                    throw new Error(`Tile on layer 'gates' must have type 'gate', got ${type} instead`)
+                    throw new Error(`Tile on layer 'gates' must have type 'gate', got ${type} instead`);
                 }
 
                 obj.type = type;
@@ -169,20 +175,22 @@ function tmxParserPlugin(outFile){
                 let type = tile.properties.type;
                 if(type === 'start'){
                     if(startCounter === 0){
-                        throw new Error('There must be exactly 1 start tile on the triggers layer')
+                        throw new Error('There must be exactly 1 start tile on the triggers layer');
                     }
 
                     obj.type = type;
+                    level.startId = obj.id;
                     delete obj.properties;
                     startCounter--;
                 }
 
                 if(type === 'finish'){
                     if(finishCounter === 0){
-                        throw new Error('There must be exactly 1 finish tile on the triggers layer')
+                        throw new Error('There must be exactly 1 finish tile on the triggers layer');
                     }
 
                     obj.type = type;
+                    level.finishId = obj.id;
                     finishCounter--;
                 }
 
@@ -193,30 +201,85 @@ function tmxParserPlugin(outFile){
             }
         });
 
-        flattened.forEach((tile, i) => {
-            let up = flattened[((tile.row - 1) * width) + tile.col];
-            let right = flattened[(tile.row * width) + (tile.col + 1)];
-            let down = flattened[((tile.row + 1) * width) + tile.col];
-            let left = flattened[(tile.row * width) + (tile.col - 1)];
+        for(let i=0; i<flattened.length; i++){
+            let tile = flattened[i];
 
-            if(up !== undefined){
-                tile.neighbors.up = up.id;
-            }
+            if(tile !== undefined){
+                let up = flattened[((tile.row - 1) * width) + tile.col];
+                let right = flattened[(tile.row * width) + (tile.col + 1)];
+                let down = flattened[((tile.row + 1) * width) + tile.col];
+                let left = flattened[(tile.row * width) + (tile.col - 1)];
 
-            if(right !== undefined){
-                tile.neighbors.right = right.id;
-            }
+                if(up !== undefined){
+                    tile.neighbors.up = up.id;
+                }
 
-            if(down !== undefined){
-                tile.neighbors.down = down.id;
-            }
+                if(right !== undefined){
+                    tile.neighbors.right = right.id;
+                }
 
-            if(left !== undefined){
-                tile.neighbors.left = left.id;
+                if(down !== undefined){
+                    tile.neighbors.down = down.id;
+                }
+
+                if(left !== undefined){
+                    tile.neighbors.left = left.id;
+                }
             }
+            else {
+                let col = i % width;
+                let row = Math.floor(i / width);
+                
+                let up = flattened[((row - 1) * width) + col];
+                let right = flattened[(row * width) + (col + 1)];
+                let down = flattened[((row + 1) * width) + col];
+                let left = flattened[(row * width) + (col - 1)];
+
+                let border = {
+                    id: tileId++,
+                    col: col,
+                    row: row,
+                    type: 'border',
+                    neighbors: {}
+                };
+
+                if(up !== undefined && up.type !== 'border'){
+                    border.neighbors.up = up.id;
+                    up.neighbors.down = border.id;
+                    flattened[i] = border;
+                }
+                if(right !== undefined && right.type !== 'border'){
+                    border.neighbors.right = right.id;
+                    right.neighbors.left = border.id;
+                    flattened[i] = border;
+                }
+                if(down !== undefined && down.type !== 'border'){
+                    border.neighbors.down = down.id;
+                    down.neighbors.up = border.id;
+                    flattened[i] = border;
+                }
+                if(left !== undefined && left.type !== 'border'){
+                    border.neighbors.left = left.id;
+                    left.neighbors.right = border.id;
+                    flattened[i] = border;
+                }
+            }
+        }
+
+        level.tiles = flattened.filter(obj => obj !== undefined);
+
+        /** Collecting models ----------------------------------------------- */
+        let objectId = 0;
+        layers.models.objects.forEach(model => {
+            level.models.push({
+                id: objectId++,
+                col: Math.floor(model.x / data.tileWidth),
+                row: Math.floor(model.y / data.tileHeight),
+                name: model.name
+            });
         });
 
-        return flattened.filter(obj => obj !== undefined);
+        return level
     }
 
     return through2.obj(
