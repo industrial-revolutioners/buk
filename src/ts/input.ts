@@ -313,6 +313,8 @@ class InputMock extends InputBase {
 
     public mockCameraAttributeEvents: Array<CameraAttributeEvent> = [
         {attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_IN},
+        {attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_IN},
+        {attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_OUT},
         {attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_OUT}
     ];
 
@@ -344,8 +346,8 @@ class InputMock extends InputBase {
             let cameraAttributeEventCounter = 0;
 
             setInterval(() => {
-                let i = cameraAttributeEventFrequency % this.mockCameraAttributeEvents.length;
-                this.emit(events.camera.ROTATE, this.mockCameraAttributeEvents[i]);
+                let i = cameraAttributeEventCounter % this.mockCameraAttributeEvents.length;
+                this.emit(events.camera.ZOOM, this.mockCameraAttributeEvents[i]);
                 cameraAttributeEventCounter++;
             }, cameraAttributeEventFrequency);
         }
@@ -354,7 +356,8 @@ class InputMock extends InputBase {
     update(): void {}
 }
 
-export const input = new InputMock(canvasWrapper, 0, 1000, 0);
+// export const input = new InputMock(canvasWrapper, 0, 1000, 1000);
+export const input = new Input(canvasWrapper);
 //? } else {
 export const input = new Input(canvasWrapper);
 //? }

@@ -40,7 +40,7 @@ class Game {
 
     zoomCamera(e: CameraAttributeEvent): void {
         if(!avatarAnimations.isAnimationRunning()){
-            console.info('Zoom is not implemented yet');
+            cameraAnimations.zoom(e.value);
         }
     }
 }
