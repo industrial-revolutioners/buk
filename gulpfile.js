@@ -325,7 +325,7 @@ gulp.task('watch-tmx', () => {
 
 // main tasks ------------------------------------------------------------------
 gulp.task('default', ['build-html', 'build-sass', 'build-ts', 'build-tmx']);
-gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts', 'watch-txm'], () => {
+gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts', 'watch-tmx'], () => {
     browserSync.init({
         server: {
             baseDir: './dist'
