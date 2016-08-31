@@ -16,6 +16,7 @@ import { scene } from './objects';
 import { updateAnimations } from './animations';
 
 export let renderer = new THREE.WebGLRenderer(rendererSettings);
+renderer.gammaOutput = true;
 canvasWrapper.appendChild(renderer.domElement);
 
 function setupSize() {

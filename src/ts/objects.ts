@@ -19,14 +19,18 @@ export class AvatarModel {
     public avatar: THREE.Mesh;
 
     constructor() {
-        let loader = new THREE.JSONLoader();
+        let jsonLoader = new THREE.JSONLoader();
 
-        loader.load('assets/cube.json', (geometry, materials) => {
+        jsonLoader.load('assets/cube.json', (geometry, materials) => {
             this.avatar = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
             this.avatar.scale.set(.5, .5, .5);
             scene.add(this.avatar);
-            
-            console.log(this.avatar);
+        });
+
+        jsonLoader.load('assets/tree.json', (geometry, materials) => {
+            let tree = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+            tree.position.x = -3;
+            scene.add(tree);
         });
     }
 }
