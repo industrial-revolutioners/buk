@@ -15,7 +15,7 @@ import {
     rotateAreaY,
     rotateSwipeThreshold, moveSwipeThreshold,
     frontRange, backRange, leftRange, rightRange,
-    zoom, zoomThreshold
+    zoomThreshold
 } from './settings';
 
 export const CLASS_NAME: string = 'event-source';
@@ -40,6 +40,10 @@ export enum cameraDirections {
 
 export enum cameraAttributes {
     ZOOM
+}
+
+export enum cameraZoomDirection {
+    ZOOM_IN = 1, ZOOM_OUT = -1
 }
 
 export interface ControlEvent {
@@ -137,14 +141,14 @@ class Input extends InputBase {
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
                         attribute: cameraAttributes.ZOOM,
-                        value: zoom
+                        value: cameraZoomDirection.ZOOM_IN
                     };
                     break;
                 case 'S':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
                         attribute: cameraAttributes.ZOOM,
-                        value: -1 * zoom
+                        value: cameraZoomDirection.ZOOM_OUT
                     };
                     break;
                 default:
@@ -198,11 +202,11 @@ class Input extends InputBase {
                 lastDistance = distance;
 
                 if (distanceDelta >= zoomThreshold) {
-                    eventObject.value = zoom;
+                    eventObject.value = cameraZoomDirection.ZOOM_IN;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
                 else if (distanceDelta <= -1 * zoomThreshold) {
-                    eventObject.value = -1 * zoom;
+                    eventObject.value = cameraZoomDirection.ZOOM_OUT;
                     this.emit(events.camera.ZOOM, eventObject);
                 }
             }
@@ -307,8 +311,15 @@ class InputMock extends InputBase {
         {direction: cameraDirections.CCW}
     ];
 
-    constructor(eventSourceElement: HTMLElement, controlEventFrequency=1000, cameraDirectionEventFrequency=1000){
+    public mockCameraAttributeEvents: Array<CameraAttributeEvent> = [
+        {attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_IN},
+        {attribute: cameraAttributes.ZOOM, value: cameraZoomDirection.ZOOM_OUT}
+    ];
+
+    constructor(eventSourceElement: HTMLElement,
+                controlEventFrequency=1000, cameraDirectionEventFrequency=1000, cameraAttributeEventFrequency=1000){
         super(eventSourceElement);
+
         if(controlEventFrequency > 0){
             let controlEventCounter = 0;
 
@@ -328,12 +339,22 @@ class InputMock extends InputBase {
                 cameraDirectionEventCounter++;
             }, cameraDirectionEventFrequency);
         }
+
+        if(cameraAttributeEventFrequency > 0){
+            let cameraAttributeEventCounter = 0;
+
+            setInterval(() => {
+                let i = cameraAttributeEventFrequency % this.mockCameraAttributeEvents.length;
+                this.emit(events.camera.ROTATE, this.mockCameraAttributeEvents[i]);
+                cameraAttributeEventCounter++;
+            }, cameraAttributeEventFrequency);
+        }
     }
 
     update(): void {}
 }
 
-export const input = new InputMock(canvasWrapper);
+export const input = new InputMock(canvasWrapper, 0, 1000, 0);
 //? } else {
 export const input = new Input(canvasWrapper);
 //? }
