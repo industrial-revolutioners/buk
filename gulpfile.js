@@ -104,21 +104,133 @@ function tmxParserPlugin(outFile){
     let levels = [];
 
     function serialize(data){
-        // TODO: Add custom serialization logic here
-        return 'medve';
+        let width = data.width;
+
+        let level = {
+            width: width,
+            height: data.height,
+            bonus: 0,
+            tiles: []
+        };
+
+        let layers = {};
+        data.layers.forEach((layer) => {
+            layers[layer.name] = layer;
+        });
+
+        let tileId = 0;
+        let flattened = new Array(width * level.height);
+        layers.base.tiles.forEach((tile, i) => {
+            if(tile !== undefined){
+                let type = tile.properties.type;
+
+                if(type !== 'base' && type !== 'border'){
+                    throw new Error(`'base' and 'border' tiles are allowed on the base layer (got '${type}' instead)`)
+                }
+
+                flattened[i] = {
+                    id: tileId++,
+                    col: i % width,
+                    row: Math.floor(i / width),
+                    type: type,
+                    neighbors: {}
+                }
+            }
+        });
+
+        layers.gates.tiles.forEach((tile, i ) => {
+            if(tile !== undefined){
+                let obj = flattened[i];
+                if(obj === undefined || obj.type !== 'base'){
+                    throw new Error(`Tile ${i} must be over the base layer`);
+                }
+
+                let type = tile.properties.type;
+                if(type !== 'gate'){
+                    throw new Error(`Tile on layer 'gates' must have type 'gate', got ${type} instead`)
+                }
+
+                obj.type = type;
+                obj.properties = {
+                    allow: tile.properties.color
+                }
+            }
+        });
+
+        let startCounter = 1;
+        let finishCounter = 1;
+        layers.triggers.tiles.forEach((tile, i) => {
+            if(tile !== undefined){
+                let obj = flattened[i];
+                if(obj === undefined){
+                    throw new Error(`Tile ${i} must be over the base layer`)
+                }
+
+                let type = tile.properties.type;
+                if(type === 'start'){
+                    if(startCounter === 0){
+                        throw new Error('There must be exactly 1 start tile on the triggers layer')
+                    }
+
+                    obj.type = type;
+                    delete obj.properties;
+                    startCounter--;
+                }
+
+                if(type === 'finish'){
+                    if(finishCounter === 0){
+                        throw new Error('There must be exactly 1 finish tile on the triggers layer')
+                    }
+
+                    obj.type = type;
+                    finishCounter--;
+                }
+
+                if(type === 'bonus'){
+                    obj.type = type;
+                    level.bonus++;
+                }
+            }
+        });
+
+        flattened.forEach((tile, i) => {
+            let up = flattened[((tile.row - 1) * width) + tile.col];
+            let right = flattened[(tile.row * width) + (tile.col + 1)];
+            let down = flattened[((tile.row + 1) * width) + tile.col];
+            let left = flattened[(tile.row * width) + (tile.col - 1)];
+
+            if(up !== undefined){
+                tile.neighbors.up = up.id;
+            }
+
+            if(right !== undefined){
+                tile.neighbors.right = right.id;
+            }
+
+            if(down !== undefined){
+                tile.neighbors.down = down.id;
+            }
+
+            if(left !== undefined){
+                tile.neighbors.left = left.id;
+            }
+        });
+
+        return flattened.filter(obj => obj !== undefined);
     }
 
     return through2.obj(
         function(file, encoding, callback){
-            tmxParser.parse(file.contents.toString(), './tiled', (err, map) => {
+            tmxParser.parse(file.contents.toString(), './resources/tiled/tileset.tsx', (err, map) => {
                 if(err){
                     throw err;
                 }
 
-                levels.push({
-                    name: path.parse(file.path).name,
-                    data: serialize(map)
-                });
+                let name = path.parse(file.path).name;
+                let data = serialize(map);
+                data.name = name;
+
+                levels.push({name: name, data:data});
 
                 callback();
             });
@@ -139,10 +251,18 @@ gulp.task('build-tmx', () => {
         .pipe(gulp.dest('./dist/assets/'))
 });
 
+gulp.task('watch-tmx', () => {
+    return gulp.watch('./src/levels/*.tmx', () => {
+        return gulp.src('./src/levels/*.tmx')
+            .pipe(tmxParserPlugin('levels.json'))
+            .pipe(gulp.dest('./dist/assets/'))
+    });
+});
+
 
 // main tasks ------------------------------------------------------------------
 gulp.task('default', ['build-html', 'build-sass', 'build-ts', 'build-tmx']);
-gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts'], () => {
+gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts', 'watch-txm'], () => {
     browserSync.init({
         server: {
             baseDir: './dist'
