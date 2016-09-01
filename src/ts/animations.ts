@@ -258,7 +258,7 @@ class CameraAnimations extends AnimationBase {
         }
 
         const zoom = this.cameraModel.getZoom();
-        const zoomTo = zoom + SETTINGS.zoomLevelStep * (direction == cameraZoomDirection.ZOOM_OUT ? -1 : 1);
+        const zoomTo = zoom + SETTINGS.zoomLevelStep * (direction == cameraZoomDirection.ZOOM_OUT ? 1 : -1);
 
         if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
             //? if(DEBUG){
