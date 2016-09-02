@@ -17,6 +17,8 @@ import { updateAnimations } from './animations';
 
 export let renderer = new THREE.WebGLRenderer(rendererSettings);
 renderer.gammaOutput = true;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.renderReverseSided = false;
 canvasWrapper.appendChild(renderer.domElement);
 
 function setupSize() {

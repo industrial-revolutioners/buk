@@ -249,16 +249,9 @@ class CameraAnimations extends AnimationBase {
         animationEvent.emitAnimationStart();
     }
 
-    zoom(direction: cameraZoomDirection): void {
-        if (this.lock.isLocked()) {
-            //? if(DEBUG){
-            console.info("locked");
-            //? }
-            return;
-        }
-
+    zoom(direction: number): void {
         const zoom = this.cameraModel.getZoom();
-        const zoomTo = zoom + SETTINGS.zoomLevelStep * (direction == cameraZoomDirection.ZOOM_OUT ? -1 : 1);
+        const zoomTo = zoom +  direction;
 
         if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
             //? if(DEBUG){
@@ -267,20 +260,9 @@ class CameraAnimations extends AnimationBase {
             return;
         }
 
-        let t = { t: zoom };
         let camera = this.cameraModel;
 
-        let tween = new TWEEN.Tween(t)
-            .to({ t: zoomTo }, SETTINGS.animationDuration)
-            .onUpdate(function () {
-                camera.setZoom(this.t);
-            })
-            .onComplete(() => { this.lock.pop() });
-
-        this.lock.push();
-        tween.start();
-
-        animationEvent.emitAnimationStart();
+        camera.setZoom(zoomTo);
     }
 
 }
