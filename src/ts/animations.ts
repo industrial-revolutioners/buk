@@ -8,19 +8,17 @@
  */
 
 /// <reference path="../../typings/index.d.ts" />
+
 import {EventEmitter} from "events";
 
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
 import * as SETTINGS from './settings';
-
-import {
-    cameraDirections, cameraAttributes, controlDirections, cameraZoomDirection
-} from './input';
-import { concurrence } from './utils'
-import { avatarModel, AvatarModel} from './objects';
-import { cameraModel, CameraModel } from './camera';
+import {avatarModel, AvatarModel} from './objects';
+import {cameraModel, CameraModel} from './camera';
+import {concurrence} from './utils'
+import {cameraDirections, controlDirections} from './input';
 
 
 export const ANIMATION_START_EVT_NAME = "animation.start";
@@ -107,8 +105,6 @@ class AvatarAnimations extends AnimationBase {
 
         this.setupTweens(moveDir, rotateEdge);
     }
-
-    /** TODO cleanup */
 
     /**
      * Get forward direction of the character in relation of the camera position 
@@ -208,11 +204,8 @@ class AvatarAnimations extends AnimationBase {
 
 /** Animation for the camera */
 class CameraAnimations extends AnimationBase {
-
     private camera: THREE.Camera;
     private cameraModel: CameraModel;
-
-    // private t: { t: number } = { t: 0 };
 
     constructor(cameraModel: CameraModel) {
         super();
@@ -221,37 +214,39 @@ class CameraAnimations extends AnimationBase {
     }
 
     rotate(d: cameraDirections): void {
-
-        if (this.lock.isLocked()) {
+        if(this.lock.isLocked()){
             //? if(DEBUG){
             console.info("locked");
             //? }
             return;
         }
+        else {
+            this.lock.push();
+        }
 
-        let angle = cameraModel.getAngle();
-        angle.to = angle.from + ((d == cameraDirections.CCW) ? -1 : +1) * Math.PI / 2;
+        let cameraModel = this.cameraModel;
 
-        // this.t.t = angle.from;
-        let t = { t: angle.from };
+        let angleFrom = cameraModel.getAngle();
+        let angleTo = angleFrom + ((d == cameraDirections.CW) ? -1 : +1) * Math.PI / 2;
 
-        let camera = this.cameraModel;
-        let tween = new TWEEN.Tween(t)
-            .to({ t: angle.to }, SETTINGS.animationDuration)
-            .onUpdate(function () {
-                camera.setViewAngle(this.t);
+        new TWEEN.Tween({angle: angleFrom})
+            .to({angle: angleTo }, SETTINGS.animationDuration)
+            .onUpdate(function(){
+                cameraModel.setViewAngle(this.angle);
             })
-            .onComplete(() => { this.lock.pop() });
-
-        this.lock.push();
-        tween.start();
+            .onComplete(() => {
+                cameraModel.rotate(d);
+                this.lock.pop();
+            })
+            .start();
 
         animationEvent.emitAnimationStart();
     }
 
-    zoom(direction: number): void {
-        const zoom = this.cameraModel.getZoom();
-        const zoomTo = zoom +  direction;
+    zoom(distanceDelta: number): void {
+        let cameraModel = this.cameraModel;
+
+        let zoomTo = cameraModel.getZoom() +  distanceDelta;
 
         if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
             //? if(DEBUG){
@@ -260,11 +255,8 @@ class CameraAnimations extends AnimationBase {
             return;
         }
 
-        let camera = this.cameraModel;
-
-        camera.setZoom(zoomTo);
+        cameraModel.setZoom(zoomTo);
     }
-
 }
 
 // ----------------------------------------------------------------------------
