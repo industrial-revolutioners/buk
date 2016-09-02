@@ -9,31 +9,16 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import {EventEmitter} from "events";
-
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
 import * as SETTINGS from './settings';
 import {avatarModel, AvatarModel} from './objects';
+import {cameraDirections, controlDirections} from './input';
 import {cameraModel, CameraModel} from './camera';
 import {concurrence} from './utils'
-import {cameraDirections, controlDirections} from './input';
+import {startRendering} from './renderer';
 
-
-export const ANIMATION_START_EVT_NAME = "animation.start";
-
-class AnimationEvent extends EventEmitter {
-    constructor() {
-        super();
-    }
-
-    emitAnimationStart() {
-        this.emit(ANIMATION_START_EVT_NAME);
-    }
-}
-
-export let animationEvent = new AnimationEvent();
 
 interface Direction {
     x: number;
@@ -159,7 +144,7 @@ class AvatarAnimations extends AnimationBase {
 
         let lockPop = () => {
             this.lock.pop();
-        }
+        };
 
         const duration = SETTINGS.animationDuration;
 
@@ -198,7 +183,7 @@ class AvatarAnimations extends AnimationBase {
         this.lock.push();
         t_rotation.start();
 
-        animationEvent.emitAnimationStart();
+        startRendering();
     }
 }
 
@@ -231,6 +216,7 @@ class CameraAnimations extends AnimationBase {
 
         new TWEEN.Tween({angle: angleFrom})
             .to({angle: angleTo }, SETTINGS.animationDuration)
+            .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(function(){
                 cameraModel.setViewAngle(this.angle);
             })
@@ -240,7 +226,7 @@ class CameraAnimations extends AnimationBase {
             })
             .start();
 
-        animationEvent.emitAnimationStart();
+        startRendering();
     }
 
     zoom(distanceDelta: number): void {
@@ -256,6 +242,7 @@ class CameraAnimations extends AnimationBase {
         }
 
         cameraModel.setZoom(zoomTo);
+        startRendering();
     }
 }
 
@@ -267,12 +254,10 @@ export const cameraAnimations = new CameraAnimations(cameraModel);
 /** Steps all the animations if any
  * @return true if those are running
  */
-export function updateAnimations(): boolean {
+export function updateAnimations(): void {
     TWEEN.update();
+}
 
-    const b = avatarAnimations.isAnimationRunning() ||
-        cameraAnimations.isAnimationRunning() ||
-        true;
-
-    return b;
+export function isAnimationRunning(): boolean{
+    return avatarAnimations.isAnimationRunning() || cameraAnimations.isAnimationRunning();
 }

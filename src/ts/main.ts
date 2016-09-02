@@ -10,7 +10,4 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import './renderer';
-import {game} from './game';
-
-
-game.init();
+import './game';

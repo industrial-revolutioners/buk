@@ -20,6 +20,11 @@ class Game extends EventEmitter{
     constructor(){
         super();
 
+        levelLoader.load()
+            .then((data) => {
+            console.log(data);
+        });
+
         input.on(events.avatar.MOVE, (e: ControlEvent) => {
             this.moveAvatar(e);
         });
@@ -31,10 +36,6 @@ class Game extends EventEmitter{
         input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
             this.zoomCamera(e);
         });
-    }
-
-    init(): void {
-        levelLoader.load();
     }
 
     moveAvatar(e: ControlEvent): void {
