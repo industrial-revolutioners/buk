@@ -35,10 +35,12 @@ export const rightRange: directionRange = { from: 270, to: 360 };
 export const leftRange: directionRange = { from: 90, to: 180 };
 
 export const zoomLevelStep = 2;
-export const zoomThreshold = 0.4; // Pinch distance treshold on touch event 
+export const zoomThreshold = 0.4; // Pinch distance threshold on touch event
 export const zoom = {min : 3, max: 15, default: 5};
 
 export const cameraRotationRadius = 5 * Math.SQRT2;
 export const cameraHeight = 5;
 
 export const animationDuration = 250;
+
+export const levelsJson = './assets/levels.json';
