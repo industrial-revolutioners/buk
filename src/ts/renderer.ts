@@ -1,7 +1,9 @@
 /**
  * renderer.ts
  *
- * Contains the main renderer functions
+ * This module contains the render loop.
+ * It is an on-demand renderer meaning that the loop is off when no animations occur.
+ * Animations are relatively rare and short so we save a lot of resource here.
  *
  * @author Caiwan
  * @author Slapec
@@ -11,11 +13,11 @@
 
 import * as THREE from 'three';
 
-import { rendererSettings, canvasWrapper } from './settings';
-import { cameraModel } from './camera';
-import { scene } from './objects';
-import { updateAnimations, isAnimationRunning } from './animations';
-import { input } from './input';
+import {rendererSettings, canvasWrapper} from './settings';
+import {cameraModel} from './camera';
+import {scene} from './objects';
+import {updateAnimations, isAnimationRunning} from './animations';
+import {input} from './input';
 
 export let renderer = new THREE.WebGLRenderer(rendererSettings);
 renderer.gammaOutput = true;

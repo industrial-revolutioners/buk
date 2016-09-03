@@ -48,7 +48,10 @@ export const cameraHeight = 5;
 
 export const animationDuration = 250;
 
-export const levelsJson = './assets/levels.json';
+
+export const paths = {
+    levels: './assets/levels.json'
+};
 
 const paletteDefault = {
     "avatar.red" : 0xe53935,
@@ -65,3 +68,4 @@ const paletteDefault = {
 }
 
 export const palette = [paletteDefault];
+

@@ -30,29 +30,29 @@ export const events = Object.freeze({
     }
 });
 
-export enum controlDirections {
+export enum ControlDirection {
     FRONT, RIGHT, BACK, LEFT
 }
 
-export enum cameraDirections {
+export enum CameraDirection {
     CW, CCW
 }
 
-export enum cameraAttributes {
+export enum CameraAttribute {
     ZOOM
 }
 
 export interface ControlEvent {
-    direction: controlDirections,
+    direction: ControlDirection,
     angle: number
 }
 
 export interface CameraDirectionEvent {
-    direction: cameraDirections
+    direction: CameraDirection
 }
 
 export interface CameraAttributeEvent {
-    attribute: cameraAttributes
+    attribute: CameraAttribute
     value: any
 }
 
@@ -108,42 +108,42 @@ class Input extends InputBase {
                 case 'w':
                 case 'ArrowUp':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.FRONT };
+                    eventObject = <ControlEvent>{ direction: ControlDirection.FRONT };
                     break;
                 case 's':
                 case 'ArrowDown':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.BACK };
+                    eventObject = <ControlEvent>{ direction: ControlDirection.BACK };
                     break;
                 case 'a':
                 case 'ArrowLeft':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.LEFT };
+                    eventObject = <ControlEvent>{ direction: ControlDirection.LEFT };
                     break;
                 case 'd':
                 case 'ArrowRight':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{ direction: controlDirections.RIGHT };
+                    eventObject = <ControlEvent>{ direction: ControlDirection.RIGHT };
                     break;
                 case 'A':
                     eventName = events.camera.ROTATE;
-                    eventObject = <CameraDirectionEvent>{ direction: cameraDirections.CW };
+                    eventObject = <CameraDirectionEvent>{ direction: CameraDirection.CCW };
                     break;
                 case 'D':
                     eventName = events.camera.ROTATE;
-                    eventObject = <CameraDirectionEvent>{ direction: cameraDirections.CCW };
+                    eventObject = <CameraDirectionEvent>{ direction: CameraDirection.CW };
                     break;
                 case 'W':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
-                        attribute: cameraAttributes.ZOOM,
+                        attribute: CameraAttribute.ZOOM,
                         value: -1 * zoom.step
                     };
                     break;
                 case 'S':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
-                        attribute: cameraAttributes.ZOOM,
+                        attribute: CameraAttribute.ZOOM,
                         value: zoom.step
                     };
                     break;
@@ -181,7 +181,7 @@ class Input extends InputBase {
             e.preventDefault();
 
             if (isPinch) {
-                let eventObject = <CameraAttributeEvent>{ attribute: cameraAttributes.ZOOM };
+                let eventObject = <CameraAttributeEvent>{ attribute: CameraAttribute.ZOOM };
 
                 let touch0 = e.touches[0];
                 let touch1 = e.touches[1];
@@ -228,10 +228,10 @@ class Input extends InputBase {
                         let eventName = events.camera.ROTATE;
                         let eventObject = <CameraDirectionEvent>{};
                         if (deltaX > 0) {
-                            eventObject.direction = cameraDirections.CW;
+                            eventObject.direction = CameraDirection.CW;
                         }
                         else {
-                            eventObject.direction = cameraDirections.CCW;
+                            eventObject.direction = CameraDirection.CCW;
                         }
 
                         this.emit(eventName, eventObject);
@@ -249,16 +249,16 @@ class Input extends InputBase {
                         let eventObject = <ControlEvent>{ angle: angle };
 
                         if (angle >= frontRange.from && angle < frontRange.to) {
-                            eventObject.direction = controlDirections.FRONT;
+                            eventObject.direction = ControlDirection.FRONT;
                         }
                         else if (angle >= backRange.from && angle < backRange.to) {
-                            eventObject.direction = controlDirections.BACK;
+                            eventObject.direction = ControlDirection.BACK;
                         }
                         else if (angle >= leftRange.from && angle < leftRange.to) {
-                            eventObject.direction = controlDirections.LEFT;
+                            eventObject.direction = ControlDirection.LEFT;
                         }
                         else if (angle >= rightRange.from && angle < rightRange.to) {
-                            eventObject.direction = controlDirections.RIGHT;
+                            eventObject.direction = ControlDirection.RIGHT;
                         }
                         else {
                             throw new Error(`Angle ${angle} should never appear.`);
@@ -286,32 +286,32 @@ class Input extends InputBase {
  */
 class InputMock extends InputBase {
     public mockControlEvents: Array<ControlEvent> = [
-        {direction: controlDirections.FRONT, angle: 0},
-        {direction: controlDirections.RIGHT, angle: 0},
-        {direction: controlDirections.BACK, angle: 0},
-        {direction: controlDirections.LEFT, angle: 0}
+        {direction: ControlDirection.FRONT, angle: 0},
+        {direction: ControlDirection.RIGHT, angle: 0},
+        {direction: ControlDirection.BACK, angle: 0},
+        {direction: ControlDirection.LEFT, angle: 0}
     ];
 
     public mockCameraDirectionEvents: Array<CameraDirectionEvent> = [
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CW},
-        {direction: cameraDirections.CCW},
-        {direction: cameraDirections.CCW},
-        {direction: cameraDirections.CCW},
-        {direction: cameraDirections.CCW}
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CCW},
+        {direction: CameraDirection.CCW},
+        {direction: CameraDirection.CCW},
+        {direction: CameraDirection.CCW}
     ];
 
     public mockCameraAttributeEvents: Array<CameraAttributeEvent> = [
-        {attribute: cameraAttributes.ZOOM, value: zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: -1 * zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: -1 * zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: -1 * zoom.step},
-        {attribute: cameraAttributes.ZOOM, value: -1 * zoom.step}
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step}
     ];
 
     constructor(eventSourceElement: HTMLElement,
