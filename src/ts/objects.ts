@@ -9,18 +9,26 @@
 
 /// <reference path="../../typings/index.d.ts" />
 import * as THREE from 'three';
+import * as SETTINGS from './settings';
+
+const currentPalette = SETTINGS.palette[0];
+
+function LookupMaterials(materials: THREE.Material[]) {
+    for (let i in materials) {
+        let material = <THREE.MeshLambertMaterial>materials[i];
+        if (currentPalette.hasOwnProperty(material.name)) {
+            const color = currentPalette[material.name];
+            material.color.set(color);
+            console.log("Material: " + material.name + " color: " + color.toString(16));
+        }
+
+    }
+}
 
 export let scene = new THREE.Scene();
 
 export const light0 = new THREE.AmbientLight(0x555555);
 scene.add(light0);
-
-
-// let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-// hemiLight.color.setHSL(0.6, 1, 0.6);
-// hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-// hemiLight.position.set(0, 500, 0);
-// scene.add(hemiLight);
 
 let dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.color.setHSL(0.1, 1, 0.95);
@@ -66,6 +74,7 @@ export class AvatarModel {
         let jsonLoader = new THREE.JSONLoader();
 
         jsonLoader.load('assets/cube.json', (geometry, materials) => {
+            LookupMaterials(materials);
             this.avatar = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
             this.avatar.scale.set(.5, .5, .5);
             this.avatar.castShadow = true;
@@ -74,6 +83,7 @@ export class AvatarModel {
         });
 
         jsonLoader.load('assets/tree.json', (geometry, materials) => {
+            LookupMaterials(materials);
             let tree = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
             tree.position.x = -3;
             tree.position.y = -0.5;
@@ -84,4 +94,12 @@ export class AvatarModel {
     }
 }
 
-export let avatarModel = new AvatarModel(); 
+export let avatarModel = new AvatarModel();
+
+/**
+ * Fetch palette 
+ */
+for (let i in SETTINGS.palette[0]) {
+    const c = currentPalette[i];
+    console.log("color " + i + " %c \u25a0 %c " + c.toString(16), "color:#" + c.toString(16), "color:0");
+}
