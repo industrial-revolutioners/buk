@@ -42,7 +42,7 @@ gulp.task('build-sass', () => {
 });
 
 gulp.task('watch-sass', ['build-sass'], () => {
-    return gulp.watch('./src/sass/style.scss', () => {
+    return gulp.watch('./src/sass/*.scss', () => {
         return gulp.src('./src/sass/style.scss')
             .pipe(sass().on('error', sass.logError))
             .pipe(gulp.dest('./dist/assets'))
@@ -325,20 +325,26 @@ gulp.task('watch-tmx', ['build-tmx'], () => {
 // models ----------------------------------------------------------------------
 gulp.task('build-models', () => {
     return gulp.src('./src/models/*.json')
-        .pipe(gulp.dest('./dist/assets/'))
+        .pipe(gulp.dest('./dist/assets/models/'))
 });
 
 gulp.task('watch-models', ['build-models'], () => {
     return gulp.watch('./src/models/*.json', () => {
         return gulp.src('./src/models/*.json')
-            .pipe(gulp.dest('./dist/assets/'))
+            .pipe(gulp.dest('./dist/assets/models/'))
     }).on('change', browserSync.reload);
+});
+
+// static ----------------------------------------------------------------------
+gulp.task('copy-static', () => {
+    return gulp.src('./src/fonts/*')
+        .pipe(gulp.dest('./dist/assets/fonts/'));
 });
 
 
 // main tasks ------------------------------------------------------------------
-gulp.task('default', ['build-html', 'build-sass', 'build-ts', 'build-tmx', 'build-models']);
-gulp.task('watch', ['watch-html', 'watch-sass', 'watch-ts', 'watch-tmx', 'watch-models'], () => {
+gulp.task('default', ['copy-static', 'build-html', 'build-sass', 'build-ts', 'build-tmx', 'build-models']);
+gulp.task('watch', ['copy-static', 'watch-html', 'watch-sass', 'watch-ts', 'watch-tmx', 'watch-models'], () => {
     browserSync.init({
         server: {
             baseDir: './dist'

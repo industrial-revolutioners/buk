@@ -9,5 +9,7 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import './renderer';
-import './game';
+// import './renderer';
+// import './game';
+
+// import './ui';
