@@ -6,17 +6,37 @@
  * @author Slapec
  */
 
+import {EventEmitter} from 'events';
 import {avatarAnimations, cameraAnimations} from "./animations";
 import {Avatar} from "./avatar";
 import {CameraDirectionEvent, CameraAttributeEvent} from "./input";
-import {cameraModel} from "./camera";
 import {ControlEvent, events, input} from './input';
+import {levelLoader} from './levels';
 
 
-class Game {
+class Game extends EventEmitter{
     protected avatar: Avatar;
 
+    constructor(){
+        super();
 
+        levelLoader.load()
+            .then((data) => {
+            console.log(data);
+        });
+
+        input.on(events.avatar.MOVE, (e: ControlEvent) => {
+            this.moveAvatar(e);
+        });
+
+        input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
+            this.rotateCamera(e);
+        });
+
+        input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
+            this.zoomCamera(e);
+        });
+    }
 
     moveAvatar(e: ControlEvent): void {
         if(!avatarAnimations.isAnimationRunning()){
@@ -33,29 +53,14 @@ class Game {
 
     rotateCamera(e: CameraDirectionEvent): void {
         if(!avatarAnimations.isAnimationRunning()){
-            cameraModel.rotate(e.direction);
             cameraAnimations.rotate(e.direction);
         }
     }
 
     zoomCamera(e: CameraAttributeEvent): void {
-        if(!avatarAnimations.isAnimationRunning()){
-            cameraAnimations.zoom(e.value);
-        }
+        cameraAnimations.zoom(e.value);
     }
 }
 
 
 export const game = new Game();
-
-input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    game.moveAvatar(e);
-});
-
-input.on(events.camera.ROTATE, (e: CameraDirectionEvent) => {
-    game.rotateCamera(e);
-});
-
-input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
-    game.zoomCamera(e);
-});

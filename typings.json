@@ -2,6 +2,8 @@
   "globalDependencies": {
     "node": "registry:dt/node#6.0.0+20160807145350",
     "three": "registry:dt/three#0.0.0+20160802154944",
-    "tween.js": "registry:dt/tween.js#0.0.0+20160608102153"
+    "tween.js": "registry:dt/tween.js#0.0.0+20160608102153",
+    "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160829180742",
+    "whatwg-streams": "registry:dt/whatwg-streams#0.0.0+20160829180742"
   }
 }

@@ -13,8 +13,8 @@ body {
 }
 
 #canvas-wrapper {
-  display: flex;
   outline: none;
+  position: fixed;
 }
 
 .event-source {
@@ -22,23 +22,11 @@ body {
   height: 100%;
 }
 
-.event-source::after {
-  content: attr(data-name);
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid red;
-  background: rgba(255, 0, 0, 0.1);
-  z-index: 1;
-}
-
-#zoom-test {
-  width: 10px;
-  height: 10px;
-  background: rgba(0, 255, 0, 0.4);
+footer {
+  display: none;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%)
+  width: 100%;
+  text-align: center;
+  bottom: 0;
+  padding: 8pt;
 }
