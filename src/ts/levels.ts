@@ -62,6 +62,15 @@ interface LevelDescription {
 }
 
 
+// TODO: It's just a plain object
+interface LevelModel {
+    id: number;
+    col: number;
+    row: number;
+    name: string;
+}
+
+
 /** A level represents a single object in the levels.json file */
 export class Level {
     name: string;
@@ -70,12 +79,16 @@ export class Level {
     tileWidth: number;
     tileHeight: number;
     tileList: BaseTile[] = [];
+
     tileMap: {[id: number]: BaseTile} = {};
     startTile: Start;
     finishTile: Finish;
-    bonus: number;
     nextLevel: Level;
     previousLevel: Level;
+
+    models: LevelModel[] = [];
+
+    bonus: number;
 
     constructor(level: LevelJson){
         this.name = level.name;
@@ -111,6 +124,15 @@ export class Level {
 
         this.tileList.forEach(tile => {
             tile.resolveNeighbors();
+        });
+
+        level.models.forEach(modelJson => {
+            this.models.push(<LevelModel>{
+                id: modelJson.id,
+                col: modelJson.col,
+                row: modelJson.row,
+                name: modelJson.name
+            });
         });
 
         this.reset();
