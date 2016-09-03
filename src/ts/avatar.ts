@@ -105,16 +105,16 @@ export class Avatar {
 
         switch(e.direction){
             case controlDirections.FRONT:
-                target = this.tile.front;
+                target = <BaseTile>this.tile.front;
                 break;
             case controlDirections.BACK:
-                target = this.tile.back;
+                target = <BaseTile>this.tile.back;
                 break;
             case controlDirections.LEFT:
-                target = this.tile.left;
+                target = <BaseTile>this.tile.left;
                 break;
             case controlDirections.RIGHT:
-                target = this.tile.right;
+                target = <BaseTile>this.tile.right;
                 break;
             default:
                 throw e;

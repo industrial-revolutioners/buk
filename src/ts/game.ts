@@ -11,19 +11,22 @@ import {avatarAnimations, cameraAnimations} from "./animations";
 import {Avatar} from "./avatar";
 import {CameraDirectionEvent, CameraAttributeEvent} from "./input";
 import {ControlEvent, events, input} from './input';
-import {levelLoader} from './levels';
+import {Level, LevelContainer, levelLoader} from './levels';
 
 
 class Game extends EventEmitter{
-    protected avatar: Avatar;
+    private avatar: Avatar;
+    private levels: LevelContainer;
 
     constructor(){
         super();
 
         levelLoader.load()
-            .then((data) => {
-            console.log(data);
-        });
+            .then(levelContainer => {
+                console.log(levelContainer);
+                this.levels = <LevelContainer>levelContainer;
+                this.loadLevel(levelContainer.getFirstLevel());
+            });
 
         input.on(events.avatar.MOVE, (e: ControlEvent) => {
             this.moveAvatar(e);
@@ -36,6 +39,12 @@ class Game extends EventEmitter{
         input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
             this.zoomCamera(e);
         });
+    }
+
+    loadLevel(level: Level){
+        //? if(DEBUG){
+        console.log(`Loading ${level.name}`);
+        //? }
     }
 
     moveAvatar(e: ControlEvent): void {

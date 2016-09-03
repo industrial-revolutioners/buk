@@ -109,8 +109,8 @@ function tmxParserPlugin(outFile){
             width: width,
             height: data.height,
             bonus: 0,
-            startId: null,
-            finishId: null,
+            startTile: null,
+            finishTile: null,
             tileWidth: data.tileWidth,
             tileHeight: data.tileHeight,
             tiles: [],
@@ -157,7 +157,7 @@ function tmxParserPlugin(outFile){
 
                 obj.type = type;
                 obj.properties = {
-                    allow: tile.properties.color
+                    face: tile.properties.color
                 }
             }
         });
@@ -178,8 +178,10 @@ function tmxParserPlugin(outFile){
                     }
 
                     obj.type = type;
-                    level.startId = obj.id;
-                    delete obj.properties;
+                    level.startTile = obj.id;
+                    obj.properties = {
+                        face: 'yellow'
+                    };
                     startCounter--;
                 }
 
@@ -189,7 +191,7 @@ function tmxParserPlugin(outFile){
                     }
 
                     obj.type = type;
-                    level.finishId = obj.id;
+                    level.finishTile = obj.id;
                     finishCounter--;
                 }
 
@@ -204,21 +206,21 @@ function tmxParserPlugin(outFile){
             let tile = flattened[i];
 
             if(tile !== undefined){
-                let up = flattened[((tile.row - 1) * width) + tile.col];
+                let front = flattened[((tile.row - 1) * width) + tile.col];
                 let right = flattened[(tile.row * width) + (tile.col + 1)];
-                let down = flattened[((tile.row + 1) * width) + tile.col];
+                let back = flattened[((tile.row + 1) * width) + tile.col];
                 let left = flattened[(tile.row * width) + (tile.col - 1)];
 
-                if(up !== undefined){
-                    tile.neighbors.up = up.id;
+                if(front !== undefined){
+                    tile.neighbors.front = front.id;
                 }
 
                 if(right !== undefined){
                     tile.neighbors.right = right.id;
                 }
 
-                if(down !== undefined){
-                    tile.neighbors.down = down.id;
+                if(back !== undefined){
+                    tile.neighbors.back = back.id;
                 }
 
                 if(left !== undefined){
@@ -229,9 +231,9 @@ function tmxParserPlugin(outFile){
                 let col = i % width;
                 let row = Math.floor(i / width);
                 
-                let up = flattened[((row - 1) * width) + col];
+                let front = flattened[((row - 1) * width) + col];
                 let right = flattened[(row * width) + (col + 1)];
-                let down = flattened[((row + 1) * width) + col];
+                let back = flattened[((row + 1) * width) + col];
                 let left = flattened[(row * width) + (col - 1)];
 
                 let border = {
@@ -242,9 +244,9 @@ function tmxParserPlugin(outFile){
                     neighbors: {}
                 };
 
-                if(up !== undefined && up.type !== 'border'){
-                    border.neighbors.up = up.id;
-                    up.neighbors.down = border.id;
+                if(front !== undefined && front.type !== 'border'){
+                    border.neighbors.front = front.id;
+                    front.neighbors.back = border.id;
                     flattened[i] = border;
                 }
                 if(right !== undefined && right.type !== 'border'){
@@ -252,9 +254,9 @@ function tmxParserPlugin(outFile){
                     right.neighbors.left = border.id;
                     flattened[i] = border;
                 }
-                if(down !== undefined && down.type !== 'border'){
-                    border.neighbors.down = down.id;
-                    down.neighbors.up = border.id;
+                if(back !== undefined && back.type !== 'border'){
+                    border.neighbors.back = back.id;
+                    back.neighbors.front = border.id;
                     flattened[i] = border;
                 }
                 if(left !== undefined && left.type !== 'border'){
@@ -289,10 +291,9 @@ function tmxParserPlugin(outFile){
                 }
 
                 let name = path.parse(file.path).name;
-                let data = serialize(map);
-                data.name = name;
-
-                levels.push({name: name, data:data});
+                let level = serialize(map);
+                level.name = name;
+                levels.push(level);
 
                 callback();
             });

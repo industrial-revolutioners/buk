@@ -48,4 +48,6 @@ export const cameraHeight = 5;
 
 export const animationDuration = 250;
 
-export const levelsJson = './assets/levels.json';
+export const paths = {
+    levels: './assets/levels.json'
+};

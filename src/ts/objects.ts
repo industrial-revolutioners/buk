@@ -28,10 +28,9 @@ dirLight.position.set(1, 1.25, -1);
 dirLight.position.multiplyScalar(50);
 scene.add(dirLight);
 
-dirLight.castShadow = true;
-
-dirLight.shadow.mapSize.width = 2048;
-dirLight.shadow.mapSize.height = 2048;
+// dirLight.castShadow = true;
+// dirLight.shadow.mapSize.width = 2048;
+// dirLight.shadow.mapSize.height = 2048;
 
 var d = 5;
 
