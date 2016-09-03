@@ -8,14 +8,23 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import { Start, BaseTile } from './tiles';
-import { controlDirections, ControlEvent } from "./input";
-import { avatarAnimations } from './animations';
+import {Start, BaseTile} from './tiles';
+import {avatarAnimations} from './animations';
+import {AbsoluteDirection} from "./camera";
 
 
 export enum AvatarFaces {
     WHITE, YELLOW, RED, ORANGE, GREEN, BLUE
 }
+
+export const stringToAvatarFace = {
+    'white': AvatarFaces.WHITE,
+    'yellow': AvatarFaces.YELLOW,
+    'red': AvatarFaces.RED,
+    'orange': AvatarFaces.ORANGE,
+    'green': AvatarFaces.GREEN,
+    'blue': AvatarFaces.BLUE
+};
 
 interface Faces {
     top: AvatarFaces,
@@ -52,84 +61,90 @@ export class Avatar {
         };
 
         this.setTile(startTile);
+
+        console.log(this);
     }
 
-    delegateState(e: ControlEvent){
+    delegateState(d: AbsoluteDirection){
         let faces = Object.assign({}, this.faces);
 
         let temp = faces.top;
-        switch(e.direction){
-            case controlDirections.FRONT:
+        switch(d){
+            case AbsoluteDirection.NORTH:
                 faces.top = faces.front;
                 faces.front = faces.bottom;
                 faces.bottom = faces.back;
                 faces.back = temp;
                 break;
-            case controlDirections.BACK:
+
+            case AbsoluteDirection.EAST:
+                faces.top = faces.left;
+                faces.left = faces.bottom;
+                faces.bottom = faces.right;
+                faces.right = temp;
+                break;
+
+            case AbsoluteDirection.SOUTH:
                 faces.top = faces.back;
                 faces.back = faces.bottom;
                 faces.bottom = faces.front;
                 faces.front = temp;
                 break;
-            case controlDirections.LEFT:
+
+            case AbsoluteDirection.WEST:
                 faces.top = faces.right;
                 faces.right = faces.bottom;
                 faces.bottom = faces.left;
                 faces.left = temp;
-                break;
-            case controlDirections.RIGHT:
-                faces.top = faces.left;
-                faces.left = faces.bottom;
-                faces.bottom = faces.right;
-                faces.right = temp;
                 break;
         }
 
         /** TODO: Delegate more events */
         return <AvatarState>{
             face: faces.bottom,
-            accept: (target) => {
+            accept: target => {
+                avatarAnimations.move(d);
                 this.faces = faces;
                 this.setTile(target);
-                avatarAnimations.move(e.direction);
                 //? if(DEBUG){
                 console.log(this);
                 //? }
+            },
+            kill: target => {
+                console.warn('Died');
+            },
+            finish: target => {
+                console.warn('Finished');
             }
         }
     }
 
-    move(e: ControlEvent){
-        let stateDelegate = this.delegateState(e);
+    move(d: AbsoluteDirection){
+        let stateDelegate = this.delegateState(d);
         let target: BaseTile;
 
-        switch(e.direction){
-            case controlDirections.FRONT:
+        switch(d){
+            case AbsoluteDirection.NORTH:
                 target = <BaseTile>this.tile.front;
                 break;
-            case controlDirections.BACK:
-                target = <BaseTile>this.tile.back;
-                break;
-            case controlDirections.LEFT:
-                target = <BaseTile>this.tile.left;
-                break;
-            case controlDirections.RIGHT:
+
+            case AbsoluteDirection.EAST:
                 target = <BaseTile>this.tile.right;
                 break;
+
+            case AbsoluteDirection.SOUTH:
+                target = <BaseTile>this.tile.back;
+                break;
+
+            case AbsoluteDirection.WEST:
+                target = <BaseTile>this.tile.left;
+                break;
+
             default:
-                throw e;
+                throw new Error(`Unhandled direction ${d}`);
         }
 
-        //? if(DEBUG){
-        try {
-            target.action(stateDelegate);
-        }
-        catch(err){
-            console.warn(`Move skipped: no ${controlDirections[e.direction]} neighbor for tile`, this.tile);
-        }
-        //? } else {
-            target.action(stateDelegate);
-        //? }
+        target.action(stateDelegate);
     }
 
     setTile(tile: BaseTile){

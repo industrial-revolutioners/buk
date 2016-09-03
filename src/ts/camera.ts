@@ -12,7 +12,7 @@
 import * as THREE from 'three';
 
 import * as SETTINGS from './settings';
-import {cameraDirections} from './input';
+import {CameraDirection, ControlEvent} from './input';
 
 export enum AbsoluteDirection {
     NORTH, EAST, SOUTH, WEST
@@ -127,8 +127,8 @@ export class CameraModel {
         this.camera.lookAt(this.center);
     }
 
-    rotate(d: cameraDirections): void {
-        d === cameraDirections.CW ? this.status-- : this.status++;
+    rotate(d: CameraDirection): void {
+        d === CameraDirection.CW ? this.status-- : this.status++;
         if(this.status > CameraOrientation.NORTH_EAST){
             this.status = CameraOrientation.SOUTH_EAST;
         }
@@ -139,6 +139,10 @@ export class CameraModel {
 
     getAngle(): number {
         return this.cameraOrientations[this.status].rad * Math.PI / 4;
+    }
+
+    toAbsoluteDirection(e: ControlEvent): AbsoluteDirection {
+        return this.cameraOrientations[this.status].absoluteDirections[e.direction];
     }
 }
 

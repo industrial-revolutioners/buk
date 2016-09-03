@@ -9,7 +9,7 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import {AvatarState, AvatarFaces} from "./avatar";
+import {AvatarState, AvatarFaces, stringToAvatarFace} from "./avatar";
 import {Level, LevelJsonTile} from './levels';
 
 
@@ -21,14 +21,6 @@ import {Level, LevelJsonTile} from './levels';
 export abstract class BaseTile {
     // This object is populated at the end of this module
     static tileTypes = {};
-    static stringToAvatarFace = {
-        'white': AvatarFaces.WHITE,
-        'yellow': AvatarFaces.YELLOW,
-        'red': AvatarFaces.RED,
-        'orange': AvatarFaces.ORANGE,
-        'green': AvatarFaces.GREEN,
-        'blue': AvatarFaces.BLUE
-    };
 
     id: number;
     col: number;
@@ -134,7 +126,7 @@ export class Gate extends Tile {
     constructor(level: Level, tileJson: LevelJsonTile){
         super(level, tileJson);
 
-        let face = BaseTile.stringToAvatarFace[tileJson.properties.face];
+        let face = stringToAvatarFace[tileJson.properties.face];
         if(face === undefined) {
             throw new Error(`Unsupported face ${face}`);
         }
@@ -186,6 +178,7 @@ export class Bonus extends Gate {
  * The avatar is spawned on this tile. It also behaves like a Gate.
  */
 export class Start extends Gate {}
+
 
 /**
  * The level is finished if the avatar steps on this tile. It's also a gate.

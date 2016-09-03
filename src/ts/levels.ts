@@ -54,12 +54,15 @@ interface LevelJson {
     name: string
 }
 
-
+/**
+ * LevelDescription objects are used by the UI to show the level list
+ */
 interface LevelDescription {
     name: string
 }
 
 
+/** A level represents a single object in the levels.json file */
 export class Level {
     name: string;
     width: number;
@@ -113,12 +116,14 @@ export class Level {
         this.reset();
     }
 
+    /** This resets the state of the level itself and the state of its tiles too */
     reset(): void {
         this.tileList.forEach(tile => {
             tile.reset();
         });
     }
 
+    /** Returns a light object with the brief description of the level. Used by the UI */
     getDescription(): LevelDescription {
         return <LevelDescription>{
             name: this.name
@@ -126,7 +131,7 @@ export class Level {
     }
 }
 
-
+/** This class parses the levels.json file. */
 export class LevelContainer {
     private levels: Level[] = [];
 
@@ -148,6 +153,7 @@ export class LevelContainer {
         });
     }
 
+    /** Reset the state of every level in the container */
     reset(): void {
         this.levels.forEach(level => {
             level.reset();
@@ -170,6 +176,7 @@ export class LevelContainer {
         return null;
     }
 
+    /** Returns a list of the brief description of every level in the container */
     getLevelDescriptions(): LevelDescription[]{
         let descriptions: LevelDescription[] = [];
 

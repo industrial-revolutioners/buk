@@ -30,3 +30,16 @@ footer {
   bottom: 0;
   padding: 8pt;
 }
+
+#perspective {
+  pointer-events: none;
+  position: fixed;
+  transform: rotate(0deg);
+  right: 60px;
+  bottom: 0;
+  transition: 0.25s ease;
+}
+
+#compass {
+  transform: rotateX(45deg) rotateZ(45deg);
+}
