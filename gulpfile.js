@@ -109,12 +109,13 @@ function tmxParserPlugin(outFile){
             width: width,
             height: data.height,
             bonus: 0,
+            steps: parseInt(data.properties.steps),
             startTile: null,
             finishTile: null,
             tileWidth: data.tileWidth,
             tileHeight: data.tileHeight,
             tiles: [],
-            models: []
+            objects: []
         };
 
         /** Merging tile layers --------------------------------------------- */
@@ -269,10 +270,10 @@ function tmxParserPlugin(outFile){
 
         level.tiles = flattened.filter(obj => obj !== undefined);
 
-        /** Collecting models ----------------------------------------------- */
+        /** Collecting objects ---------------------------------------------- */
         let objectId = 0;
-        layers.models.objects.forEach(model => {
-            level.models.push({
+        layers.objects.objects.forEach(model => {
+            level.objects.push({
                 id: objectId++,
                 col: Math.floor(model.x / data.tileWidth),
                 row: Math.floor(model.y / data.tileHeight),
@@ -285,6 +286,8 @@ function tmxParserPlugin(outFile){
 
     return through2.obj(
         function(file, encoding, callback){
+            util.log('Parsing', file.path);
+
             tmxParser.parse(file.contents.toString(), './resources/tiled/tileset.tsx', (err, map) => {
                 if(err){
                     throw err;
@@ -322,16 +325,36 @@ gulp.task('watch-tmx', ['build-tmx'], () => {
     }).on('change', browserSync.reload);
 });
 
-// models ----------------------------------------------------------------------
-gulp.task('build-models', () => {
-    return gulp.src('./src/models/*.json')
-        .pipe(gulp.dest('./dist/assets/models/'))
+// objects ---------------------------------------------------------------------
+function objectCollector(outFile){
+    let objects = [];
+
+    return through2.obj(
+        function(file, encoding, callback){
+            util.log('Parsing', file.path);
+            objects.push(JSON.parse(file.contents));
+            callback();
+        },
+        function(callback){
+            this.push(new File({
+                path: outFile,
+                contents: new Buffer(JSON.stringify(objects))
+            }));
+            callback();
+        }
+    );
+}
+
+gulp.task('build-objects', () => {
+    return gulp.src('./src/objects/*.json')
+        .pipe(objectCollector('objects.json'))
+        .pipe(gulp.dest('./dist/assets/'));
 });
 
-gulp.task('watch-models', ['build-models'], () => {
-    return gulp.watch('./src/models/*.json', () => {
-        return gulp.src('./src/models/*.json')
-            .pipe(gulp.dest('./dist/assets/models/'))
+gulp.task('watch-objects', ['build-objects'], () => {
+    return gulp.watch('./src/objects/*.json', () => {
+        return gulp.src('./src/objects/*.json')
+            .pipe(objectCollector('./dist/assets/objects.json'))
     }).on('change', browserSync.reload);
 });
 
@@ -343,8 +366,8 @@ gulp.task('copy-static', () => {
 
 
 // main tasks ------------------------------------------------------------------
-gulp.task('default', ['copy-static', 'build-html', 'build-sass', 'build-ts', 'build-tmx', 'build-models']);
-gulp.task('watch', ['copy-static', 'watch-html', 'watch-sass', 'watch-ts', 'watch-tmx', 'watch-models'], () => {
+gulp.task('default', ['copy-static', 'build-html', 'build-sass', 'build-ts', 'build-tmx', 'build-objects']);
+gulp.task('watch', ['copy-static', 'watch-html', 'watch-sass', 'watch-ts', 'watch-tmx', 'watch-objects'], () => {
     browserSync.init({
         server: {
             baseDir: './dist'
