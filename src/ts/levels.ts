@@ -210,21 +210,18 @@ export class LevelContainer {
     }
 }
 
+export function loadLevels(path: string=paths.levels): Promise<LevelContainer> {
+    //? if(DEBUG){
+    console.time('Levels.loadLevels');
+    //? }
 
-class LevelLoader {
-    load(path: string=paths.levels){
-        // TODO: Proper network handling
-        return new Promise((resolve, reject) => {
-            fetch(path)
-            .then(response => {
-                return response.json();
-            })
-            .then(levelsJson => {
-                return resolve(new LevelContainer(levelsJson))
-            })
-        });
-    }
+    return new Promise((resolve, reject) => {
+        fetch(path)
+        .then(response => {
+            return response.json();
+        })
+        .then(levelsJson => {
+            return resolve(new LevelContainer(levelsJson))
+        })
+    });
 }
-
-
-export const levelLoader = new LevelLoader();

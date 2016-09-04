@@ -337,7 +337,7 @@ gulp.task('watch-models', ['build-models'], () => {
 
 // static ----------------------------------------------------------------------
 gulp.task('copy-static', () => {
-    return gulp.src('./src/fonts/*')
+    return gulp.src('./src/fonts/**/*')
         .pipe(gulp.dest('./dist/assets/fonts/'));
 });
 
