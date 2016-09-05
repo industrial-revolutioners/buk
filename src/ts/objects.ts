@@ -19,7 +19,9 @@ function LookupMaterials(materials: THREE.Material[]) {
         if (currentPalette.hasOwnProperty(material.name)) {
             const color = currentPalette[material.name];
             material.color.set(color);
+            //? if(DEBUG)
             console.log("Material: " + material.name + " color: " + color.toString(16));
+            //
         }
 
     }
@@ -36,9 +38,9 @@ dirLight.position.set(1, 1.25, -1);
 dirLight.position.multiplyScalar(50);
 scene.add(dirLight);
 
-// dirLight.castShadow = true;
-// dirLight.shadow.mapSize.width = 2048;
-// dirLight.shadow.mapSize.height = 2048;
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
 
 var d = 5;
 
