@@ -9,13 +9,13 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import {EventEmitter} from "events";
+import { EventEmitter } from "events";
 import {
     canvasWrapper,
     rotateAreaY,
     rotateSwipeThreshold, moveSwipeThreshold,
     frontRange, backRange, leftRange, rightRange,
-    zoom, zoomThreshold
+    zoom
 } from './settings';
 
 export const CLASS_NAME: string = 'event-source';
@@ -30,29 +30,29 @@ export const events = Object.freeze({
     }
 });
 
-export enum controlDirections {
-    FRONT, BACK, LEFT, RIGHT
+export enum ControlDirection {
+    FRONT, RIGHT, BACK, LEFT
 }
 
-export enum cameraDirections {
+export enum CameraDirection {
     CW, CCW
 }
 
-export enum cameraAttributes {
+export enum CameraAttribute {
     ZOOM
 }
 
 export interface ControlEvent {
-    direction: controlDirections,
+    direction: ControlDirection,
     angle: number
 }
 
 export interface CameraDirectionEvent {
-    direction: cameraDirections
+    direction: CameraDirection
 }
 
 export interface CameraAttributeEvent {
-    attribute: cameraAttributes
+    attribute: CameraAttribute
     value: any
 }
 
@@ -108,43 +108,43 @@ class Input extends InputBase {
                 case 'w':
                 case 'ArrowUp':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{direction: controlDirections.FRONT};
+                    eventObject = <ControlEvent>{ direction: ControlDirection.FRONT };
                     break;
                 case 's':
                 case 'ArrowDown':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{direction: controlDirections.BACK};
+                    eventObject = <ControlEvent>{ direction: ControlDirection.BACK };
                     break;
                 case 'a':
                 case 'ArrowLeft':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{direction: controlDirections.LEFT};
+                    eventObject = <ControlEvent>{ direction: ControlDirection.LEFT };
                     break;
                 case 'd':
                 case 'ArrowRight':
                     eventName = events.avatar.MOVE;
-                    eventObject = <ControlEvent>{direction: controlDirections.RIGHT};
+                    eventObject = <ControlEvent>{ direction: ControlDirection.RIGHT };
                     break;
                 case 'A':
                     eventName = events.camera.ROTATE;
-                    eventObject = <CameraDirectionEvent>{direction: cameraDirections.CCW};
+                    eventObject = <CameraDirectionEvent>{ direction: CameraDirection.CCW };
                     break;
                 case 'D':
                     eventName = events.camera.ROTATE;
-                    eventObject = <CameraDirectionEvent>{direction: cameraDirections.CW};
+                    eventObject = <CameraDirectionEvent>{ direction: CameraDirection.CW };
                     break;
                 case 'W':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
-                        attribute: cameraAttributes.ZOOM,
-                        value: zoom
+                        attribute: CameraAttribute.ZOOM,
+                        value: -1 * zoom.step
                     };
                     break;
                 case 'S':
                     eventName = events.camera.ZOOM;
                     eventObject = <CameraAttributeEvent>{
-                        attribute: cameraAttributes.ZOOM,
-                        value: -1 * zoom
+                        attribute: CameraAttribute.ZOOM,
+                        value: zoom.step
                     };
                     break;
                 default:
@@ -181,7 +181,7 @@ class Input extends InputBase {
             e.preventDefault();
 
             if (isPinch) {
-                let eventObject = <CameraAttributeEvent>{attribute: cameraAttributes.ZOOM};
+                let eventObject = <CameraAttributeEvent>{ attribute: CameraAttribute.ZOOM };
 
                 let touch0 = e.touches[0];
                 let touch1 = e.touches[1];
@@ -197,12 +197,8 @@ class Input extends InputBase {
                 let distanceDelta = distance - lastDistance;
                 lastDistance = distance;
 
-                if (distanceDelta >= zoomThreshold) {
-                    eventObject.value = zoom;
-                    this.emit(events.camera.ZOOM, eventObject);
-                }
-                else if (distanceDelta <= -1 * zoomThreshold) {
-                    eventObject.value = -1 * zoom;
+                if (Math.abs(distanceDelta) >= zoom.threshold) {
+                    eventObject.value = -1 * (distanceDelta / zoom.deltaDivisor);
                     this.emit(events.camera.ZOOM, eventObject);
                 }
             }
@@ -232,10 +228,10 @@ class Input extends InputBase {
                         let eventName = events.camera.ROTATE;
                         let eventObject = <CameraDirectionEvent>{};
                         if (deltaX > 0) {
-                            eventObject.direction = cameraDirections.CCW;
+                            eventObject.direction = CameraDirection.CW;
                         }
                         else {
-                            eventObject.direction = cameraDirections.CW;
+                            eventObject.direction = CameraDirection.CCW;
                         }
 
                         this.emit(eventName, eventObject);
@@ -250,19 +246,19 @@ class Input extends InputBase {
 
                     if (r > moveSwipeThreshold) {
                         let eventName = events.avatar.MOVE;
-                        let eventObject = <ControlEvent>{angle: angle};
+                        let eventObject = <ControlEvent>{ angle: angle };
 
                         if (angle >= frontRange.from && angle < frontRange.to) {
-                            eventObject.direction = controlDirections.FRONT;
+                            eventObject.direction = ControlDirection.FRONT;
                         }
                         else if (angle >= backRange.from && angle < backRange.to) {
-                            eventObject.direction = controlDirections.BACK;
+                            eventObject.direction = ControlDirection.BACK;
                         }
                         else if (angle >= leftRange.from && angle < leftRange.to) {
-                            eventObject.direction = controlDirections.LEFT;
+                            eventObject.direction = ControlDirection.LEFT;
                         }
                         else if (angle >= rightRange.from && angle < rightRange.to) {
-                            eventObject.direction = controlDirections.RIGHT;
+                            eventObject.direction = ControlDirection.RIGHT;
                         }
                         else {
                             throw new Error(`Angle ${angle} should never appear.`);
@@ -282,40 +278,81 @@ class Input extends InputBase {
     }
 }
 
-//? if(DEBUG) {
+//? if(!DEBUG) {
+/** This class periodically emits:
+ *      - [FRONT, BACK, LEFT, RIGHT] ControlEvents
+ *      - 4x cw and 4x ccw CameraDirectionEvents (that's 2 whole round around the avatar)
+ *      - 4x zoom in and 4x zoom out event
+ */
 class InputMock extends InputBase {
-    /** This class emits [FRONT, BACK, LEFT, RIGHT] input events periodically */
     public mockControlEvents: Array<ControlEvent> = [
-        {direction: controlDirections.FRONT, angle: 0}, // 0
-        {direction: controlDirections.BACK, angle: 0},  // 1
-        {direction: controlDirections.LEFT, angle: 0},  // 2
-        {direction: controlDirections.RIGHT, angle: 0}  // 3
+        {direction: ControlDirection.FRONT, angle: 0},
+        {direction: ControlDirection.RIGHT, angle: 0},
+        {direction: ControlDirection.BACK, angle: 0},
+        {direction: ControlDirection.LEFT, angle: 0}
     ];
 
-    constructor(eventSourceElement: HTMLElement) {
+    public mockCameraDirectionEvents: Array<CameraDirectionEvent> = [
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CW},
+        {direction: CameraDirection.CCW},
+        {direction: CameraDirection.CCW},
+        {direction: CameraDirection.CCW},
+        {direction: CameraDirection.CCW}
+    ];
+
+    public mockCameraAttributeEvents: Array<CameraAttributeEvent> = [
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step},
+        {attribute: CameraAttribute.ZOOM, value: -1 * zoom.step}
+    ];
+
+    constructor(eventSourceElement: HTMLElement,
+                controlEventFrequency=1000, cameraDirectionEventFrequency=1000, cameraAttributeEventFrequency=1000){
         super(eventSourceElement);
 
-        let count = 0;
+        if(controlEventFrequency > 0){
+            let controlEventCounter = 0;
 
-        setInterval(() => {
-            const rnd = count % this.mockControlEvents.length;
-            let evt = this.mockControlEvents[rnd];
+            setInterval(() => {
+                let i = controlEventCounter % this.mockControlEvents.length;
+                this.emit(events.avatar.MOVE, this.mockControlEvents[i]);
+                controlEventCounter++;
+            }, controlEventFrequency);
+        }
 
-            this.emit(events.avatar.MOVE, evt);
+        if(cameraDirectionEventFrequency > 0){
+            let cameraDirectionEventCounter = 0;
 
-            count++;
-        }, 25);
+            setInterval(() => {
+                let i = cameraDirectionEventCounter % this.mockCameraDirectionEvents.length;
+                this.emit(events.camera.ROTATE, this.mockCameraDirectionEvents[i]);
+                cameraDirectionEventCounter++;
+            }, cameraDirectionEventFrequency);
+        }
+
+        if(cameraAttributeEventFrequency > 0){
+            let cameraAttributeEventCounter = 0;
+
+            setInterval(() => {
+                let i = cameraAttributeEventCounter % this.mockCameraAttributeEvents.length;
+                this.emit(events.camera.ZOOM, this.mockCameraAttributeEvents[i]);
+                cameraAttributeEventCounter++;
+            }, cameraAttributeEventFrequency);
+        }
     }
 
-    update(): void {
-    }
+    update(): void {}
 }
 
-export const input = new InputMock(canvasWrapper);
+export const input = new InputMock(canvasWrapper, 0, 500, 0);
 //? } else {
 export const input = new Input(canvasWrapper);
 //? }
-
-window.addEventListener('resize', () => {
-    input.update();
-});

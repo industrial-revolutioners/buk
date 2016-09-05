@@ -9,26 +9,42 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
-import * as TWEEN from 'tween.js';
+import * as Game from './game';
+import * as Levels from './levels';
+import * as UI from './ui';
 
-import './events';
-import './renderer';
-import { Avatar } from './avatar';
-import { avatarAnimations } from './animations';
-import { events, input, ControlEvent, controlDirections } from './input';
-import { StartTile, Tile } from './tiles';
+//? if(DEBUG){
+console.time('UI.bootstrap');
+//? }
 
+UI.bootstrap().then(ui => {
+    //? if(DEBUG) {
+    console.timeEnd('UI.bootstrap');
 
-let start = new StartTile();
-start.front = new Tile();
-start.front.back = start;
-start.left = new Tile();
-start.left.right = start;
+    console.time('Levels.loadLevels');
+    //? }
 
-let avatar = new Avatar(start);
+    ui.loadLog('Initialized the interface');
 
-input.on(events.avatar.MOVE, (e: ControlEvent) => {
-    if(!avatarAnimations.isAnimationRunning()){
-        avatar.move(e);
-    }
+    let loadLevelsPromise = Levels.loadLevels();
+    loadLevelsPromise.then(() => {
+        //? if(DEBUG){
+        console.timeEnd('Levels.loadLevels');
+        //? }
+
+        ui.loadLog('Fetched levels')
+    });
+
+    Promise.all([loadLevelsPromise]).then((values: any[]) => {
+        main(ui, values[0])
+    });
 });
+
+
+function main(ui: UI.UserInterface, levels: Levels.LevelContainer){
+    let game = new Game.Game(levels);
+
+    ui.showLoading(false);
+
+    console.log(ui, levels);
+}

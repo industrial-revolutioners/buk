@@ -2,12 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+    <div id="loading">
+        <div id="loading-title">
+            <h1>buk</h1>
+            <h2>a cube rolling puzzle</h2>
+        </div>
+        <div id="cog-animation">
+            <svg id="cog-bg" viewBox="0 0 153.43 177.17">
+                <path fill="#000" d="M76.715-5.0293E-7,0,44.291v88.583l76.715,44.291,76.715-44.291v-88.583z"/>
+            </svg>
+            <span class="center-fix">
+                <span id="cog" class="fa fa-cog fa-spin"></span>
+            </span>
+        </div>
+        <div id="loading-log"></div>
+    </div>
+    <input type="checkbox" class="toggle-footer" id="go-fullscreen-area-toggle">
+    <footer id="go-fullscreen-area">
+        <button id="go-fullscreen">Go fullscreen</button>
+        <label for="go-fullscreen-area-toggle">✕</label>
+    </footer>
     <div id="canvas-wrapper"></div>
-    <!-- <div id="zoom-test"></div> -->
     <script src="assets/main.js"></script>
 </body>
 </html>

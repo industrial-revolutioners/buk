@@ -1,47 +1,59 @@
 /**
  * renderer.ts
  *
- * Contains the main renderer functions
+ * This module contains the render loop.
+ * It is an on-demand renderer meaning that the loop is off when no animations occur.
+ * Animations are relatively rare and short so we save a lot of resource here.
  *
  * @author Caiwan
+ * @author Slapec
  */
 
 /// <reference path="../../typings/index.d.ts" />
 
 import * as THREE from 'three';
-import * as TWEEN from 'tween.js';
 
 import {rendererSettings, canvasWrapper} from './settings';
-import {camera, updateCamera} from './camera';
-import {scene, cube} from './objects';
-import {
-    updateAnimations, animationEvent, 
-    ANIMATION_START_EVT_NAME
-} from './animations';
+import {cameraModel} from './camera';
+import {scene} from './objects';
+import {updateAnimations, isAnimationRunning} from './animations';
+import {input} from './input';
 
 export let renderer = new THREE.WebGLRenderer(rendererSettings);
+renderer.gammaOutput = true;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.renderReverseSided = false;
 canvasWrapper.appendChild(renderer.domElement);
 
+
+let animationHandle: number = null;
+function render(){
+    updateAnimations();
+    renderer.render(scene, cameraModel.camera);
+
+    if(isAnimationRunning()){
+        animationHandle = requestAnimationFrame(render);
+    }
+    else {
+        cancelAnimationFrame(animationHandle);
+        animationHandle = null;
+    }
+}
+
 function setupSize() {
-    updateCamera(window.innerWidth, window.innerHeight);
+    cameraModel.updateCamera(window.innerWidth, window.innerHeight);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    input.update();
+
+    startRendering();
 }
 
-setupSize();
+// setupSize();
+// window.addEventListener('resize', setupSize);
+animationHandle = requestAnimationFrame(render);
 
-window.addEventListener('resize', setupSize);
-
-function renderScene(): void {
-    renderer.render(scene, camera);
+export function startRendering(){
+    if(!animationHandle){
+        render();
+    }
 }
-
-function render(): void {
-    if (updateAnimations())
-        requestAnimationFrame(render);
-
-    renderScene();
-}
-
-animationEvent.on(ANIMATION_START_EVT_NAME, render);
-
-render();

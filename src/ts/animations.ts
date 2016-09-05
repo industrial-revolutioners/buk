@@ -8,33 +8,23 @@
  */
 
 /// <reference path="../../typings/index.d.ts" />
-import {EventEmitter} from "events";
 
 import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
-import {
-    cameraDirections, cameraAttributes, controlDirections
-} from './input';
-import { concurrence } from './utils'
-import { cube } from './objects';
-import { camera } from './camera';
+import * as SETTINGS from './settings';
+import {avatarModel, AvatarModel} from './objects';
+import {CameraDirection} from './input';
+import {cameraModel, CameraModel} from './camera';
+import {concurrence} from './utils'
+import {startRendering} from './renderer';
+import {AbsoluteDirection} from "./camera";
 
-const ANIM_DURATION = 250;
 
-export const ANIMATION_START_EVT_NAME = "animation.start";
-
-class AnimationEvent extends EventEmitter {
-    constructor() {
-        super();
-    }
-
-    emitAnimationStart() {
-        this.emit(ANIMATION_START_EVT_NAME);
-    }
+interface Direction {
+    x: number;
+    z: number;
 }
-
-export let animationEvent = new AnimationEvent();
 
 /** Common stuff and interface for all kind of animations */
 class AnimationBase {
@@ -46,57 +36,50 @@ class AnimationBase {
 
     /** @return True if any animations are running */
     isAnimationRunning(): boolean {
-        //? if(DEBUG){
-        if (this.lock.isLocked() != (TWEEN.getAll().length > 0)) {
-            const msg = "Semaphore is not unlocked properly. Lock=" + this.lock.isLocked() + ", TweenQueue=" + (TWEEN.getAll().length > 0);
-            // console.log(msg);
-            throw msg;
-        }
-        //? }
-
         return this.lock.isLocked();
     }
 }
 
 /** Animation clips for the avatar */
 class AvatarAnimations extends AnimationBase {
+    private avatarModel: AvatarModel;
+    private node: THREE.Object3D;
 
-    constructor(node: THREE.Object3D) {
+    constructor(avatarModel_: AvatarModel) {
         super();
-        this.node = node;
+        this.avatarModel = avatarModel_;
+        // this.avatarModel.avatar = avatarModel_.avatar;
     }
 
-    protected node: THREE.Object3D;
-
     /** Moves the avatar node towards the given direction */
-    move(dir: controlDirections): void {
+    move(d: AbsoluteDirection): void {
         // the floor under the cube is the {X, Z} plane. 
-        let moveDir: { x: number; z: number };
-        let rotateEdge: { x: number; z: number };
+        let moveDir: Direction;
+        let rotateEdge: Direction;
         let invRotEdge: boolean;
-        switch (dir) {
-            case controlDirections.FRONT:
-                moveDir = this.getForwardDirection(false);
+        switch (d) {
+            case AbsoluteDirection.NORTH:
+                moveDir = this.getNorthDirection(false);
                 invRotEdge = false;
                 break;
 
-            case controlDirections.BACK:
-                moveDir = this.getForwardDirection(true);
-                invRotEdge = false;
-                break;
-
-            case controlDirections.LEFT:
-                moveDir = this.getRightDirection(true);
+            case AbsoluteDirection.EAST:
+                moveDir = this.getEastDirection(false);
                 invRotEdge = true;
                 break;
 
-            case controlDirections.RIGHT:
-                moveDir = this.getRightDirection(false);
+            case AbsoluteDirection.SOUTH:
+                moveDir = this.getNorthDirection(true);
+                invRotEdge = false;
+                break;
+
+            case AbsoluteDirection.WEST:
+                moveDir = this.getEastDirection(true);
                 invRotEdge = true;
                 break;
 
             default:
-                throw "invalid enum" + dir;
+                throw new Error(`Unhandled direction ${d}`);
         }
 
         // rotate edge is the opposite one of the moving direction
@@ -107,12 +90,13 @@ class AvatarAnimations extends AnimationBase {
 
         this.setupTweens(moveDir, rotateEdge);
     }
+
     /**
      * Get forward direction of the character in relation of the camera position 
      * (back:= -forward)
      * @param {boolean} inv invert to get the oppositye direction
     */
-    private getForwardDirection(inv: boolean): { x: number, z: number } {
+    private getNorthDirection(inv: boolean): { x: number, z: number } {
         let x = 0;  // mock direction
         let z = -1;
 
@@ -128,7 +112,7 @@ class AvatarAnimations extends AnimationBase {
      * Get right direction of the character in relation of the camera position
      * @param {boolean} inv invert to get the oppositye direction
     */
-    private getRightDirection(inv: boolean): { x: number, z: number } {
+    private getEastDirection(inv: boolean): { x: number, z: number } {
         let x = 1; // mock direction
         let z = 0;
 
@@ -150,7 +134,7 @@ class AvatarAnimations extends AnimationBase {
 
     /** Common setup method for tweens */
     private masterTween: TWEEN.Tween;
-    private setupTweens(mov: { x: number, z: number }, rot: { x: number, z: number }) {
+    private setupTweens(mov: Direction, rot: Direction) {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
@@ -158,84 +142,122 @@ class AvatarAnimations extends AnimationBase {
             return;
         }
 
-        let lock = this.lock;
-        let lockPop = function () {
-            lock.pop();
-        }
+        let lockPop = () => {
+            this.lock.pop();
+        };
+
+        const duration = SETTINGS.animationDuration;
 
         // --- rotation
-        this.node.rotation.set(0, 0, 0);
-        var t_rotation = new TWEEN.Tween(cube.rotation)
-            .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, ANIM_DURATION)
+        this.avatarModel.avatar.rotation.set(0, 0, 0);
+        var t_rotation = new TWEEN.Tween(this.avatarModel.avatar.rotation)
+            .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, duration)
             .onComplete(lockPop);
 
         // --- bump
-        this.node.position.set(0, 0, 0);
-        var t_elevation = new TWEEN.Tween(this.node.position)
-            .to({ y: Math.SQRT2 * .125 }, ANIM_DURATION)
+        this.avatarModel.avatar.position.set(0, 0, 0);
+        var t_elevation = new TWEEN.Tween(this.avatarModel.avatar.position)
+            .to({ y: Math.SQRT2 * .125 }, duration)
             .easing(this.semiCircularEase)
             .onComplete(lockPop);
 
         // --- move
-        var t_move = new TWEEN.Tween(this.node.position)
-            .to({ x: mov.x, z: mov.z }, ANIM_DURATION)
+        var t_move = new TWEEN.Tween(this.avatarModel.avatar.position)
+            .to({ x: mov.x, z: mov.z }, duration)
             .onComplete(lockPop);
 
         // move back, tmep
-        var t_move2 = new TWEEN.Tween(this.node.position)
-            .to({ x: 0, z: 0 }, ANIM_DURATION)
+        var t_move2 = new TWEEN.Tween(this.avatarModel.avatar.position)
+            .to({ x: 0, z: 0 }, duration)
             .onComplete(lockPop);
 
         // --- start
 
-        lock.push();
+        this.lock.push();
         t_elevation.start();
 
-        lock.push();
-        lock.push();
+        this.lock.push();
+        this.lock.push();
         t_move.chain(t_move2).start();
 
-        lock.push();
+        this.lock.push();
         t_rotation.start();
 
-        animationEvent.emitAnimationStart();
+        startRendering();
     }
 }
 
 /** Animation for the camera */
 class CameraAnimations extends AnimationBase {
-
     private camera: THREE.Camera;
+    private cameraModel: CameraModel;
 
-    constructor(camera: THREE.Camera) {
+    constructor(cameraModel: CameraModel) {
         super();
-        this.camera = camera;
+        this.cameraModel = cameraModel;
+        this.camera = cameraModel.camera;
     }
 
-    rotate(): void {
-        // ... 
+    rotate(d: CameraDirection): void {
+        if(this.lock.isLocked()){
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+        else {
+            this.lock.push();
+        }
+
+        let cameraModel = this.cameraModel;
+
+        let angleFrom = cameraModel.getAngle();
+        let angleTo = angleFrom + ((d == CameraDirection.CW) ? -1 : +1) * Math.PI / 2;
+
+        new TWEEN.Tween({angle: angleFrom})
+            .to({angle: angleTo }, SETTINGS.animationDuration)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(function(){
+                cameraModel.setViewAngle(this.angle);
+            })
+            .onComplete(() => {
+                cameraModel.rotate(d);
+                this.lock.pop();
+            })
+            .start();
+
+        startRendering();
     }
 
-    zoom(direction: number): void {
-        // ... 
-    }
+    zoom(distanceDelta: number): void {
+        let cameraModel = this.cameraModel;
 
+        let zoomTo = cameraModel.getZoom() +  distanceDelta;
+
+        if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
+            //? if(DEBUG){
+            console.info("zoom min or max reached", zoomTo);
+            //? }
+            return;
+        }
+
+        cameraModel.setZoom(zoomTo);
+        startRendering();
+    }
 }
 
 // ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
-export const avatarAnimations = new AvatarAnimations(cube);
-export const cameraAnimations = new CameraAnimations(camera);
+export const avatarAnimations = new AvatarAnimations(avatarModel);
+export const cameraAnimations = new CameraAnimations(cameraModel);
 
 /** Steps all the animations if any
  * @return true if those are running
  */
-export function updateAnimations(): boolean {
+export function updateAnimations(): void {
     TWEEN.update();
+}
 
-    const b = avatarAnimations.isAnimationRunning() ||
-        cameraAnimations.isAnimationRunning() ||
-        false;
-
-    return b;
+export function isAnimationRunning(): boolean{
+    return avatarAnimations.isAnimationRunning() || cameraAnimations.isAnimationRunning();
 }
