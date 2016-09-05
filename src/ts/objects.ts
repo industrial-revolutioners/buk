@@ -64,7 +64,7 @@ export class AvatarModel {
     constructor() {
         let jsonLoader = new THREE.JSONLoader();
 
-        jsonLoader.load('assets/cube.json', (geometry, materials) => {
+        jsonLoader.load('assets/objects/cube.json', (geometry, materials) => {
             this.avatar = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
             this.avatar.scale.set(.5, .5, .5);
             this.avatar.castShadow = true;
@@ -72,7 +72,7 @@ export class AvatarModel {
             scene.add(this.avatar);
         });
 
-        jsonLoader.load('assets/tree.json', (geometry, materials) => {
+        jsonLoader.load('assets/objects/tree.json', (geometry, materials) => {
             let tree = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
             tree.position.x = -3;
             tree.position.y = -0.5;

@@ -1,20 +1,60 @@
+@import 'raleway';
+@import 'globals';
+@import 'loading';
+
+$fa-font-path: '/assets/fonts/font-awesome/fonts/';
+@import '../fonts/font-awesome/scss/font-awesome.scss';
+
+
 html {
   width: 100%;
   height: 100%;
+  font-family: $font;
+  touch-action: none;
 }
 
 body {
+  @include user-select(none);
+
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #406c8f;
+  background: $body-bg;
+  cursor: default;
+  border-radius: 0;
 }
 
-#canvas-wrapper {
+button {
+  font-family: $font;
+  font-size: $button-font-size;
+  padding: 2pt 4pt;
+  margin: 0;
+  border: 2pt solid $body-bg;
+  background: $body-bg;
   outline: none;
+  cursor: pointer;
+  color: black;
+
+  &:active {
+    background: white;
+  }
+}
+
+footer {
+  box-sizing: border-box;
   position: fixed;
+  width: 100%;
+  bottom: 0;
+  padding: 8pt;
+  z-index: 10;
+  background-color: $modal-bg;
+  box-shadow: 0 0 0 1pt rgba(255, 255, 255, 0.4);
+  border-top: 2pt solid transparent;
+  background-clip: padding-box;
+  transform: translateY(calc(100% + 3pt));
+  transition: 0.4s ease transform;
 }
 
 .event-source {
@@ -22,24 +62,41 @@ body {
   height: 100%;
 }
 
-footer {
+#canvas-wrapper {
+  outline: none;
+  position: fixed;
+  z-index: 0;
+}
+
+.toggle {
   display: none;
-  position: fixed;
-  width: 100%;
-  text-align: center;
-  bottom: 0;
-  padding: 8pt;
 }
 
-#perspective {
-  pointer-events: none;
-  position: fixed;
-  transform: rotate(0deg);
-  right: 60px;
-  bottom: 0;
-  transition: 0.25s ease;
+.toggle-footer {
+  @extend .toggle;
+
+  &:checked + footer {
+    transform: initial;
+  }
 }
 
-#compass {
-  transform: rotateX(45deg) rotateZ(45deg);
+#go-fullscreen-area {
+  display: flex;
+  justify-content: center;
+
+  button {
+    &:last-child {
+      border-left: none;
+    }
+  }
+
+  label {
+    background: transparentize($body-bg, 0.5);
+    @extend button;
+    cursor: pointer;
+  }
+}
+
+.invisible {
+  visibility: hidden;
 }
