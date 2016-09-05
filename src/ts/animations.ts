@@ -166,19 +166,20 @@ class AvatarAnimations extends AnimationBase {
             .to({ x: mov.x, z: mov.z }, duration)
             .onComplete(lockPop);
 
-        // move back, tmep
-        var t_move2 = new TWEEN.Tween(this.avatarModel.avatar.position)
-            .to({ x: 0, z: 0 }, duration)
-            .onComplete(lockPop);
+        // TODO kamerat mozgassa magaval
+        // TODO fenyeket mozgassa magaval
+
+        this.lock.setCallback(() => {
+            /// TODO az avatar gyoker nodejat kell itt majd novelni abba az iranyba amerre mozog
+            console.log("megvan")
+        });
 
         // --- start
-
         this.lock.push();
         t_elevation.start();
 
         this.lock.push();
-        this.lock.push();
-        t_move.chain(t_move2).start();
+        t_move.start();
 
         this.lock.push();
         t_rotation.start();

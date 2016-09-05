@@ -23,17 +23,38 @@ export namespace concurrence {
     /** Common, quick and dirty mutex/lock class */
     export class Lock {
         private count: number;
+        private callback : ()=>void = () => {};
+        private locked: boolean;
+
         constructor() {
             this.count = 0;
+            
         }
+    
+        setCallback(callback : () => void){
+            if (callback === undefined){
+                this.callback = () => {};
+            } else {
+                this.callback = callback;
+            }
+        }
+
         push(): void {
             this.count++;
+            this.locked = true;
         }
+        
         pop(): void {
             this.count--;
+            if (this.count <= 0 && this.locked){
+                this.callback();    
+                this.locked = false;
+            }
         }
+
         isLocked(): boolean {
             return this.count != 0;
         }
+
     }
 }
