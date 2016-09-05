@@ -1,100 +1,100 @@
 {
-    "vertices":[1,-0.93144,1,-1,-0.93144,1,-1,-0.93144,-1,1,-0.93144,-1,0.999999,1,1,-1,1,0.999999,-1,1,-1,1,1,-1],
-    "name":"CubeGeometry",
-    "normals":[-0,0,1,0,-0,-1,-0,1,-0,-1,-0,0,0,-1,0,1,0,-0],
     "metadata":{
-        "type":"Geometry",
         "version":3,
-        "normals":6,
-        "vertices":8,
-        "materials":6,
         "faces":6,
-        "generator":"io_three"
+        "generator":"io_three",
+        "materials":6,
+        "type":"Geometry",
+        "normals":6,
+        "vertices":8
     },
+    "faces":[35,0,1,2,3,0,0,0,0,0,35,4,7,6,5,1,1,1,1,1,35,0,4,5,1,2,2,2,2,2,35,1,5,6,2,3,3,3,3,3,35,2,6,7,3,4,4,4,4,4,35,4,0,3,7,5,5,5,5,5],
     "materials":[{
-        "DbgIndex":5,
         "shading":"lambert",
-        "visible":true,
+        "depthWrite":true,
+        "blending":"NormalBlending",
+        "colorEmissive":[0,0,0],
+        "DbgColor":61166,
         "depthTest":true,
+        "opacity":1,
+        "DbgName":"avatar.yellow",
+        "visible":true,
         "wireframe":false,
         "colorDiffuse":[1,1,0],
         "transparent":false,
-        "colorEmissive":[0,0,0],
-        "DbgName":"yellow",
-        "opacity":1,
+        "DbgIndex":5
+    },{
+        "shading":"lambert",
         "depthWrite":true,
         "blending":"NormalBlending",
-        "DbgColor":61166
-    },{
-        "DbgIndex":0,
-        "shading":"lambert",
-        "visible":true,
+        "colorEmissive":[0,0,0],
+        "DbgColor":15658734,
         "depthTest":true,
+        "opacity":1,
+        "DbgName":"avatar.white",
+        "visible":true,
         "wireframe":false,
         "colorDiffuse":[1,1,1],
         "transparent":false,
-        "colorEmissive":[0,0,0],
-        "DbgName":"white",
-        "opacity":1,
+        "DbgIndex":0
+    },{
+        "shading":"lambert",
         "depthWrite":true,
         "blending":"NormalBlending",
-        "DbgColor":15658734
-    },{
-        "DbgIndex":1,
-        "shading":"lambert",
-        "visible":true,
+        "colorEmissive":[0,0,0],
+        "DbgColor":15597568,
         "depthTest":true,
+        "opacity":1,
+        "DbgName":"avatar.red",
+        "visible":true,
         "wireframe":false,
         "colorDiffuse":[1,0,0],
         "transparent":false,
-        "colorEmissive":[0,0,0],
-        "DbgName":"red",
-        "opacity":1,
+        "DbgIndex":1
+    },{
+        "shading":"lambert",
         "depthWrite":true,
         "blending":"NormalBlending",
-        "DbgColor":15597568
-    },{
-        "DbgIndex":3,
-        "shading":"lambert",
-        "visible":true,
+        "colorEmissive":[0,0,0],
+        "DbgColor":238,
         "depthTest":true,
+        "opacity":1,
+        "DbgName":"avatar.green",
+        "visible":true,
         "wireframe":false,
         "colorDiffuse":[0,1,0],
         "transparent":false,
-        "colorEmissive":[0,0,0],
-        "DbgName":"green",
-        "opacity":1,
+        "DbgIndex":3
+    },{
+        "shading":"lambert",
         "depthWrite":true,
         "blending":"NormalBlending",
-        "DbgColor":238
-    },{
-        "DbgIndex":4,
-        "shading":"lambert",
-        "visible":true,
+        "colorEmissive":[0,0,0],
+        "DbgColor":15658496,
         "depthTest":true,
+        "opacity":1,
+        "DbgName":"avatar.orange",
+        "visible":true,
         "wireframe":false,
         "colorDiffuse":[1,0.5,0],
         "transparent":false,
-        "colorEmissive":[0,0,0],
-        "DbgName":"orange",
-        "opacity":1,
+        "DbgIndex":4
+    },{
+        "shading":"lambert",
         "depthWrite":true,
         "blending":"NormalBlending",
-        "DbgColor":15658496
-    },{
-        "DbgIndex":2,
-        "shading":"lambert",
-        "visible":true,
+        "colorEmissive":[0,0,0],
+        "DbgColor":60928,
         "depthTest":true,
+        "opacity":1,
+        "DbgName":"avatar.blue",
+        "visible":true,
         "wireframe":false,
         "colorDiffuse":[0,0,1],
         "transparent":false,
-        "colorEmissive":[0,0,0],
-        "DbgName":"blue",
-        "opacity":1,
-        "depthWrite":true,
-        "blending":"NormalBlending",
-        "DbgColor":60928
+        "DbgIndex":2
     }],
-    "faces":[35,0,1,2,3,0,0,0,0,0,35,4,7,6,5,1,1,1,1,1,35,0,4,5,1,2,2,2,2,2,35,1,5,6,2,3,3,3,3,3,35,2,6,7,3,4,4,4,4,4,35,4,0,3,7,5,5,5,5,5]
+    "name":"CubeGeometry.2",
+    "normals":[-0,0,1,0,-0,-1,1,0,-0,-0,1,0,-1,-0,0,0,-1,-0],
+    "vertices":[1,-0.93144,-1,1,-0.93144,1,-1,-0.93144,1,-1,-0.93144,-1,1,1,-1,0.999999,1,1,-1,1,1,-1,1,-1]
 }

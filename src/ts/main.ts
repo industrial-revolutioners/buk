@@ -11,6 +11,7 @@
 
 import * as Game from './game';
 import * as Levels from './levels';
+import * as Objects from './objects';
 import * as UI from './ui';
 
 //? if(DEBUG){
@@ -35,16 +36,24 @@ UI.bootstrap().then(ui => {
         ui.loadLog('Fetched levels')
     });
 
-    Promise.all([loadLevelsPromise]).then((values: any[]) => {
-        main(ui, values[0])
+    let loadObjectsPromise = Objects.loadObjects();
+    loadObjectsPromise.then(() => {
+        //? if(DEBUG){
+        console.timeEnd('Objects.loadObjects');
+        //? }
+
+        ui.loadLog('Fetched objects');
+    });
+
+    Promise.all([loadLevelsPromise, loadObjectsPromise]).then((values: any[]) => {
+        main(ui, values[0], values[1])
     });
 });
 
 
-function main(ui: UI.UserInterface, levels: Levels.LevelContainer){
-    let game = new Game.Game(levels);
+function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Objects.ObjectContainer){
+    let scene = new Objects.Scene(objects);
+    let game = new Game.Game(levels, scene);
 
     ui.showLoading(false);
-
-    console.log(ui, levels);
 }

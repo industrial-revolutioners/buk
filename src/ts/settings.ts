@@ -48,6 +48,25 @@ export const cameraHeight = 5;
 
 export const animationDuration = 250;
 
+
 export const paths = {
-    levels: './assets/levels.json'
+    levels: './assets/levels.json',
+    objects: './assets/objects.json'
 };
+
+const paletteDefault = {
+    "avatar.red" : 0xe53935,
+    "avatar.green" : 0x4CAF50,
+    "avatar.blue" : 0x1E88E5,
+    "avatar.orange" : 0xFB8C00,
+    "avatar.white" : 0x90A4AE,
+    "avatar.yellow" : 0xFDD835,
+    
+    "tree.crown" : 0x8D6E63,
+    "tree.trunk" : 0x66BB6A
+
+    // ... 
+}
+
+export const palette = [paletteDefault];
+

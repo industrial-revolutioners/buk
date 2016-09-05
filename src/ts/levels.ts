@@ -64,7 +64,7 @@ interface LevelDescription {
 
 
 // TODO: It's just a plain object
-interface LevelObject {
+export interface LevelObject {
     id: number;
     col: number;
     row: number;
@@ -213,6 +213,7 @@ export class LevelContainer {
     }
 }
 
+
 export function loadLevels(path: string=paths.levels): Promise<LevelContainer> {
     //? if(DEBUG){
     console.time('Levels.loadLevels');
@@ -221,7 +222,6 @@ export function loadLevels(path: string=paths.levels): Promise<LevelContainer> {
     return new Promise((resolve, reject) => {
         fetch(path)
         .then(response => {
-            console.log(response.body);
             return response.json();
         })
         .then(levelsJson => {
