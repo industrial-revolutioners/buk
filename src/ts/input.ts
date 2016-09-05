@@ -20,7 +20,7 @@ import {
 
 export const CLASS_NAME: string = 'event-source';
 
-export const events = Object.freeze({
+export const events = {
     camera: {
         ROTATE: 'camera.rotate',
         ZOOM: 'camera.zoom'
@@ -28,7 +28,7 @@ export const events = Object.freeze({
     avatar: {
         MOVE: 'avatar.move'
     }
-});
+};
 
 export enum ControlDirection {
     FRONT, RIGHT, BACK, LEFT

@@ -9,8 +9,8 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import {Start, BaseTile} from './tiles';
-import {avatarAnimations} from './animations';
 import {AbsoluteDirection} from "./camera";
+import {Game} from "./game";
 
 
 export enum AvatarFaces {
@@ -46,13 +46,16 @@ export interface AvatarState {
 
 
 export class Avatar {
+    private game: Game;
     private tile: BaseTile;
     private faces: Faces;
 
-    constructor(startTile: Start){
+    constructor(game: Game, startTile: Start){
         if(!(startTile instanceof Start)){
             throw new Error(`Expected Start, got ${startTile.constructor.name} instead.`);
         }
+
+        this.game = game;
 
         this.faces = <Faces>{
             top: AvatarFaces.WHITE, bottom: AvatarFaces.YELLOW,
@@ -61,8 +64,6 @@ export class Avatar {
         };
 
         this.setTile(startTile);
-
-        console.log(this);
     }
 
     delegateState(d: AbsoluteDirection){
@@ -103,7 +104,7 @@ export class Avatar {
         return <AvatarState>{
             face: faces.bottom,
             accept: target => {
-                avatarAnimations.move(d);
+                this.game.scene.animations.avatar.move(d);
                 this.faces = faces;
                 this.setTile(target);
                 //? if(DEBUG){

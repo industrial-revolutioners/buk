@@ -6,23 +6,23 @@
  * @author Slapec
  */
 
-import {avatarAnimations, cameraAnimations} from "./animations";
-import {Avatar} from "./avatar";
-import {CameraDirectionEvent, CameraAttributeEvent} from "./input";
-import {ControlEvent, events, input} from './input';
 import {EventEmitter} from 'events';
+
+import {Avatar} from "./avatar";
+import {ControlEvent, CameraDirectionEvent, CameraAttributeEvent, events, input} from './input';
 import {Level, LevelContainer} from './levels';
-import {Scene} from './objects';
+import {Scene, RenderableEvents} from './objects';
 
-export enum GameEvents {
-    LEVELS_LOADED
-}
-
+export const GameEvents = {
+    level: {
+        loaded: 'level.loaded'
+    }
+};
 
 export class Game extends EventEmitter{
     private avatar: Avatar;
     private levels: LevelContainer;
-    private scene: Scene;
+    public scene: Scene;
 
     constructor(levels: LevelContainer, scene: Scene){
         super();
@@ -41,6 +41,10 @@ export class Game extends EventEmitter{
         input.on(events.camera.ZOOM, (e: CameraAttributeEvent) => {
             this.zoomCamera(e);
         });
+
+        scene.on(RenderableEvents.SETUP_SIZE, () => {
+            input.update();
+        })
     }
 
     loadLevel(level: Level){
@@ -48,13 +52,15 @@ export class Game extends EventEmitter{
         console.log(`Loading ${level.name}`);
         //? }
 
-        this.scene.build();
+        this.scene.build(level);
 
-        this.avatar = new Avatar(level.startTile);
+        this.avatar = new Avatar(this, level.startTile);
+
+        this.emit(GameEvents.level.loaded, level);
     }
 
     moveAvatar(e: ControlEvent): void {
-        if(!avatarAnimations.isAnimationRunning()){
+        if(!this.scene.animations.isAnimationRunning()){
             let avatar = this.avatar;
 
             if(!this.avatar){
@@ -67,20 +73,12 @@ export class Game extends EventEmitter{
     }
 
     rotateCamera(e: CameraDirectionEvent): void {
-        if(!cameraAnimations.isAnimationRunning()){
-            cameraAnimations.rotate(e.direction);
-
-            //? if(DEBUG){
-            let compass = document.getElementById('perspective');
-            let deg = Number(compass.style.transform.slice(7, -4));
-
-            deg = e.direction === 0 ? deg + 90: deg - 90;
-            compass.style.transform = `rotate(${deg}deg)`;
-            //? }
+        if(!this.scene.animations.isAnimationRunning()){
+            this.scene.animations.camera.rotate(e.direction);
         }
     }
 
     zoomCamera(e: CameraAttributeEvent): void {
-        cameraAnimations.zoom(e.value);
+        this.scene.animations.camera.zoom(e.value);
     }
 }
