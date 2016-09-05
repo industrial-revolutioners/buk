@@ -48,8 +48,8 @@ function setupSize() {
     startRendering();
 }
 
-setupSize();
-window.addEventListener('resize', setupSize);
+// setupSize();
+// window.addEventListener('resize', setupSize);
 animationHandle = requestAnimationFrame(render);
 
 export function startRendering(){

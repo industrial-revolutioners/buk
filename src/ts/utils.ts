@@ -58,3 +58,9 @@ export namespace concurrence {
 
     }
 }
+
+export namespace dom {
+    export function byId(selector: string): HTMLElement{
+        return document.getElementById(selector);
+    }
+}

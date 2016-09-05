@@ -50,7 +50,8 @@ export const animationDuration = 250;
 
 
 export const paths = {
-    levels: './assets/levels.json'
+    levels: './assets/levels.json',
+    objects: './assets/objects.json'
 };
 
 const paletteDefault = {

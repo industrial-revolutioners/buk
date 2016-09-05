@@ -11,54 +11,64 @@ import {AvatarFaces} from "./avatar";
 
 
 interface LevelJsonNeighbors {
-    front?: number,
-    right?: number,
-    back?: number,
-    left?: number
+    front?: number;
+    right?: number;
+    back?: number;
+    left?: number;
 }
 
 
 interface LevelJsonTileProperties {
-    face?: AvatarFaces
+    face?: AvatarFaces;
 }
 
 
 export interface LevelJsonTile {
-    id: number,
-    col: number,
-    row: number,
-    type: string,
-    neighbors: LevelJsonNeighbors
-    properties?: LevelJsonTileProperties
+    id: number;
+    col: number;
+    row: number;
+    type: string;
+    neighbors: LevelJsonNeighbors;
+    properties?: LevelJsonTileProperties;
 }
 
 
-interface LevelJsonModel {
-    id: number,
-    col: number,
-    row: number,
-    name: string
+interface LevelJsonObjects {
+    id: number;
+    col: number;
+    row: number;
+    name: string;
 }
 
 
 interface LevelJson {
-    width: number,
-    height: number,
-    bonus: number,
-    startTile: number,
-    finishTile: number,
-    tileWidth: number,
-    tileHeight: number
-    tiles: LevelJsonTile[]
-    models: LevelJsonModel[],
-    name: string
+    width: number;
+    height: number;
+    bonus: number;
+    steps: number;
+    startTile: number;
+    finishTile: number;
+    tileWidth: number;
+    tileHeight: number;
+    tiles: LevelJsonTile[];
+    objects: LevelJsonObjects[];
+    name: string;
 }
 
 /**
  * LevelDescription objects are used by the UI to show the level list
  */
 interface LevelDescription {
-    name: string
+    name: string;
+}
+
+
+// TODO: It's just a plain object
+interface LevelObject {
+    id: number;
+    col: number;
+    row: number;
+    name: string;
 }
 
 
@@ -70,12 +80,17 @@ export class Level {
     tileWidth: number;
     tileHeight: number;
     tileList: BaseTile[] = [];
+
     tileMap: {[id: number]: BaseTile} = {};
     startTile: Start;
     finishTile: Finish;
-    bonus: number;
     nextLevel: Level;
     previousLevel: Level;
+
+    objects: LevelObject[] = [];
+
+    bonus: number;
+    steps: number;
 
     constructor(level: LevelJson){
         this.name = level.name;
@@ -84,6 +99,7 @@ export class Level {
         this.tileWidth = level.tileWidth;
         this.tileHeight = level.tileHeight;
         this.bonus = level.bonus;
+        this.steps = level.steps;
 
         level.tiles.forEach(tileJson =>{
             let tile = BaseTile.tileFactory(this, tileJson);
@@ -111,6 +127,15 @@ export class Level {
 
         this.tileList.forEach(tile => {
             tile.resolveNeighbors();
+        });
+
+        level.objects.forEach(modelJson => {
+            this.objects.push(<LevelObject>{
+                id: modelJson.id,
+                col: modelJson.col,
+                row: modelJson.row,
+                name: modelJson.name
+            });
         });
 
         this.reset();
@@ -189,20 +214,18 @@ export class LevelContainer {
 }
 
 
-class LevelLoader {
-    load(path: string=paths.levels){
-        // TODO: Proper network handling
-        return new Promise((resolve, reject) => {
-            fetch(path)
-            .then(response => {
-                return response.json();
-            })
-            .then(levelsJson => {
-                return resolve(new LevelContainer(levelsJson))
-            })
-        });
-    }
+export function loadLevels(path: string=paths.levels): Promise<LevelContainer> {
+    //? if(DEBUG){
+    console.time('Levels.loadLevels');
+    //? }
+
+    return new Promise((resolve, reject) => {
+        fetch(path)
+        .then(response => {
+            return response.json();
+        })
+        .then(levelsJson => {
+            return resolve(new LevelContainer(levelsJson))
+        })
+    });
 }
-
-
-export const levelLoader = new LevelLoader();
