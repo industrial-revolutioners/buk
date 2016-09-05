@@ -13,11 +13,10 @@ import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
 import * as SETTINGS from './settings';
-import {avatarModel, AvatarModel} from './objects';
 import {CameraDirection} from './input';
-import {cameraModel, CameraModel} from './camera';
+import {Scene} from './objects';
+import {CameraModel} from './camera';
 import {concurrence} from './utils'
-import {startRendering} from './renderer';
 import {AbsoluteDirection} from "./camera";
 
 
@@ -42,13 +41,13 @@ class AnimationBase {
 
 /** Animation clips for the avatar */
 class AvatarAnimations extends AnimationBase {
-    private avatarModel: AvatarModel;
     private node: THREE.Object3D;
+    private camera: CameraModel;
 
-    constructor(avatarModel_: AvatarModel) {
+    constructor(avatar: THREE.Object3D, camera: CameraModel) {
         super();
-        this.avatarModel = avatarModel_;
-        // this.avatarModel.avatar = avatarModel_.avatar;
+        this.node = avatar;
+        this.camera = camera;
     }
 
     /** Moves the avatar node towards the given direction */
@@ -149,20 +148,20 @@ class AvatarAnimations extends AnimationBase {
         const duration = SETTINGS.animationDuration;
 
         // --- rotation
-        this.avatarModel.avatar.rotation.set(0, 0, 0);
-        var t_rotation = new TWEEN.Tween(this.avatarModel.avatar.rotation)
+        this.node.rotation.set(0, 0, 0);
+        var t_rotation = new TWEEN.Tween(this.node.rotation)
             .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, duration)
             .onComplete(lockPop);
 
         // --- bump
-        this.avatarModel.avatar.position.set(0, 0, 0);
-        var t_elevation = new TWEEN.Tween(this.avatarModel.avatar.position)
+        this.node.position.set(0, 0, 0);
+        var t_elevation = new TWEEN.Tween(this.node.position)
             .to({ y: Math.SQRT2 * .125 }, duration)
             .easing(this.semiCircularEase)
             .onComplete(lockPop);
 
         // --- move
-        var t_move = new TWEEN.Tween(this.avatarModel.avatar.position)
+        var t_move = new TWEEN.Tween(this.node.position)
             .to({ x: mov.x, z: mov.z }, duration)
             .onComplete(lockPop);
 
@@ -200,7 +199,7 @@ class CameraAnimations extends AnimationBase {
     }
 
     rotate(d: CameraDirection): void {
-        if(this.lock.isLocked()){
+        if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
             //? }
@@ -215,10 +214,10 @@ class CameraAnimations extends AnimationBase {
         let angleFrom = cameraModel.getAngle();
         let angleTo = angleFrom + ((d == CameraDirection.CW) ? -1 : +1) * Math.PI / 2;
 
-        new TWEEN.Tween({angle: angleFrom})
-            .to({angle: angleTo }, SETTINGS.animationDuration)
+        new TWEEN.Tween({ angle: angleFrom })
+            .to({ angle: angleTo }, SETTINGS.animationDuration)
             .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(function(){
+            .onUpdate(function () {
                 cameraModel.setViewAngle(this.angle);
             })
             .onComplete(() => {
@@ -233,7 +232,7 @@ class CameraAnimations extends AnimationBase {
     zoom(distanceDelta: number): void {
         let cameraModel = this.cameraModel;
 
-        let zoomTo = cameraModel.getZoom() +  distanceDelta;
+        let zoomTo = cameraModel.getZoom() + distanceDelta;
 
         if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
             //? if(DEBUG){
@@ -249,16 +248,21 @@ class CameraAnimations extends AnimationBase {
 
 // ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
-export const avatarAnimations = new AvatarAnimations(avatarModel);
-export const cameraAnimations = new CameraAnimations(cameraModel);
+export class Animations {
+    public avatarAnimations: AvatarAnimations;
+    public cameraAnimations: CameraAnimations;
 
-/** Steps all the animations if any
- * @return true if those are running
- */
-export function updateAnimations(): void {
-    TWEEN.update();
-}
+    constructor(scene: Scene) {
+        this.avatarAnimations = new AvatarAnimations(scene.avatar, scene.camera);
+        this.cameraAnimations = new CameraAnimations(scene.camera);
+    }
 
-export function isAnimationRunning(): boolean{
-    return avatarAnimations.isAnimationRunning() || cameraAnimations.isAnimationRunning();
+
+    updateAnimations(): void {
+        TWEEN.update();
+    }
+
+    isAnimationRunning(): boolean {
+        return this.avatarAnimations.isAnimationRunning() || this.cameraAnimations.isAnimationRunning();
+    }
 }

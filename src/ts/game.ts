@@ -9,11 +9,10 @@
 import {avatarAnimations, cameraAnimations} from "./animations";
 import {Avatar} from "./avatar";
 import {CameraDirectionEvent, CameraAttributeEvent} from "./input";
-import {cameraModel} from './camera';
 import {ControlEvent, events, input} from './input';
 import {EventEmitter} from 'events';
 import {Level, LevelContainer} from './levels';
-
+import {Scene} from './objects';
 
 export enum GameEvents {
     LEVELS_LOADED
@@ -23,11 +22,13 @@ export enum GameEvents {
 export class Game extends EventEmitter{
     private avatar: Avatar;
     private levels: LevelContainer;
+    private scene: Scene;
 
-    constructor(levels: LevelContainer){
+    constructor(levels: LevelContainer, scene: Scene){
         super();
 
         this.levels = levels;
+        this.scene = scene;
 
         input.on(events.avatar.MOVE, (e: ControlEvent) => {
             this.moveAvatar(e);
@@ -47,6 +48,8 @@ export class Game extends EventEmitter{
         console.log(`Loading ${level.name}`);
         //? }
 
+        this.scene.build();
+
         this.avatar = new Avatar(level.startTile);
     }
 
@@ -58,7 +61,7 @@ export class Game extends EventEmitter{
                 throw new Error('No avatar exist')
             }
             else {
-                avatar.move(cameraModel.toAbsoluteDirection(e));
+                avatar.move(this.scene.camera.toAbsoluteDirection(e));
             }
         }
     }

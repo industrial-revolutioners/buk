@@ -145,5 +145,3 @@ export class CameraModel {
         return this.cameraOrientations[this.status].absoluteDirections[e.direction];
     }
 }
-
-export let cameraModel = new CameraModel();

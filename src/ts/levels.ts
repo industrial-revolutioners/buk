@@ -64,7 +64,7 @@ interface LevelDescription {
 
 
 // TODO: It's just a plain object
-interface LevelObject {
+export interface LevelObject {
     id: number;
     col: number;
     row: number;
