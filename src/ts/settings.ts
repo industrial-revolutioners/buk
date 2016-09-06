@@ -15,6 +15,21 @@ export let rendererSettings: WebGLRendererParameters = {
     antialias: true
 };
 
+export const renderPipeline = {
+    ssao: {
+        enabled: false
+    },
+    shadow: {
+        enabled: true,
+        map: 2048,
+        camera : {
+            view: 5,
+            // near: 5,
+            far: 350
+        }
+    }
+}
+
 export let canvasWrapper: HTMLElement = document.getElementById('canvas-wrapper');
 
 // Touch is in the rotate area if `touchX >= height * rotateAreaY`
@@ -36,7 +51,7 @@ export const leftRange: directionRange = { from: 90, to: 180 };
 
 export const zoom = {
     threshold: 0.5,
-    min : 3,
+    min: 3,
     max: 15,
     initial: 5,
     step: 0.25,  // when playing on keyboard
@@ -55,15 +70,15 @@ export const paths = {
 };
 
 const paletteDefault = {
-    "avatar.red" : 0xe53935,
-    "avatar.green" : 0x4CAF50,
-    "avatar.blue" : 0x1E88E5,
-    "avatar.orange" : 0xFB8C00,
-    "avatar.white" : 0x90A4AE,
-    "avatar.yellow" : 0xFDD835,
-    
-    "tree.crown" : 0x8D6E63,
-    "tree.trunk" : 0x66BB6A
+    "avatar.red": 0xe53935,
+    "avatar.green": 0x4CAF50,
+    "avatar.blue": 0x1E88E5,
+    "avatar.orange": 0xFB8C00,
+    "avatar.white": 0x90A4AE,
+    "avatar.yellow": 0xFDD835,
+
+    "tree.crown": 0x8D6E63,
+    "tree.trunk": 0x66BB6A
 
     // ... 
 }
