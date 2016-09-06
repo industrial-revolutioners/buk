@@ -116,21 +116,21 @@ export class Scene extends Renderable {
         this.avatarAnimation = new THREE.Object3D();
         this.avatar.add(avatarAnchor);
         avatarAnchor.add(this.avatarAnimation);
-        this.avatarAnimation.add(this.objContainer.getObject("cube")); 
-        
-        avatarAnchor.position.set(0,.5,0);
-    
+        this.avatarAnimation.add(this.objContainer.getObject("cube"));
+
+        avatarAnchor.position.set(0, .5, 0);
+
         // --- setup lights
         this.dirLight = new THREE.DirectionalLight(0xffffff, 1);
         this.dirLight.color.setHSL(0.1, 1, 0.95);
         this.dirLight.position.set(1, 1.25, -1);
         this.dirLight.position.multiplyScalar(50);
-        
+
         this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
         this.ambientLight.color.setHSL(0.3, .3, 0.3);
 
         const shadowProps = SETTINGS.renderPipeline.shadow;
-        
+
         if (shadowProps.enabled) {
             this.dirLight.castShadow = true;
             this.dirLight.shadow.mapSize.width = shadowProps.map;
@@ -174,9 +174,7 @@ export class Scene extends Renderable {
 
         // -- build object atop of tiles
 
-        // const sx = level.startTile.col;
-        // const sy = lw - level.startTile.row;
-        // this.avatar.position.set(sx, 0, sy);
+        // ... 
 
         // build scene
         this.scene = new THREE.Scene();
@@ -191,13 +189,13 @@ export class Scene extends Renderable {
 
 
 export class ObjectContainer {
-    private  objects: Object = {};
+    private objects: Object = {};
     private loader = new THREE.JSONLoader();
 
     private currentPalette = SETTINGS.palette[0];
 
-    public getObject(name : string){
-        if (!this.objects.hasOwnProperty(name)){
+    public getObject(name: string) {
+        if (!this.objects.hasOwnProperty(name)) {
             throw "Ther is no object3d named " + name;
         }
         else return this.objects[name];
