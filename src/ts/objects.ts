@@ -29,6 +29,7 @@ export const RenderableEvents = {
 class Renderable extends EventEmitter {
     private renderer: THREE.WebGLRenderer;
     private animationHandle: number = null;
+
     public animations: Animations;
     public scene = new THREE.Scene();
     public camera: CameraModel;
@@ -46,7 +47,7 @@ class Renderable extends EventEmitter {
         SETTINGS.canvasWrapper.appendChild(this.renderer.domElement);
     }
 
-    registerHandlers(){
+    registerHandlers() {
         this.setupSize();
 
         window.addEventListener('resize', () => {
@@ -85,12 +86,13 @@ class Renderable extends EventEmitter {
     }
 }
 
-/**
- * 
- */
+
 export class Scene extends Renderable {
     private objContainer: ObjectContainer;
     public avatar: THREE.Object3D;
+    private ground: THREE.Object3D;
+
+    private dirLight: THREE.DirectionalLight;
 
     constructor(objContainer: ObjectContainer) {
         super();
@@ -102,39 +104,47 @@ export class Scene extends Renderable {
 
         // this.avatar = ... 
 
-        // let dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        // dirLight.color.setHSL(0.1, 1, 0.95);
-        // dirLight.position.set(1, 1.25, -1);
-        // dirLight.position.multiplyScalar(50);
+        // --- setup lights
+        this.dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        this.dirLight.color.setHSL(0.1, 1, 0.95);
+        this.dirLight.position.set(1, 1.25, -1);
+        this.dirLight.position.multiplyScalar(50);
         // scene.add(dirLight);
 
-        // dirLight.castShadow = true;
-        // dirLight.shadow.mapSize.width = 2048;
-        // dirLight.shadow.mapSize.height = 2048;
+        const shadowProps = SETTINGS.renderPipeline.shadow;
 
-        // var d = 5;
+        if (shadowProps.enabled) {
+            this.dirLight.castShadow = true;
+            this.dirLight.shadow.mapSize.width = shadowProps.map;
+            this.dirLight.shadow.mapSize.height = shadowProps.map;
 
-        // let shadowCamera = <THREE.OrthographicCamera>(dirLight.shadow.camera);
-        // shadowCamera.left = -d;
-        // shadowCamera.right = d;
-        // shadowCamera.top = d;
-        // shadowCamera.bottom = -d;
+            let shadowCamera = <THREE.OrthographicCamera>(this.dirLight.shadow.camera);
+            shadowCamera.left = -shadowProps.camera.view;
+            shadowCamera.right = shadowProps.camera.view;
+            shadowCamera.top = shadowProps.camera.view;
+            shadowCamera.bottom = -shadowProps.camera.view;
 
-        // shadowCamera.far = 350;
+            shadowCamera.far = shadowProps.camera.far;
 
-        // dirLight.shadow.bias = -0.0001;
-        //dirLight.shadow.camera.visible = true;
+            this.dirLight.shadow.bias = -0.0001;
+        }
 
-        // var groundGeo = new THREE.PlaneBufferGeometry(10000, 10000);
-        // var groundMat = new THREE.MeshLambertMaterial({ color: 0x505050 });
-        // groundMat.color.setHSL(0.095, 1, 0.75);
+        // --- setup (temporal) ground
+        var groundGeo = new THREE.PlaneBufferGeometry(10000, 10000);
+        var groundMat = new THREE.MeshLambertMaterial({ color: 0x505050 });
+        groundMat.color.setHSL(0.095, 1, 0.75);
+        groundMat.name = "playfield.ground";
+        groundMat.polygonOffset = true;
+        groundMat.polygonOffsetFactor = -0.05;
+        groundMat.polygonOffsetUnits = 1;
 
-        // var ground = new THREE.Mesh(groundGeo, groundMat);
-        // ground.rotation.x = -Math.PI / 2;
-        // ground.position.y = -0.5;
+        this.ground = new THREE.Mesh(groundGeo, groundMat);
+        this.ground.rotation.x = -Math.PI / 2;
+
+        // this.ground.position.y = -0.5;
         // scene.add(ground);
 
-        // ground.receiveShadow = true;
+        this.ground.receiveShadow = shadowProps.enabled;
 
         // +++ cuccok
     }
@@ -146,9 +156,7 @@ export class Scene extends Renderable {
     }
 }
 
-/**
- * 
- */
+
 export class ObjectContainer {
     public objects: THREE.Object3D[] = [];
     private loader = new THREE.JSONLoader();
@@ -166,9 +174,7 @@ export class ObjectContainer {
     }
 
     constructor(objectsJson: Object[]) {
-
         //? if(DEBUG){
-        // print color palette
         for (let i in SETTINGS.palette[0]) {
             const c = this.currentPalette[i];
             console.log("color " + i + " %c \u25a0 %c " + c.toString(16), "color:#" + c.toString(16), "color:0");
@@ -178,7 +184,12 @@ export class ObjectContainer {
         objectsJson.forEach((objectData: Object) => {
             let meshData = this.loader.parse(objectData);
             this.lookupMaterials(meshData.materials);
-            this.objects.push(new THREE.Mesh(meshData.geometry, new THREE.MultiMaterial(meshData.materials)));
+            let object3d = new THREE.Mesh(meshData.geometry, new THREE.MultiMaterial(meshData.materials))
+            object3d.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
+
+            object3d.name = objectData["name"];
+
+            this.objects.push(object3d);
         });
     }
 }
