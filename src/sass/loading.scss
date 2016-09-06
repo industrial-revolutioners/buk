@@ -3,6 +3,7 @@
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
+  width: 25%;
 
   h1 {
     font-size: 32pt;
@@ -14,7 +15,6 @@
     font-weight: bold;
     background: black;
     color: $body-bg;
-    max-width: 30vw
   }
 
   h2 {

@@ -2,6 +2,8 @@
 @import 'globals';
 @import 'loading';
 @import 'logo';
+@import 'ui_layer';
+@import 'menu.scss';
 
 $fa-font-path: '/assets/fonts/font-awesome/fonts/';
 @import '../fonts/font-awesome/scss/font-awesome.scss';
@@ -29,33 +31,17 @@ body {
 
 button {
   font-family: $font;
-  font-size: $button-font-size;
-  padding: 2pt 4pt;
-  margin: 0;
-  border: 2pt solid $body-bg;
-  background: $body-bg;
+  border: 2pt solid black;
+  background: #f5f5f5;
   outline: none;
   cursor: pointer;
   color: black;
+  -webkit-tap-highlight-color: transparent;
 
   &:active {
-    background: white;
+    background: black;
+    color: white;
   }
-}
-
-footer {
-  box-sizing: border-box;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  padding: 8pt;
-  z-index: 10;
-  background-color: $modal-bg;
-  box-shadow: 0 0 0 1pt rgba(255, 255, 255, 0.4);
-  border-top: 2pt solid transparent;
-  background-clip: padding-box;
-  transform: translateY(calc(100% + 3pt));
-  transition: 0.4s ease transform;
 }
 
 .event-source {
@@ -71,33 +57,42 @@ footer {
 
 .toggle {
   display: none;
-}
 
-.toggle-footer {
-  @extend .toggle;
-
-  &:checked + footer {
-    transform: initial;
+  &:checked + div {
+    transform: initial!important;
   }
 }
 
+.hidden {
+  display: none;
+}
+
 #go-fullscreen-area {
+  box-sizing: border-box;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  padding: 8pt;
+  z-index: 10;
+  background-color: $modal-bg;
+  border-top: 2pt solid black;
+  transform: translateY(100%);
+  transition: 0.4s ease transform;
   display: flex;
   justify-content: center;
 
   button {
+    font-size: $button-font-size;
+    padding: 2pt 4pt;
+    margin: 0;
+
     &:last-child {
       border-left: none;
     }
   }
 
   label {
-    background: transparentize($body-bg, 0.5);
     @extend button;
     cursor: pointer;
   }
-}
-
-.invisible {
-  visibility: hidden;
 }

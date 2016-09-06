@@ -56,4 +56,5 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
     let game = new Game.Game(levels, scene);
 
     ui.showLoading(false);
+    ui.showUi(true);
 }
