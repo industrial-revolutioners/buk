@@ -38,15 +38,15 @@ Simply run `npm run build`. The result will be written in `dist/`
 Shortcuts are case sensitive
 
 -   Avatar
-    -   `w` or `up arrow` - Move forward
-    -   `s` or `down arrow` - Move back
-    -   `a` or `left arrow` - Move left
-    -   `d` or `right arrow` - Move right
+    - `w` or `up arrow` - Move forward
+    - `s` or `down arrow` - Move back
+    - `a` or `left arrow` - Move left
+    - `d` or `right arrow` - Move right
 -   Camera
-    -   `A` - Rotate clockwise
-    -   `D` - Rotate counterclockwise
-    -   `W` - Zoom in
-    -   `S` - Zoom out
+    - `shift + a` - Rotate clockwise
+    - `shift + d` - Rotate counterclockwise
+    - `shift + w` - Zoom in
+    - `shift + s` - Zoom out
     
 ## Touch
 
