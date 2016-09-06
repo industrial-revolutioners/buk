@@ -4,7 +4,7 @@
  * Contains all the animation tasks that being invoked by the event dispatchers
  *
  * @author Caiwan
- * 
+ * @author Slapec
  */
 
 /// <reference path="../../typings/index.d.ts" />
@@ -13,11 +13,11 @@ import * as THREE from 'three';
 import * as TWEEN from 'tween.js';
 
 import * as SETTINGS from './settings';
+import {AbsoluteDirection} from "./camera";
 import {CameraDirection} from './input';
-import {Scene} from './objects';
 import {CameraModel} from './camera';
 import {concurrence} from './utils'
-import {AbsoluteDirection} from "./camera";
+import {Scene} from './objects';
 
 
 interface Direction {
@@ -27,8 +27,14 @@ interface Direction {
 
 /** Common stuff and interface for all kind of animations */
 class AnimationBase {
-    constructor() {
+    protected scene: Scene;
+    protected camera: CameraModel;
+
+    constructor(scene: Scene){
         this.lock = new concurrence.Lock();
+
+        this.scene = scene;
+        this.camera = scene.camera;
     }
 
     protected lock: concurrence.Lock;
@@ -40,14 +46,13 @@ class AnimationBase {
 }
 
 /** Animation clips for the avatar */
-class AvatarAnimations extends AnimationBase {
+export class AvatarAnimations extends AnimationBase {
     private node: THREE.Object3D;
-    private camera: CameraModel;
 
-    constructor(avatar: THREE.Object3D, camera: CameraModel) {
-        super();
-        this.node = avatar;
-        this.camera = camera;
+    constructor(scene: Scene){
+        super(scene);
+
+        this.node = this.scene.avatar;
     }
 
     /** Moves the avatar node towards the given direction */
@@ -183,19 +188,14 @@ class AvatarAnimations extends AnimationBase {
         this.lock.push();
         t_rotation.start();
 
-        startRendering();
+        this.scene.startRendering();
     }
 }
 
 /** Animation for the camera */
-class CameraAnimations extends AnimationBase {
-    private camera: THREE.Camera;
-    private cameraModel: CameraModel;
-
-    constructor(cameraModel: CameraModel) {
-        super();
-        this.cameraModel = cameraModel;
-        this.camera = cameraModel.camera;
+export class CameraAnimations extends AnimationBase {
+    constructor(scene: Scene){
+        super(scene);
     }
 
     rotate(d: CameraDirection): void {
@@ -209,30 +209,30 @@ class CameraAnimations extends AnimationBase {
             this.lock.push();
         }
 
-        let cameraModel = this.cameraModel;
+        let camera = this.camera;
 
-        let angleFrom = cameraModel.getAngle();
+        let angleFrom = camera.getAngle();
         let angleTo = angleFrom + ((d == CameraDirection.CW) ? -1 : +1) * Math.PI / 2;
 
         new TWEEN.Tween({ angle: angleFrom })
             .to({ angle: angleTo }, SETTINGS.animationDuration)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(function () {
-                cameraModel.setViewAngle(this.angle);
+                camera.setViewAngle(this.angle);
             })
             .onComplete(() => {
-                cameraModel.rotate(d);
+                camera.rotate(d);
                 this.lock.pop();
             })
             .start();
 
-        startRendering();
+        this.scene.startRendering();
     }
 
     zoom(distanceDelta: number): void {
-        let cameraModel = this.cameraModel;
+        let camera = this.camera;
 
-        let zoomTo = cameraModel.getZoom() + distanceDelta;
+        let zoomTo = camera.getZoom() + distanceDelta;
 
         if (zoomTo > SETTINGS.zoom.max || zoomTo < SETTINGS.zoom.min) {
             //? if(DEBUG){
@@ -241,28 +241,26 @@ class CameraAnimations extends AnimationBase {
             return;
         }
 
-        cameraModel.setZoom(zoomTo);
-        startRendering();
+        camera.setZoom(zoomTo);
+        this.scene.startRendering();
     }
 }
 
-// ----------------------------------------------------------------------------
 /** Export beans of the animation objecs */
 export class Animations {
-    public avatarAnimations: AvatarAnimations;
-    public cameraAnimations: CameraAnimations;
+    public avatar: AvatarAnimations;
+    public camera: CameraAnimations;
 
     constructor(scene: Scene) {
-        this.avatarAnimations = new AvatarAnimations(scene.avatar, scene.camera);
-        this.cameraAnimations = new CameraAnimations(scene.camera);
+        this.avatar = new AvatarAnimations(scene);
+        this.camera = new CameraAnimations(scene);
     }
-
 
     updateAnimations(): void {
         TWEEN.update();
     }
 
     isAnimationRunning(): boolean {
-        return this.avatarAnimations.isAnimationRunning() || this.cameraAnimations.isAnimationRunning();
+        return this.avatar.isAnimationRunning() || this.camera.isAnimationRunning();
     }
 }

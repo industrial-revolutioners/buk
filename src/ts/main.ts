@@ -53,10 +53,7 @@ UI.bootstrap().then(ui => {
 
 function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Objects.ObjectContainer){
     let scene = new Objects.Scene(objects);
-    // let render = 
     let game = new Game.Game(levels, scene);
 
     ui.showLoading(false);
-
-    console.log(ui, levels, objects);
 }

@@ -11,74 +11,94 @@ import {paths} from './settings';
 
 /// <reference path="../../typings/index.d.ts" />
 
-import * as THREE from 'three';
+import {EventEmitter} from 'events';
+
 import * as SETTINGS from './settings';
+import * as THREE from 'three';
 import * as Tiles from './tiles'
-import {LevelObject} from './levels'
-import {CameraModel} from './camera'
 import {Animations} from './animations'
+import {CameraModel} from './camera'
+import {LevelObject, Level} from './levels'
 
 
-class Renderer {
+export const RenderableEvents = {
+    SETUP_SIZE: 'setupSize'
+};
+
+
+class Renderable extends EventEmitter {
     private renderer: THREE.WebGLRenderer;
     private animationHandle: number = null;
+    public animations: Animations;
+    public scene = new THREE.Scene();
+    public camera: CameraModel;
 
     constructor() {
+        super();
+
+        this.camera = new CameraModel();
+
         this.renderer = new THREE.WebGLRenderer(SETTINGS.rendererSettings);
 
         this.renderer.gammaOutput = true;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.renderReverseSided = false;
         SETTINGS.canvasWrapper.appendChild(this.renderer.domElement);
+    }
 
+    registerHandlers(){
         this.setupSize();
-        window.addEventListener('resize', () => { this.setupSize(); });
+
+        window.addEventListener('resize', () => {
+            this.setupSize();
+        });
     }
 
     render(): void {
-        this.updateAnimations();
-        this.renderer.render(scene.scene, cameraModel.camera);
+        this.animations.updateAnimations();
+        this.renderer.render(this.scene, this.camera.camera);
 
-        if (this.isAnimationRunning()) {
-            this.animationHandle = requestAnimationFrame(render);
+        if (this.animations.isAnimationRunning()) {
+            this.animationHandle = requestAnimationFrame(() => {
+                this.render();
+            });
         }
         else {
-            cancelAnimationFrame(animationHandle);
-            animationHandle = null;
+            cancelAnimationFrame(this.animationHandle);
+            this.animationHandle = null;
         }
     }
 
     setupSize(): void {
-        this.cameraModel.updateCamera(window.innerWidth, window.innerHeight);
+        this.camera.updateCamera(window.innerWidth, window.innerHeight);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.input.update();
 
-        startRendering();
+        this.emit(RenderableEvents.SETUP_SIZE);
+
+        this.startRendering();
     }
 
     startRendering(): void {
-        if (!animationHandle) {
-            render();
+        if (!this.animationHandle) {
+            this.render();
         }
     }
-
 }
 
 /**
  * 
  */
-export class Scene extends Renderer{
-    private objContainer: ObjectContainer
-    public scene: THREE.Scene;
-    public camera: CameraModel;
+export class Scene extends Renderable {
+    private objContainer: ObjectContainer;
     public avatar: THREE.Object3D;
-    public animations: Animations;
 
     constructor(objContainer: ObjectContainer) {
         super();
+
         this.objContainer = objContainer;
         this.animations = new Animations(this);
-        this.camera = new CameraModel();
+
+        this.registerHandlers();
 
         // this.avatar = ... 
 
@@ -119,7 +139,7 @@ export class Scene extends Renderer{
         // +++ cuccok
     }
 
-    build(w: number, h: number, objects: LevelObject[], tiles: Tiles.BaseTile[]): void {
+    build(level: Level): void {
         // ... 
 
         this.scene = new THREE.Scene();
