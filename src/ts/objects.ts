@@ -42,7 +42,7 @@ class Renderable extends EventEmitter {
         this.renderer = new THREE.WebGLRenderer(SETTINGS.rendererSettings);
 
         this.renderer.gammaOutput = true;
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.enabled = SETTINGS.renderPipeline.shadow.enabled;
         this.renderer.shadowMap.renderReverseSided = false;
         SETTINGS.canvasWrapper.appendChild(this.renderer.domElement);
     }
@@ -90,9 +90,11 @@ class Renderable extends EventEmitter {
 export class Scene extends Renderable {
     private objContainer: ObjectContainer;
     public avatar: THREE.Object3D;
+    public avatarAnimation: THREE.Object3D;
     private ground: THREE.Object3D;
 
     private dirLight: THREE.DirectionalLight;
+    private ambientLight: THREE.AmbientLight;
 
     constructor(objContainer: ObjectContainer) {
         super();
@@ -102,17 +104,33 @@ export class Scene extends Renderable {
 
         this.registerHandlers();
 
-        // this.avatar = ... 
+        /**
+         * + this.avatar
+         *  ++ Ancor node
+         *   ++ Animation node
+         *    + Mesh
+         */
 
+        this.avatar = new THREE.Object3D();
+        let avatarAnchor = new THREE.Object3D();
+        this.avatarAnimation = new THREE.Object3D();
+        this.avatar.add(avatarAnchor);
+        avatarAnchor.add(this.avatarAnimation);
+        this.avatarAnimation.add(this.objContainer.getObject("cube")); 
+        
+        avatarAnchor.position.set(0,.5,0);
+    
         // --- setup lights
         this.dirLight = new THREE.DirectionalLight(0xffffff, 1);
         this.dirLight.color.setHSL(0.1, 1, 0.95);
         this.dirLight.position.set(1, 1.25, -1);
         this.dirLight.position.multiplyScalar(50);
-        // scene.add(dirLight);
+        
+        this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        this.ambientLight.color.setHSL(0.3, .3, 0.3);
 
         const shadowProps = SETTINGS.renderPipeline.shadow;
-
+        
         if (shadowProps.enabled) {
             this.dirLight.castShadow = true;
             this.dirLight.shadow.mapSize.width = shadowProps.map;
@@ -129,39 +147,61 @@ export class Scene extends Renderable {
             this.dirLight.shadow.bias = -0.0001;
         }
 
-        // --- setup (temporal) ground
-        var groundGeo = new THREE.PlaneBufferGeometry(10000, 10000);
-        var groundMat = new THREE.MeshLambertMaterial({ color: 0x505050 });
-        groundMat.color.setHSL(0.095, 1, 0.75);
-        groundMat.name = "playfield.ground";
-        groundMat.polygonOffset = true;
-        groundMat.polygonOffsetFactor = -0.05;
-        groundMat.polygonOffsetUnits = 1;
-
-        this.ground = new THREE.Mesh(groundGeo, groundMat);
-        this.ground.rotation.x = -Math.PI / 2;
-
-        // this.ground.position.y = -0.5;
-        // scene.add(ground);
-
-        this.ground.receiveShadow = shadowProps.enabled;
-
         // +++ cuccok
     }
 
     build(level: Level): void {
-        // ... 
+        let ground: THREE.Object3D = this.objContainer.getObject("ground");
+        if (ground === undefined) {
+            throw "there is no ground model loaded";
+        }
+        const lw = level.width;
+        const lh = level.height;
 
+        // -- build ground tiles
+        let levelNode = new THREE.Object3D();
+
+        level.tileList.forEach((tile: Tiles.BaseTile) => {
+            const px = tile.col;
+            const py = level.height - tile.row;
+
+            let tileNode = new THREE.Object3D();
+            levelNode.add(tileNode);
+
+            tileNode.add(ground.clone());
+            tileNode.position.set(px, 0, py);
+        });
+
+        // -- build object atop of tiles
+
+        // const sx = level.startTile.col;
+        // const sy = lw - level.startTile.row;
+        // this.avatar.position.set(sx, 0, sy);
+
+        // build scene
         this.scene = new THREE.Scene();
+
+        this.scene.add(levelNode);
+        this.scene.add(this.avatar);
+
+        this.scene.add(this.dirLight);
+        this.scene.add(this.ambientLight);
     }
 }
 
 
 export class ObjectContainer {
-    public objects: THREE.Object3D[] = [];
+    private  objects: Object = {};
     private loader = new THREE.JSONLoader();
 
     private currentPalette = SETTINGS.palette[0];
+
+    public getObject(name : string){
+        if (!this.objects.hasOwnProperty(name)){
+            throw "Ther is no object3d named " + name;
+        }
+        else return this.objects[name];
+    }
 
     private lookupMaterials(materials: THREE.Material[]) {
         for (let i in materials) {
@@ -185,12 +225,18 @@ export class ObjectContainer {
             let meshData = this.loader.parse(objectData);
             this.lookupMaterials(meshData.materials);
             let object3d = new THREE.Mesh(meshData.geometry, new THREE.MultiMaterial(meshData.materials))
+
+            object3d.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
             object3d.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
 
             object3d.name = objectData["name"];
 
-            this.objects.push(object3d);
+            this.objects[object3d.name] = object3d;
         });
+
+        for (let i in this.objects) {
+            console.log("object", i);
+        }
     }
 }
 

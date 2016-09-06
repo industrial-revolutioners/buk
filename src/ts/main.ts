@@ -55,5 +55,9 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
     let scene = new Objects.Scene(objects);
     let game = new Game.Game(levels, scene);
 
+    game.loadLevel(levels.getFirstLevel());
+
     ui.showLoading(false);
+
+    scene.startRendering();
 }

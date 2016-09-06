@@ -332,7 +332,9 @@ function objectCollector(outFile){
     return through2.obj(
         function(file, encoding, callback){
             util.log('Parsing', file.path);
-            objects.push(JSON.parse(file.contents));
+            let json = JSON.parse(file.contents);
+            json["name"] = path.parse(file.path).name;
+            objects.push(json);
             callback();
         },
         function(callback){
