@@ -1,0 +1,41 @@
+#settings {
+  padding: 8pt;
+
+  div {
+    margin: 8pt 0 0 0;
+
+    &:first-child {
+      margin: 0;
+    }
+  }
+
+  .section {
+    padding: 0 8pt;
+  }
+
+  h1 {
+    margin: 0;
+    background: black;
+    font-size: 16pt;
+
+    span {
+      background: white;
+      padding: 0 8pt;
+    }
+  }
+
+  #game-settings {
+    .section {
+      text-align: center;
+
+      button {
+        padding: 6pt 4pt;
+        background: #e53935;
+
+        &:active {
+          background: black;
+        }
+      }
+    }
+  }
+}

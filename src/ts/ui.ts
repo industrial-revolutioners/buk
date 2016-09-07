@@ -28,6 +28,10 @@ declare global {
     }
 }
 
+export let UIEvents = {
+    LOAD_LEVEL: 'UIEvents.loadLevel'
+};
+
 
 export class UserInterface extends EventEmitter {
     classes = {
@@ -164,8 +168,14 @@ export class UserInterface extends EventEmitter {
             card.appendChild(name);
 
             levels.appendChild(card);
+
+            card.onclick = () => {
+                this.emit(UIEvents.LOAD_LEVEL, level.name);
+            }
         });
     }
+
+
 }
 
 export function bootstrap(): Promise<UserInterface>{

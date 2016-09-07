@@ -89,8 +89,8 @@
   }
 
   .screen-body {
-    overflow-y: scroll;
-    height: calc(100% - 28pt - 4px);
+    overflow-y: auto;
+    height: calc(100% - 44pt - 4px);
   }
 
   #levels {

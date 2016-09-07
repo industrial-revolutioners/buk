@@ -52,8 +52,43 @@
         </div>
 
         <input type="checkbox" class="toggle" id="settings-toggle">
-        <div id="settings" class="screen">
-            <label for="settings-toggle">Burger</label>
+        <div id="settings-screen" class="screen">
+            <div class="screen-head">
+                <label for="settings-toggle"><span class="fa fa-times"></span></label>
+                <h1>Settings</h1>
+            </div>
+            <div id="settings" class="screen-body">
+                <div id="control-settings">
+                    <h1><span>Controls</span></h1>
+                    <div class="section">
+                        <input type="checkbox" id="swap-controls">
+                        <label for="swap-controls">Swap camera rotation</label>
+                    </div>
+                </div>
+
+                <div id="graphics-settings">
+                    <h1><span>Graphics</span></h1>
+                    <div class="section">
+                        <input type="checkbox" id="antialias">
+                        <label for="antialias">Anti-aliasing</label>
+
+                        <select id="shadow">
+                            <option value="off">Off</option>
+                            <option value="medium">Medium</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                        <label for="shadow">Shadow quality</label>
+                    </div>
+                </div>
+
+                <div id="game-settings">
+                    <h1><span>Game</span></h1>
+                    <div class="section">
+                        <button>Reset the game</button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <input type="checkbox" class="toggle" id="about-toggle">

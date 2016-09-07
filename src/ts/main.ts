@@ -57,7 +57,13 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
 
     ui.loadLevelDescriptions(levels.getLevelDescriptions());
 
-    // game.loadLevel(levels.getFirstLevel());
+    ui.on(UI.UIEvents.LOAD_LEVEL, (name: string) => {
+        game.loadLevel(levels.getLevelByName(name));
+    });
+
+    game.on(Game.GameEvents.level.loaded, () => {
+        ui.showUi(false);
+    });
 
     ui.showLoading(false);
     ui.showUi(true);

@@ -109,14 +109,10 @@ export class Avatar {
                 this.game.scene.animations.avatar.move(d);
                 this.faces = faces;
                 this.setTile(target);
-                //? if(DEBUG){
-                console.log(this);
-                //? }
             },
             kill: target => {
-                // console.warn('Died');
-                // this.game.scene.animations.avatar.move(d);
                 this.game.scene.animations.avatar.die(d);
+
             },
             finish: target => {
                 console.warn('Finished');
