@@ -7,7 +7,6 @@
  */
 
 /// <reference path="../../typings/index.d.ts" />
-
 import { WebGLRendererParameters } from 'three';
 
 export let rendererSettings: WebGLRendererParameters = {
@@ -78,7 +77,10 @@ const paletteDefault = {
     "avatar.yellow": 0xFDD835,
 
     "tree.crown": 0x8D6E63,
-    "tree.trunk": 0x66BB6A
+    "tree.trunk": 0x66BB6A,
+
+    "ground.light" : 0x90A4AE,
+    "ground.dark" : 0x546E7A
 
     // ... 
 }

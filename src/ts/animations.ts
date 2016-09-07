@@ -28,13 +28,10 @@ interface Direction {
 /** Common stuff and interface for all kind of animations */
 class AnimationBase {
     protected scene: Scene;
-    protected camera: CameraModel;
 
-    constructor(scene: Scene){
+    constructor(scene: Scene) {
         this.lock = new concurrence.Lock();
-
         this.scene = scene;
-        this.camera = scene.camera;
     }
 
     protected lock: concurrence.Lock;
@@ -47,16 +44,12 @@ class AnimationBase {
 
 /** Animation clips for the avatar */
 export class AvatarAnimations extends AnimationBase {
-    private node: THREE.Object3D;
-
-    constructor(scene: Scene){
+    constructor(scene: Scene) {
         super(scene);
-
-        this.node = this.scene.avatar;
     }
 
     /** Moves the avatar node towards the given direction */
-    move(d: AbsoluteDirection): void {
+    setupTweens(d: AbsoluteDirection): TWEEN.Tween[] {
         // the floor under the cube is the {X, Z} plane. 
         let moveDir: Direction;
         let rotateEdge: Direction;
@@ -92,7 +85,42 @@ export class AvatarAnimations extends AnimationBase {
             z: invRotEdge ? -moveDir.x : moveDir.x
         };
 
-        this.setupTweens(moveDir, rotateEdge);
+        return this.setupMoveTweens(moveDir, rotateEdge);
+    }
+
+    move(d: AbsoluteDirection) {
+        let tweens = this.setupTweens(d);
+        tweens.forEach((tween: TWEEN.Tween) => {
+            this.lock.push();
+            tween.start();
+        })
+
+        this.scene.startRendering();
+    }
+
+    die(d: any): void {
+        let tweens = this.setupTweens(d);
+
+        const duration = SETTINGS.animationDuration * 4;
+        let node = this.scene.avatarAnimation;
+
+        node.position.set(0, 0, 0);
+        let die = new TWEEN.Tween(node.position)
+            .to({ y: -10 }, duration)
+            .easing(TWEEN.Easing.Cubic.Out)
+            .onComplete(() => {
+                this.lock.pop();
+            });
+
+        this.lock.push();
+        tweens[0].chain(die);
+
+        tweens.forEach((tween: TWEEN.Tween) => {
+            this.lock.push();
+            tween.start();
+        })
+
+        this.scene.startRendering();
     }
 
     /**
@@ -136,9 +164,7 @@ export class AvatarAnimations extends AnimationBase {
         return Math.sqrt(1 - t * t);
     }
 
-    /** Common setup method for tweens */
-    private masterTween: TWEEN.Tween;
-    private setupTweens(mov: Direction, rot: Direction) {
+    private setupMoveTweens(mov: Direction, rot: Direction): TWEEN.Tween[] {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
@@ -151,42 +177,101 @@ export class AvatarAnimations extends AnimationBase {
         };
 
         const duration = SETTINGS.animationDuration;
+        let node = this.scene.avatarAnimation;
+        let camera = this.scene.camera;
 
         // --- rotation
-        this.node.rotation.set(0, 0, 0);
-        var t_rotation = new TWEEN.Tween(this.node.rotation)
+        node.rotation.set(0, 0, 0);
+        let t_rotation = new TWEEN.Tween(node.rotation)
             .to({ x: rot.x * Math.PI / 2, z: rot.z * Math.PI / 2 }, duration)
             .onComplete(lockPop);
 
         // --- bump
-        this.node.position.set(0, 0, 0);
-        var t_elevation = new TWEEN.Tween(this.node.position)
+        node.position.set(0, 0, 0);
+        let t_elevation = new TWEEN.Tween(node.position)
             .to({ y: Math.SQRT2 * .125 }, duration)
             .easing(this.semiCircularEase)
             .onComplete(lockPop);
 
         // --- move
-        var t_move = new TWEEN.Tween(this.node.position)
+        let t_move = new TWEEN.Tween(node.position)
             .to({ x: mov.x, z: mov.z }, duration)
+            .onUpdate(function () {
+                camera.shift(this.x, this.z);
+            })
             .onComplete(lockPop);
 
-        // TODO kamerat mozgassa magaval
-        // TODO fenyeket mozgassa magaval
 
         this.lock.setCallback(() => {
-            /// TODO az avatar gyoker nodejat kell itt majd novelni abba az iranyba amerre mozog
-            console.log("megvan")
+            node.position.set(0, 0, 0);
+            let position = this.scene.avatar.position.clone();
+
+            this.scene.avatar.position.x = position.x + mov.x;
+            this.scene.avatar.position.z = position.z + mov.z;
+
+            let rotation = this.scene.avatarOrientation.rotation.clone();
+            node.rotation.set(0, 0, 0);
+            /// TODO: quantize orientation angles if it starts ating funky because of float accuracy.
+            this.scene.avatarOrientation.rotation.x = rotation.x + rot.x * Math.PI / 2;
+            this.scene.avatarOrientation.rotation.z = rotation.z + rot.z * Math.PI / 2;
+
+            camera.shift(0, 0);
+            camera.setCenter(this.scene.avatar.position.x, this.scene.avatar.position.z);
+
+            this.scene.dirLight.target = this.scene.avatar;
         });
 
+        return [
+            t_rotation,
+            t_elevation,
+            t_move
+        ];
+
+    }
+
+    spawn(w: number, h: number, x: number, y: number) {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+
+        let lockPop = () => {
+            this.lock.pop();
+        };
+
+        const duration = SETTINGS.animationDuration * 4;
+        this.scene.avatar.position.set(x, 0, h - y);
+        this.scene.camera.setCenter(x, h - y);
+
+        let node = this.scene.avatarAnimation;
+
+        // --- fall down
+        node.position.set(0, 10, 0);
+        let fall = new TWEEN.Tween(node.position)
+            .to({ y: 0 }, duration)
+            .easing(TWEEN.Easing.Cubic.In)
+            .onComplete(lockPop);
+
+        // -- shake camera like shit
+        let camera = this.scene.camera;
+        const freq = 0.24;
+        let v = { v: 1 };
+        let bang = new TWEEN.Tween(v)
+            .to({ v: 0 }, duration)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .onUpdate(function () {
+                const h = this.v * Math.sin((new Date).getTime() * freq);
+                camera.shake(h);
+            })
+            .onComplete(lockPop);
+
         // --- start
+        // push for each tweens at once 
         this.lock.push();
-        t_elevation.start();
-
         this.lock.push();
-        t_move.start();
-
-        this.lock.push();
-        t_rotation.start();
+        fall.chain(bang).start();
 
         this.scene.startRendering();
     }
@@ -194,7 +279,7 @@ export class AvatarAnimations extends AnimationBase {
 
 /** Animation for the camera */
 export class CameraAnimations extends AnimationBase {
-    constructor(scene: Scene){
+    constructor(scene: Scene) {
         super(scene);
     }
 
@@ -209,7 +294,7 @@ export class CameraAnimations extends AnimationBase {
             this.lock.push();
         }
 
-        let camera = this.camera;
+        let camera = this.scene.camera;
 
         let angleFrom = camera.getAngle();
         let angleTo = angleFrom + ((d == CameraDirection.CW) ? -1 : +1) * Math.PI / 2;
@@ -230,7 +315,7 @@ export class CameraAnimations extends AnimationBase {
     }
 
     zoom(distanceDelta: number): void {
-        let camera = this.camera;
+        let camera = this.scene.camera;
 
         let zoomTo = camera.getZoom() + distanceDelta;
 

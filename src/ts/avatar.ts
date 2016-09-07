@@ -64,6 +64,8 @@ export class Avatar {
         };
 
         this.setTile(startTile);
+        const level = startTile.level;
+        this.game.scene.animations.avatar.spawn(level.width, level.height, startTile.col, startTile.row);
     }
 
     delegateState(d: AbsoluteDirection){
@@ -112,7 +114,9 @@ export class Avatar {
                 //? }
             },
             kill: target => {
-                console.warn('Died');
+                // console.warn('Died');
+                // this.game.scene.animations.avatar.move(d);
+                this.game.scene.animations.avatar.die(d);
             },
             finish: target => {
                 console.warn('Finished');
