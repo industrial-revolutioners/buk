@@ -209,15 +209,13 @@ export class AvatarAnimations extends AnimationBase {
             this.scene.avatar.position.x = position.x + mov.x;
             this.scene.avatar.position.z = position.z + mov.z;
 
-            let rotation = new THREE.Quaternion(); // this.scene.avatarOrientation.quaternion.clone();
+            let rotation = new THREE.Quaternion(); 
             node.rotation.set(0, 0, 0);
 
             rotation.setFromEuler(new THREE.Euler(rot.x * Math.PI / 2, 0, rot.z * Math.PI / 2));
             /// TODO: quantize orientation angles if it starts ating funky because of float accuracy.
 
             this.scene.avatarOrientation.quaternion.premultiply(rotation); 
-
-            // console.log("quaternion", this.scene.avatarOrientation.quaternion);
 
             camera.shift(0, 0);
             camera.setCenter(this.scene.avatar.position.x, this.scene.avatar.position.z);
