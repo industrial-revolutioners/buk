@@ -117,7 +117,7 @@ export class Scene extends Renderable {
         let avatarAnchor = new THREE.Object3D();
         this.avatarOrientation = new THREE.Object3D();
         this.avatarAnimation = new THREE.Object3D();
-        
+
         this.avatar.add(avatarAnchor);
         avatarAnchor.add(this.avatarAnimation);
         this.avatarAnimation.add(this.avatarOrientation);
@@ -158,29 +158,38 @@ export class Scene extends Renderable {
     }
 
     build(level: Level): void {
-        let ground: THREE.Object3D = this.objContainer.getObject("ground");
-        if (ground === undefined) {
-            throw "there is no ground model loaded";
-        }
         const lw = level.width;
         const lh = level.height;
 
         // -- build ground tiles
         let levelNode = new THREE.Object3D();
 
-        level.tileList.forEach((tile: Tiles.BaseTile) => {
-            const px = tile.col;
-            const py = level.height - tile.row;
+        level.tileList.forEach((tileObject: Tiles.BaseTile) => {
+            const px = tileObject.col;
+            const py = level.height - tileObject.row;
 
             let tileNode = new THREE.Object3D();
             levelNode.add(tileNode);
 
-            tileNode.add(ground.clone());
+            let tileName = "ground";
+
+            // if (tileObject instanceof Tiles.Tile){
+            //     if (tileObject instanceof Tiles.Gate){
+
+            //     }
+            // } else if (tileObject instanceof Tiles.Border){
+
+            // }
+
+            let tile = this.objContainer.getObject(tileName);
+
+            tileNode.add(tile.clone());
             tileNode.position.set(px, 0, py);
         });
 
         // -- build object atop of tiles
-
+        
+        let groundNode = new THREE.Object3D();
         // ... 
 
         // build scene
@@ -239,9 +248,11 @@ export class ObjectContainer {
             this.objects[object3d.name] = object3d;
         });
 
+        //? if(DEBUG){
         for (let i in this.objects) {
             console.log("object", i);
         }
+        //? }
     }
 }
 
