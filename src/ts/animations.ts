@@ -178,6 +178,7 @@ export class AvatarAnimations extends AnimationBase {
 
         const duration = SETTINGS.animationDuration;
         let node = this.scene.avatarAnimation;
+        let camera = this.scene.camera;
 
         // --- rotation
         node.rotation.set(0, 0, 0);
@@ -195,10 +196,11 @@ export class AvatarAnimations extends AnimationBase {
         // --- move
         let t_move = new TWEEN.Tween(node.position)
             .to({ x: mov.x, z: mov.z }, duration)
+            .onUpdate(function () {
+                camera.shift(this.x, this.z);
+            })
             .onComplete(lockPop);
 
-        // TODO kamerat mozgassa magaval
-        // TODO fenyeket mozgassa magaval
 
         let avatar = this.scene.avatar;
 
@@ -210,6 +212,11 @@ export class AvatarAnimations extends AnimationBase {
 
             avatar.position.x = position.x + mov.x;
             avatar.position.z = position.z + mov.z;
+            
+            camera.shift(0,0);
+            camera.setCenter(avatar.position.x, avatar.position.z);
+
+            this.scene.dirLight.target = this.scene.avatar;
         });
 
         return [
@@ -234,6 +241,7 @@ export class AvatarAnimations extends AnimationBase {
 
         const duration = SETTINGS.animationDuration * 4;
         this.scene.avatar.position.set(x, 0, h - y);
+        this.scene.camera.setCenter(x, h - y);
 
         let node = this.scene.avatarAnimation;
 

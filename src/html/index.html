@@ -19,13 +19,45 @@
                 <span id="cog" class="fa fa-cog fa-spin"></span>
             </span>
         </div>
-        <div id="loading-log"></div>
+        <div id="loading-log">Loading game core</div>
     </div>
-    <input type="checkbox" class="toggle-footer" id="go-fullscreen-area-toggle">
-    <footer id="go-fullscreen-area">
+
+    <div id="ui-layer" class="hidden">
+        <div id="logo">
+        <div id="logo-texts">
+            <h1>buk</h1>
+            <h2>a cube rolling puzzle</h2>
+        </div>
+        <svg id="logo-bg" viewBox="0 0 153.43 177.17">
+            <path fill="#f5f5f5" d="M76.715,0.0000055971,0.0000077861,44.291,76.715,88.583,153.43,44.291z"/>
+            <path fill="#e53935" d="M0.0000077861,132.87,76.715,177.17v-88.583l-76.715-44.296z"/>
+            <path fill="#1e88e5" d="m153.43,44.291-76.715,44.291,0,88.583,76.715-44.291z"/>
+        </svg>
+    </div>
+
+        <div id="menu">
+            <button id="btn-play">Play</button>
+            <label id="btn-settings" for="settings-toggle">Settings</label>
+            <label id="btn-about" for="about-toggle">About</label>
+            <span id="cc">IR - 2016</span>
+        </div>
+
+        <input type="checkbox" class="toggle" id="settings-toggle">
+        <div id="settings" class="screen">
+            <label for="settings-toggle">Burger</label>
+        </div>
+
+        <input type="checkbox" class="toggle" id="about-toggle">
+        <div id="about" class="screen">
+            <label for="about-toggle">Burger</label>
+        </div>
+    </div>
+
+    <input type="checkbox" class="toggle" id="go-fullscreen-area-toggle">
+    <div id="go-fullscreen-area">
         <button id="go-fullscreen">Go fullscreen</button>
         <label for="go-fullscreen-area-toggle">✕</label>
-    </footer>
+    </div>
     <div id="canvas-wrapper"></div>
     <script src="assets/main.js"></script>
 </body>

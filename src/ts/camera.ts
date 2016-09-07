@@ -115,16 +115,22 @@ export class CameraModel {
     }
 
     private angle: number;
+    private shiftCenter: THREE.Vector2 = new THREE.Vector2();
+
+    // TODO fix this miserable hack of mine 
 
     setViewAngle(phi: number) {
         this.angle = phi;
         const x = Math.cos(phi) * SETTINGS.cameraRotationRadius;
         const y = Math.sin(phi) * SETTINGS.cameraRotationRadius;
 
-        this.camera.position.x = this.center.x + x;
+        this.camera.position.x = this.center.x + x + this.shiftCenter.x;
         this.camera.position.y = this.height;
-        this.camera.position.z = this.center.z + y;
-        this.camera.lookAt(this.center);
+        this.camera.position.z = this.center.z + y + this.shiftCenter.y;
+        let ccenter = this.center.clone();
+        ccenter.x += this.shiftCenter.x;
+        ccenter.z += this.shiftCenter.y;
+        this.camera.lookAt(ccenter);
     }
 
     shake(h: number): void {
@@ -133,10 +139,15 @@ export class CameraModel {
         this.setViewAngle(this.angle);
     }
 
+    shift(x: number, y: number) {
+        this.shiftCenter.set(x, y);
+        this.setViewAngle(this.angle);
+    }
+
     setCenter(x: number, y: number) {
         this.center.x = x;
         this.center.z = y;
-        this.camera.lookAt(this.center);
+        this.setViewAngle(this.angle);
     }
 
     rotate(d: CameraDirection): void {

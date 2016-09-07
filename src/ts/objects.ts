@@ -93,7 +93,7 @@ export class Scene extends Renderable {
     public avatarAnimation: THREE.Object3D;
     private ground: THREE.Object3D;
 
-    private dirLight: THREE.DirectionalLight;
+    public dirLight: THREE.DirectionalLight;
     private ambientLight: THREE.AmbientLight;
 
     constructor(objContainer: ObjectContainer) {
@@ -125,6 +125,8 @@ export class Scene extends Renderable {
         this.dirLight.color.setHSL(0.1, 1, 0.95);
         this.dirLight.position.set(1, 1.25, -1);
         this.dirLight.position.multiplyScalar(50);
+
+        this.dirLight.target = this.avatar;
 
         this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
         this.ambientLight.color.setHSL(0.3, .3, 0.3);

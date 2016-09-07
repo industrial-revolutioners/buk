@@ -28,12 +28,13 @@ declare global {
 
 export class UserInterface {
     classes = {
-        invisible: 'invisible'
+        hidden: 'hidden'
     };
 
     elements = {
         html: document.documentElement,
         loading: dom.byId('loading'),
+        uiLayer: dom.byId('ui-layer'),
         loadLog: dom.byId('loading-log')
     };
     
@@ -101,8 +102,20 @@ export class UserInterface {
     }
 
     showLoading(state: boolean): void {
-        let className = this.classes.invisible;
+        let className = this.classes.hidden;
         let classList = this.elements.loading.classList;
+
+        if(state){
+            classList.remove(className);
+        }
+        else {
+            classList.add(className);
+        }
+    }
+
+    showUi(state: boolean): void {
+        let className = this.classes.hidden;
+        let classList = this.elements.uiLayer.classList;
 
         if(state){
             classList.remove(className);
