@@ -91,6 +91,7 @@ export class Scene extends Renderable {
     private objContainer: ObjectContainer;
     public avatar: THREE.Object3D;
     public avatarAnimation: THREE.Object3D;
+    public avatarOrientation: THREE.Object3D;
     private ground: THREE.Object3D;
 
     public dirLight: THREE.DirectionalLight;
@@ -104,19 +105,23 @@ export class Scene extends Renderable {
 
         this.registerHandlers();
 
-        /**
+        /** Scenegraph for avatar:
          * + this.avatar
          *  ++ Ancor node
          *   ++ Animation node
-         *    + Mesh
+         *    ++ Orientation node
+         *     + Mesh
          */
 
         this.avatar = new THREE.Object3D();
         let avatarAnchor = new THREE.Object3D();
+        this.avatarOrientation = new THREE.Object3D();
         this.avatarAnimation = new THREE.Object3D();
+        
         this.avatar.add(avatarAnchor);
         avatarAnchor.add(this.avatarAnimation);
-        this.avatarAnimation.add(this.objContainer.getObject("cube"));
+        this.avatarAnimation.add(this.avatarOrientation);
+        this.avatarOrientation.add(this.objContainer.getObject("cube"));
 
         avatarAnchor.position.set(0, .5, 0);
 
