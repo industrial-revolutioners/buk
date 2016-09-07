@@ -8,7 +8,10 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
+import {EventEmitter} from 'events';
+
 import {dom} from './utils';
+import {LevelDescription} from './levels';
 
 
 declare global {
@@ -26,7 +29,7 @@ declare global {
 }
 
 
-export class UserInterface {
+export class UserInterface extends EventEmitter {
     classes = {
         hidden: 'hidden'
     };
@@ -36,6 +39,10 @@ export class UserInterface {
         loading: dom.byId('loading'),
         uiLayer: dom.byId('ui-layer'),
         loadLog: dom.byId('loading-log')
+    };
+
+    screens = {
+        levels: dom.byId('levels')
     };
     
     buttons = {
@@ -47,6 +54,8 @@ export class UserInterface {
     };
 
     constructor(){
+        super();
+
         this.registerElementHandlers();
         this.registerButtonHandlers();
 
@@ -123,6 +132,39 @@ export class UserInterface {
         else {
             classList.add(className);
         }
+    }
+
+    loadLevelDescriptions(descriptions: LevelDescription[]){
+        let levels = this.screens.levels;
+
+        levels.innerHTML = '';
+
+        descriptions.forEach(level =>{
+            let card = document.createElement('div');
+            card.className = 'level-card';
+
+            let finished = document.createElement('span');
+            finished.className = 'star-finished fa';
+            level.finished ? finished.classList.add('fa-star') : finished.classList.add('fa-star-o');
+            card.appendChild(finished);
+
+            let bonus = document.createElement('span');
+            bonus.className = 'star-bonus fa';
+            level.bonus ? bonus.classList.add('fa-star') : bonus.classList.add('fa-star-o');
+            card.appendChild(bonus);
+
+            let steps = document.createElement('span');
+            steps.className = 'star-steps fa';
+            level.steps ? steps.classList.add('fa-star') : steps.classList.add('fa-star-o');
+            card.appendChild(steps);
+
+            let name = document.createElement('span');
+            name.className = 'level-name';
+            name.innerText = level.name;
+            card.appendChild(name);
+
+            levels.appendChild(card);
+        });
     }
 }
 

@@ -61,6 +61,10 @@ button {
   &:checked + div {
     transform: initial!important;
   }
+
+  &:checked ~ #overlay {
+    opacity: 1!important;
+  }
 }
 
 .hidden {

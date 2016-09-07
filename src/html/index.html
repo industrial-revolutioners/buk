@@ -36,10 +36,19 @@
     </div>
 
         <div id="menu">
-            <button id="btn-play">Play</button>
+            <label id="btn-play" for="levels-toggle">Play</label>
             <label id="btn-settings" for="settings-toggle">Settings</label>
             <label id="btn-about" for="about-toggle">About</label>
             <span id="cc">IR - 2016</span>
+        </div>
+
+        <input type="checkbox" class="toggle" id="levels-toggle">
+        <div id="levels-screen" class="screen">
+            <div class="screen-head">
+                <label for="levels-toggle"><span class="fa fa-times"></span></label>
+                <h1>Levels</h1>
+            </div>
+            <div id="levels" class="screen-body"></div>
         </div>
 
         <input type="checkbox" class="toggle" id="settings-toggle">
@@ -48,9 +57,17 @@
         </div>
 
         <input type="checkbox" class="toggle" id="about-toggle">
-        <div id="about" class="screen">
-            <label for="about-toggle">Burger</label>
+        <div id="about-screen" class="screen">
+            <div class="screen-head">
+                <label for="about-toggle"><span class="fa fa-times"></span></label>
+                <h1>About</h1>
+            </div>
+            <div id="about" class="screen-body">
+                <!-- @echo readme -->
+            </div>
         </div>
+
+        <div id="overlay"></div>
     </div>
 
     <input type="checkbox" class="toggle" id="go-fullscreen-area-toggle">

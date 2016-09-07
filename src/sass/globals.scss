@@ -1,7 +1,7 @@
-$font: 'Raleway', serif;
+$font: 'Raleway', sans-serif;
 $button-font-size: 14pt;
 $body-bg: #fbc02d;
-$modal-bg: #ffffff;
+$modal-bg: #f5f5f5;
 
 @mixin user-select($value) {
   -webkit-touch-callout: $value;

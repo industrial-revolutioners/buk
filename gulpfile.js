@@ -4,9 +4,12 @@ const browserify = require('browserify');
 const browserSync = require('browser-sync').create();
 const errorify = require('errorify');
 const File = require('vinyl');
+const fs = require('fs');
 const gulp = require('gulp');
+const marked = require('marked');
 const metascript = require('gulp-metascript');
 const path = require('path');
+const preprocess = require('gulp-preprocess');
 const sass = require('gulp-sass');
 const stream = require('stream');
 const through2 = require('through2');
@@ -23,12 +26,18 @@ const RELEASE_CONTEXT = {DEBUG: false};
 // html ------------------------------------------------------------------------
 gulp.task('build-html', () => {
     return gulp.src('./src/html/index.html')
+        .pipe(preprocess({
+            context: {readme: marked(fs.readFileSync('README.md', 'utf8'))}
+        }))
         .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('watch-html', ['build-html'], () => {
     return gulp.watch('./src/html/index.html', () => {
         return gulp.src('./src/html/index.html')
+            .pipe(preprocess({
+                context: {readme: marked(fs.readFileSync('README.md', 'utf8'))}
+            }))
             .pipe(gulp.dest('./dist'))
             .pipe(browserSync.stream({match: '**/*.html'}));
     });
