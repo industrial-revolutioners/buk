@@ -44,6 +44,7 @@ class Renderable extends EventEmitter {
         this.renderer.gammaOutput = true;
         this.renderer.shadowMap.enabled = SETTINGS.renderPipeline.shadow.enabled;
         this.renderer.shadowMap.renderReverseSided = false;
+
         SETTINGS.canvasWrapper.appendChild(this.renderer.domElement);
     }
 
@@ -126,22 +127,26 @@ export class Scene extends Renderable {
         avatarAnchor.position.set(0, .5, 0);
 
         // --- setup lights
-        this.dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        this.dirLight.color.setHSL(0.1, 1, 0.95);
+        this.dirLight = new THREE.DirectionalLight(0xcccccc, 1);
         this.dirLight.position.set(1, 1.25, -1);
         this.dirLight.position.multiplyScalar(50);
 
         this.dirLight.target = this.avatar;
 
-        this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
-        this.ambientLight.color.setHSL(0.3, .3, 0.3);
+        this.ambientLight = new THREE.AmbientLight(0x555555, 1);
 
         const shadowProps = SETTINGS.renderPipeline.shadow;
 
         if (shadowProps.enabled) {
+            //? if(DEBUG){
+            console.log("LightShadowProps:", shadowProps);
+            //? }
+
             this.dirLight.castShadow = true;
             this.dirLight.shadow.mapSize.width = shadowProps.map;
             this.dirLight.shadow.mapSize.height = shadowProps.map;
+
+            this.dirLight.shadow.camera.visible = true;
 
             let shadowCamera = <THREE.OrthographicCamera>(this.dirLight.shadow.camera);
             shadowCamera.left = -shadowProps.camera.view;
@@ -166,29 +171,32 @@ export class Scene extends Renderable {
 
         level.tileList.forEach((tileObject: Tiles.BaseTile) => {
             const px = tileObject.col;
-            const py = level.height - tileObject.row;
+            const py = /*level.height -*/ tileObject.row;
 
             let tileNode = new THREE.Object3D();
             levelNode.add(tileNode);
 
-            let tileName = "ground";
+            let tileName = "tile_" + tileObject.constructor.name.toLowerCase();
+            // console.log("tile", tileName, tileObject.row, tileObject.col);
 
-            // if (tileObject instanceof Tiles.Tile){
-            //     if (tileObject instanceof Tiles.Gate){
+            let tile: THREE.Mesh;
+            try {
+                tile = this.objContainer.getObject(tileName);
+            } catch (e) {
+                console.warn("Exception", e, tileName);
+            }
 
-            //     }
-            // } else if (tileObject instanceof Tiles.Border){
-
-            // }
-
-            let tile = this.objContainer.getObject(tileName);
+            if (tile === undefined) {
+                tile = this.objContainer.getObject("ground");
+                console.log("nincs", tileName);
+            }
 
             tileNode.add(tile.clone());
             tileNode.position.set(px, 0, py);
         });
 
         // -- build object atop of tiles
-        
+
         let groundNode = new THREE.Object3D();
         // ... 
 
@@ -210,15 +218,42 @@ export class ObjectContainer {
 
     private currentPalette = SETTINGS.palette[0];
 
-    public getObject(name: string) {
-        if (!this.objects.hasOwnProperty(name)) {
-            throw "Ther is no object3d named " + name;
+    public getObject(name: string): THREE.Mesh {
+        if (!this.objects.hasOwnProperty(name) && this.objects[name] instanceof THREE.Mesh) {
+            throw "There is no object named " + name;
         }
         else return this.objects[name];
     }
 
+    private duplicateObject(srcName: string, newname: string, overrideMaterial: Object) {
+        {
+            let dest = this.getObject(srcName).clone();
+            let materials = dest.material = <THREE.MultiMaterial>dest.material.clone();
+            this.overrideMaterials(materials.materials, overrideMaterial);
+            dest.name = newname;
+            this.objects[newname] = dest;
+        }
+    }
+
+    private overrideMaterials(materials: THREE.Material[], nameMap: Object) {
+        for (let i in materials) {
+            let material = <THREE.MeshLambertMaterial>materials[i];
+            if (this.currentPalette.hasOwnProperty(material.name) && nameMap.hasOwnProperty(material.name)) {
+                const newname = nameMap[material.name];
+                const color = this.currentPalette[newname];
+
+                console.log("Replace material color " + material.name + " -> " + newname);
+
+                material.color.set(color);
+                material.name = newname;
+
+            }
+        }
+    }
+
     private lookupMaterials(materials: THREE.Material[]) {
         for (let i in materials) {
+            // console.log("Material:", materials[i]);
             let material = <THREE.MeshLambertMaterial>materials[i];
             if (this.currentPalette.hasOwnProperty(material.name)) {
                 const color = this.currentPalette[material.name];
@@ -240,13 +275,33 @@ export class ObjectContainer {
             this.lookupMaterials(meshData.materials);
             let object3d = new THREE.Mesh(meshData.geometry, new THREE.MultiMaterial(meshData.materials))
 
-            object3d.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
+            object3d.castShadow = SETTINGS.renderPipeline.shadow.enabled;
             object3d.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
 
             object3d.name = objectData["name"];
 
             this.objects[object3d.name] = object3d;
         });
+
+        this.duplicateObject("ground", "tile_border", {
+            "ground.dark": "ground.light"
+        });
+
+        // 'start' - mindig sarga := sarga gate  
+        this.duplicateObject("ground", "tile_start", {
+            "ground.light": "avatar.yellow",
+            "ground.dark": "avatar.yellow"
+        });
+
+        // 'base' - sima tile
+
+        // 'gate' - ebbol minden szinre kell majd 
+
+        // 'finish' - ebbol minden szinre kell majd 
+        this.duplicateObject("ground", "tile_border", {
+            "ground.dark": "ground.light"
+        });
+        // 'bonus' - ebbol ketto kell + cserelni kell majd oket 
 
         //? if(DEBUG){
         for (let i in this.objects) {

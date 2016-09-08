@@ -209,16 +209,16 @@ export class AvatarAnimations extends AnimationBase {
             this.scene.avatar.position.x = position.x + mov.x;
             this.scene.avatar.position.z = position.z + mov.z;
 
-            let rotation = this.scene.avatarOrientation.rotation.clone();
+            let rotation = new THREE.Quaternion(); 
             node.rotation.set(0, 0, 0);
+
+            rotation.setFromEuler(new THREE.Euler(rot.x * Math.PI / 2, 0, rot.z * Math.PI / 2));
             /// TODO: quantize orientation angles if it starts ating funky because of float accuracy.
-            this.scene.avatarOrientation.rotation.x = rotation.x + rot.x * Math.PI / 2;
-            this.scene.avatarOrientation.rotation.z = rotation.z + rot.z * Math.PI / 2;
+
+            this.scene.avatarOrientation.quaternion.premultiply(rotation); 
 
             camera.shift(0, 0);
             camera.setCenter(this.scene.avatar.position.x, this.scene.avatar.position.z);
-
-            this.scene.dirLight.target = this.scene.avatar;
         });
 
         return [
@@ -242,8 +242,8 @@ export class AvatarAnimations extends AnimationBase {
         };
 
         const duration = SETTINGS.animationDuration * 4;
-        this.scene.avatar.position.set(x, 0, h - y);
-        this.scene.camera.setCenter(x, h - y);
+        this.scene.avatar.position.set(x, 0, /*h -*/ y);
+        this.scene.camera.setCenter(x, /*h -*/ y);
 
         let node = this.scene.avatarAnimation;
 
