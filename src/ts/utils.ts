@@ -47,7 +47,8 @@ export namespace concurrence {
         pop(): void {
             this.count--;
             if (this.count <= 0 && this.locked){
-                this.callback();    
+                this.callback();
+                this.setCallback(() => {});
                 this.locked = false;
             }
         }
