@@ -142,6 +142,10 @@ export class Gate extends Tile {
         }
         return false;
     }
+
+    getFaceName() : string{
+        return this.face.toString();
+    }
 }
 
 
