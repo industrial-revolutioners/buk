@@ -239,6 +239,12 @@ export class AvatarAnimations extends AnimationBase {
     }
 
     respawn(w: number, h: number, x: number, y: number): void {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
 
         // roll camera back
         const duration = SETTINGS.animationDuration * 4;
@@ -246,6 +252,8 @@ export class AvatarAnimations extends AnimationBase {
         let lockPop = () => {
             this.lock.pop();
         };
+        
+        // TODO forgast resetelje 
         
         let node = this.scene.avatarAnimation;
         node.position.set(0, 10, 0);
