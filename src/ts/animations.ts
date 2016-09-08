@@ -209,13 +209,13 @@ export class AvatarAnimations extends AnimationBase {
             this.scene.avatar.position.x = position.x + mov.x;
             this.scene.avatar.position.z = position.z + mov.z;
 
-            let rotation = new THREE.Quaternion(); 
+            let rotation = new THREE.Quaternion();
             node.rotation.set(0, 0, 0);
 
             rotation.setFromEuler(new THREE.Euler(rot.x * Math.PI / 2, 0, rot.z * Math.PI / 2));
             /// TODO: quantize orientation angles if it starts ating funky because of float accuracy.
 
-            this.scene.avatarOrientation.quaternion.premultiply(rotation); 
+            this.scene.avatarOrientation.quaternion.premultiply(rotation);
 
             camera.shift(0, 0);
             camera.setCenter(this.scene.avatar.position.x, this.scene.avatar.position.z);
@@ -229,7 +229,31 @@ export class AvatarAnimations extends AnimationBase {
 
     }
 
-    spawn(w: number, h: number, x: number, y: number) {
+    respawn(w: number, h: number, x: number, y: number): void {
+
+        // roll camera back
+        const duration = SETTINGS.animationDuration * 4;
+        let xy = this.scene.camera.getCenter();
+        let lockPop = () => {
+            this.lock.pop();
+        };
+        let rollback = new TWEEN.Tween()
+            .to({ x: x, y: y }, duration)
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .onComplete(lockPop);
+
+        // then start spwan animation
+        this.lock.setCallback(() => {
+            this.spawn(w, h, x, y);
+        });
+
+        this.lock.push();
+        rollback.start();
+
+        this.scene.startRendering();
+    }
+
+    win() : void {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
@@ -242,8 +266,38 @@ export class AvatarAnimations extends AnimationBase {
         };
 
         const duration = SETTINGS.animationDuration * 4;
-        this.scene.avatar.position.set(x, 0, /*h -*/ y);
-        this.scene.camera.setCenter(x, /*h -*/ y);
+
+        let node = this.scene.avatarAnimation;
+
+        // --- fall down
+        node.position.set(0, 0, 0);
+        let fall = new TWEEN.Tween(node.position)
+            .to({ y: 10 }, duration)
+            .easing(TWEEN.Easing.Cubic.In)
+            .onComplete(lockPop);
+
+        // --- start
+        this.lock.push();
+        fall.chain().start();
+
+        this.scene.startRendering();
+    }
+
+    spawn(w: number, h: number, x: number, y: number): void {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+
+        let lockPop = () => {
+            this.lock.pop();
+        };
+
+        const duration = SETTINGS.animationDuration * 4;
+        this.scene.avatar.position.set(x, 0, y);
+        this.scene.camera.setCenter(x, y);
 
         let node = this.scene.avatarAnimation;
 

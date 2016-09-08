@@ -144,6 +144,12 @@ export class CameraModel {
         this.setViewAngle(this.angle);
     }
 
+    getCenter() {
+        return {
+            x: this.center.x,
+            y: this.center.z
+        };
+    }
     setCenter(x: number, y: number) {
         this.center.x = x;
         this.center.z = y;
