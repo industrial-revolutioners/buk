@@ -16,6 +16,7 @@ import {EventEmitter} from 'events';
 import * as SETTINGS from './settings';
 import * as THREE from 'three';
 import * as Tiles from './tiles'
+import * as Avatar from './avatar'
 import {Animations} from './animations'
 import {CameraModel} from './camera'
 import {LevelObject, Level} from './levels'
@@ -177,19 +178,15 @@ export class Scene extends Renderable {
             levelNode.add(tileNode);
 
             let tileName = "tile_" + tileObject.constructor.name.toLowerCase();
-            // console.log("tile", tileName, tileObject.row, tileObject.col);
 
             let tile: THREE.Mesh;
-            try {
-                tile = this.objContainer.getObject(tileName);
-            } catch (e) {
-                console.warn("Exception", e, tileName);
+            if (tileObject instanceof Tiles.Finish) {
+                console.log("gate", tileObject.getFaceName());
+                const color = (<Tiles.Gate>tileObject).getFaceName();
+                tileName = tileName + "_" + color;
             }
 
-            if (tile === undefined) {
-                tile = this.objContainer.getObject("ground");
-                console.log("nincs", tileName);
-            }
+            tile = this.objContainer.getObject(tileName);
 
             tileNode.add(tile.clone());
             tileNode.position.set(px, 0, py);
@@ -219,7 +216,7 @@ export class ObjectContainer {
     private currentPalette = SETTINGS.palette[0];
 
     public getObject(name: string): THREE.Mesh {
-        if (!this.objects.hasOwnProperty(name) && this.objects[name] instanceof THREE.Mesh) {
+        if (!this.objects.hasOwnProperty(name)) {
             throw "There is no object named " + name;
         }
         else return this.objects[name];
@@ -241,9 +238,9 @@ export class ObjectContainer {
             if (this.currentPalette.hasOwnProperty(material.name) && nameMap.hasOwnProperty(material.name)) {
                 const newname = nameMap[material.name];
                 const color = this.currentPalette[newname];
-
+                //? if(DEBUG){
                 console.log("Replace material color " + material.name + " -> " + newname);
-
+                //? }
                 material.color.set(color);
                 material.name = newname;
 
@@ -289,19 +286,27 @@ export class ObjectContainer {
 
         // 'start' - mindig sarga := sarga gate  
         this.duplicateObject("ground", "tile_start", {
-            "ground.light": "avatar.yellow",
-            "ground.dark": "avatar.yellow"
+            "ground.dark": "avatar.yellow",
         });
 
         // 'base' - sima tile
+        this.duplicateObject("ground", "tile_tile", {});
 
         // 'gate' - ebbol minden szinre kell majd 
+        // TODO
 
-        // 'finish' - ebbol minden szinre kell majd 
-        this.duplicateObject("ground", "tile_border", {
-            "ground.dark": "ground.light"
-        });
-        // 'bonus' - ebbol ketto kell + cserelni kell majd oket 
+        // 'finish' - ebbol minden szinre kell majd
+        for (let k in Avatar.stringToAvatarFace) {
+            const v: number = Avatar.stringToAvatarFace[k];
+            // console.log("k, v", k, v);
+            this.duplicateObject("ground", "tile_finish_" + v, {
+                "ground.light": "avatar." + k,
+            });
+        }
+
+
+        // 'bonus' - ebbol ketto kell + cserelni kell majd oket
+        // TODO 
 
         //? if(DEBUG){
         for (let i in this.objects) {
