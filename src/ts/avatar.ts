@@ -41,7 +41,7 @@ export interface AvatarState {
     accept: (target: BaseTile) => void;
     kill: (target: BaseTile) => void;
     finish: (target: BaseTile) => void;
-    checkpoint: (target: BaseTile) => void;
+    bonus: (target: BaseTile) => void;
 }
 
 
@@ -112,10 +112,13 @@ export class Avatar {
             },
             kill: target => {
                 this.game.scene.animations.avatar.die(d);
-
+                this.game.died();
             },
             finish: target => {
                 console.warn('Finished');
+            },
+            bonus: target => {
+                this.game.addBonus();
             }
         }
     }

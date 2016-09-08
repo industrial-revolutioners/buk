@@ -12,12 +12,18 @@ import {EventEmitter} from 'events';
 
 import {dom} from './utils';
 import {LevelDescription} from './levels';
+import {settingsStorage} from './settings';
 
 
 declare global {
     interface HTMLElement {
         mozRequestFullScreen?(): void;
         msRequestFullscreen?(): void;
+    }
+
+    interface DOMStringMap {
+        current: any;
+        total: any;
     }
 
     interface Document {
@@ -43,7 +49,10 @@ export class UserInterface extends EventEmitter {
         html: document.documentElement,
         loading: dom.byId('loading'),
         uiLayer: dom.byId('ui-layer'),
-        loadLog: dom.byId('loading-log')
+        gameLayer: dom.byId('game-layer'),
+        loadLog: dom.byId('loading-log'),
+        stepCounter: dom.byId('step-counter'),
+        bonusCounter: dom.byId('bonus-counter')
     };
 
     screens = {
@@ -52,22 +61,55 @@ export class UserInterface extends EventEmitter {
     
     buttons = {
         goFullscreen: dom.byId('go-fullscreen'),
-        resetGame: dom.byId('reset-game')
+        resetGame: dom.byId('reset-game'),
+        saveSettings: dom.byId('save-settings')
+    };
 
+    inputs = {
+        swapRotation: <HTMLInputElement>dom.byId('swap-rotation'),
+        antialias: <HTMLInputElement>dom.byId('antialias'),
+        ssao: <HTMLInputElement>dom.byId('ssao'),
+        shadow: <HTMLInputElement>dom.byId('shadow')
     };
 
     toggles = {
         goFullscreen: <HTMLInputElement>dom.byId('go-fullscreen-area-toggle')
     };
 
+    private reloadRequired = false;
+
     constructor(){
         super();
 
         this.registerElementHandlers();
         this.registerButtonHandlers();
+        this.loadSettings();
+        this.registerInputHandlers();
 
         this.showGoFullscreenArea();
     };
+
+    loadSettings(): void {
+        this.inputs.swapRotation.checked = settingsStorage.get('swapRotation');
+        this.inputs.antialias.checked = settingsStorage.get('antialias');
+        this.inputs.ssao.checked = settingsStorage.get('ssao');
+
+        let shadow = this.inputs.shadow;
+        let shadowEnabled = settingsStorage.get('shadowEnabled');
+        let shadowMap = settingsStorage.get('shadowMap');
+
+        if(!shadowEnabled){
+            shadow.value = 'off';
+        }
+        else {
+            if(shadowMap >= 2000){
+                shadow.value = 'high';
+            }
+            else {
+                shadow.value = 'low';
+            }
+        }
+    }
 
     registerElementHandlers(): void {
         let showArea = () => {
@@ -95,6 +137,51 @@ export class UserInterface extends EventEmitter {
             if(confirmed){
                 this.emit(UIEvents.RESET_SETTINGS);
             }
+        };
+
+        buttons.saveSettings.onclick = () => {
+            if(this.reloadRequired){
+                alert('The game will restart for the new settings to take effect');
+                window.location.reload();
+            }
+        }
+    }
+
+    registerInputHandlers(): void {
+        var self = this;
+
+        this.inputs.swapRotation.onchange = function(){
+            settingsStorage.set('swapRotation', this.checked);
+            self.reloadRequired = true;
+        };
+
+        this.inputs.antialias.onchange = function(){
+            settingsStorage.set('antialias', this.checked);
+            self.reloadRequired = true;
+        };
+
+        this.inputs.ssao.onchange = function(){
+            settingsStorage.set('ssao', this.checked);
+            self.reloadRequired = true;
+        };
+
+        this.inputs.shadow.onchange = function(){
+            switch(this.value){
+                case 'off':
+                    settingsStorage.set('shadowEnabled', false);
+                    break;
+                case 'low':
+                    settingsStorage.set('shadowEnabled', true);
+                    settingsStorage.set('shadowMap', 1000);
+                    break;
+                case 'high':
+                    settingsStorage.set('shadowEnabled', true);
+                    settingsStorage.set('shadowMap', 2000);
+                    break;
+                default:
+                    throw new Error(`Invalid value ${this.value}`);
+            }
+            self.reloadRequired = true;
         }
     }
 
@@ -152,6 +239,18 @@ export class UserInterface extends EventEmitter {
         }
     }
 
+    showGameUi(state: boolean): void {
+        let className = this.classes.hidden;
+        let classList = this.elements.gameLayer.classList;
+
+        if(state){
+            classList.remove(className);
+        }
+        else {
+            classList.add(className);
+        }
+    }
+
     loadLevelDescriptions(descriptions: LevelDescription[]){
         let levels = this.screens.levels;
 
@@ -162,18 +261,15 @@ export class UserInterface extends EventEmitter {
             card.className = 'level-card';
 
             let finished = document.createElement('span');
-            finished.className = 'star-finished fa';
-            level.finished ? finished.classList.add('fa-star') : finished.classList.add('fa-star-o');
+            finished.className = 'star-finished fa fa-star';
             card.appendChild(finished);
 
             let bonus = document.createElement('span');
-            bonus.className = 'star-bonus fa';
-            level.bonus ? bonus.classList.add('fa-star') : bonus.classList.add('fa-star-o');
+            bonus.className = 'star-bonus fa fa-star';
             card.appendChild(bonus);
 
             let steps = document.createElement('span');
-            steps.className = 'star-steps fa';
-            level.steps ? steps.classList.add('fa-star') : steps.classList.add('fa-star-o');
+            steps.className = 'star-steps fa fa-star';
             card.appendChild(steps);
 
             let name = document.createElement('span');
@@ -188,7 +284,22 @@ export class UserInterface extends EventEmitter {
             }
         });
     }
+
+    bonusCounter(current: number, total: number): void {
+        let dataset = this.elements.bonusCounter.dataset;
+
+        dataset.current = current;
+        dataset.total = total;
+    }
+
+    stepCounter(current: number, total: number): void {
+        let dataset = this.elements.stepCounter.dataset;
+
+        dataset.current = current;
+        dataset.total = total;
+    }
 }
+
 
 export function bootstrap(): Promise<UserInterface>{
     return new Promise((resolve, reject) => {

@@ -165,7 +165,7 @@ export class Bonus extends Gate {
         if(success){
             if(!this.reached){
                 this.reached = true;
-                state.checkpoint(this);
+                state.bonus(this);
             }
         }
 

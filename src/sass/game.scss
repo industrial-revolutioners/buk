@@ -1,0 +1,19 @@
+#game-layer {
+  &.hidden {
+    display: none;
+  }
+
+  display: flex;
+
+  #step-counter {
+    &::before {
+      content: 'Steps: ' attr(data-current) '/' attr(data-total);
+    }
+  }
+
+  #bonus-counter {
+    &::before {
+      content: 'Bonus: ' attr(data-current) '/' attr(data-total);
+    }
+  }
+}

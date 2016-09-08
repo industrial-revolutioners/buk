@@ -64,6 +64,7 @@
   }
 
   .screen-head {
+    display: flex;
     border-bottom: 2px solid black;
     background: #f5f5f5;
 
@@ -71,8 +72,7 @@
       cursor: pointer;
       font-size: 24pt;
       line-height: 28pt;
-      float: left;
-      border-right: 2px solid black;
+      border-left: 2px solid black;
       padding: 0 4pt;
 
       &:active {
@@ -86,6 +86,7 @@
       font-size: 24pt;
       line-height: 28pt;
       text-align: center;
+      width: 100%;
     }
   }
 
@@ -107,10 +108,11 @@
       margin: 1vw;
       box-sizing: border-box;
       border: 2px solid rgba(0, 0, 0, 0.5);
+      cursor: pointer;
 
       .fa {
         position: absolute;
-        opacity: 0.4;
+        opacity: 0.2;
         font-size: 6vw;
       }
 

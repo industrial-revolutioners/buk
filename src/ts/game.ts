@@ -17,7 +17,9 @@ import {settingsStorage} from './settings';
 
 export const GameEvents = {
     level: {
-        loaded: 'level.loaded'
+        loaded: 'level.loaded',
+        bonus: 'level.bonus',
+        step: 'level.step'
     },
     storage: {
         clear: 'storage.clear'
@@ -28,7 +30,13 @@ export class Game extends EventEmitter{
     private avatar: Avatar;
     private levels: LevelContainer;
     private storage = new Storage('game');
+    private swapRotation: boolean = settingsStorage.get('swapRotation');
     public scene: Scene;
+
+    private activeLevel: Level;
+    private bonus = 0;
+    private steps = 0;
+    private isActive = false;
 
     constructor(levels: LevelContainer, scene: Scene){
         super();
@@ -54,43 +62,64 @@ export class Game extends EventEmitter{
     }
 
     loadLevel(level: Level){
-        //? if(DEBUG){
-        console.log(`Loading ${level.name}`);
-        //? }
-
         this.scene.build(level);
 
         this.avatar = new Avatar(this, level.startTile);
+        this.activeLevel = level;
 
         this.emit(GameEvents.level.loaded, level);
+        this.isActive = true;
     }
 
     moveAvatar(e: ControlEvent): void {
-        if(!this.scene.animations.isAnimationRunning()){
+        if(this.isActive && !this.scene.animations.isAnimationRunning()){
             let avatar = this.avatar;
 
             if(!this.avatar){
                 throw new Error('No avatar exist')
             }
             else {
+                this.steps++;
                 avatar.move(this.scene.camera.toAbsoluteDirection(e));
+                this.emit(GameEvents.level.step, this.steps, this.activeLevel.steps);
             }
         }
     }
 
     rotateCamera(e: CameraDirectionEvent): void {
-        if(!this.scene.animations.isAnimationRunning()){
+        if(this.isActive && !this.scene.animations.isAnimationRunning()){
+            if(this.swapRotation){
+                e.direction = e.direction === 0 ? 1: 0;
+            }
+
             this.scene.animations.camera.rotate(e.direction);
         }
     }
 
     zoomCamera(e: CameraAttributeEvent): void {
-        this.scene.animations.camera.zoom(e.value);
+        if(this.isActive){
+            this.scene.animations.camera.zoom(e.value);
+        }
     }
 
-    reset(): void {
+    resetSettings(): void {
         settingsStorage.clear();
         this.storage.clear();
         this.emit(GameEvents.storage.clear);
+    }
+
+    died(): void {
+        setTimeout(() => {
+            let level = this.activeLevel;
+
+            level.reset();
+            this.avatar = new Avatar(this, level.startTile);
+        }, 10000);
+    }
+
+    addBonus(): void {
+        this.bonus++;
+
+        this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
     }
 }

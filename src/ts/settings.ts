@@ -67,7 +67,6 @@ export const cameraHeight = 5;
 
 export const animationDuration = 250;
 
-
 export const paths = {
     levels: './assets/levels.json',
     objects: './assets/objects.json'
@@ -92,3 +91,4 @@ const paletteDefault = {
 
 export const palette = [paletteDefault];
 
+export const loadDelay = 250;
