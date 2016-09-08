@@ -246,6 +246,10 @@ export class AvatarAnimations extends AnimationBase {
         let lockPop = () => {
             this.lock.pop();
         };
+        
+        let node = this.scene.avatarAnimation;
+        node.position.set(0, 10, 0);
+
         let rollback = new TWEEN.Tween()
             .to({ x: x, y: y }, duration)
             .easing(TWEEN.Easing.Cubic.InOut)
