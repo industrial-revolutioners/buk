@@ -61,8 +61,16 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         game.loadLevel(levels.getLevelByName(name));
     });
 
+    ui.on(UI.UIEvents.RESET_SETTINGS, () => {
+        game.reset();
+    });
+
     game.on(Game.GameEvents.level.loaded, () => {
         ui.showUi(false);
+    });
+
+    game.on(Game.GameEvents.storage.clear, () => {
+        window.location.reload();
     });
 
     ui.showLoading(false);

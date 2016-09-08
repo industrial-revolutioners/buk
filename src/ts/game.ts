@@ -12,16 +12,22 @@ import {Avatar} from "./avatar";
 import {ControlEvent, CameraDirectionEvent, CameraAttributeEvent, events, input} from './input';
 import {Level, LevelContainer} from './levels';
 import {Scene, RenderableEvents} from './objects';
+import {Storage} from './utils';
+import {settingsStorage} from './settings';
 
 export const GameEvents = {
     level: {
         loaded: 'level.loaded'
+    },
+    storage: {
+        clear: 'storage.clear'
     }
 };
 
 export class Game extends EventEmitter{
     private avatar: Avatar;
     private levels: LevelContainer;
+    private storage = new Storage('game');
     public scene: Scene;
 
     constructor(levels: LevelContainer, scene: Scene){
@@ -80,5 +86,11 @@ export class Game extends EventEmitter{
 
     zoomCamera(e: CameraAttributeEvent): void {
         this.scene.animations.camera.zoom(e.value);
+    }
+
+    reset(): void {
+        settingsStorage.clear();
+        this.storage.clear();
+        this.emit(GameEvents.storage.clear);
     }
 }

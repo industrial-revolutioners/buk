@@ -29,7 +29,8 @@ declare global {
 }
 
 export let UIEvents = {
-    LOAD_LEVEL: 'UIEvents.loadLevel'
+    LOAD_LEVEL: 'UIEvents.loadLevel',
+    RESET_SETTINGS: 'UIEvents.resetSettings'
 };
 
 
@@ -50,7 +51,9 @@ export class UserInterface extends EventEmitter {
     };
     
     buttons = {
-        goFullscreen: dom.byId('go-fullscreen')
+        goFullscreen: dom.byId('go-fullscreen'),
+        resetGame: dom.byId('reset-game')
+
     };
 
     toggles = {
@@ -82,6 +85,17 @@ export class UserInterface extends EventEmitter {
         buttons.goFullscreen.onclick = () => {
             this.goFullscreen();
         };
+
+        buttons.resetGame.onclick = () => {
+            let confirmed = confirm(
+                'This will erase levels and game settings.\n\n' +
+                'Are you sure you want to reset the game?'
+            );
+
+            if(confirmed){
+                this.emit(UIEvents.RESET_SETTINGS);
+            }
+        }
     }
 
     showGoFullscreenArea(): void {
@@ -174,8 +188,6 @@ export class UserInterface extends EventEmitter {
             }
         });
     }
-
-
 }
 
 export function bootstrap(): Promise<UserInterface>{
