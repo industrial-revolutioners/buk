@@ -58,8 +58,11 @@ interface LevelJson {
 /**
  * LevelDescription objects are used by the UI to show the level list
  */
-interface LevelDescription {
+export interface LevelDescription {
     name: string;
+    finished: boolean;
+    bonus: boolean;
+    steps: boolean;
 }
 
 

@@ -65,3 +65,41 @@ export namespace dom {
         return document.getElementById(selector);
     }
 }
+
+export class Storage {
+    private name: string;
+
+    constructor(name: string){
+        this.name = name;
+
+        let storage = window.localStorage[name];
+        if(storage === undefined){
+            window.localStorage[name] = JSON.stringify({});
+        }
+    }
+
+    get(key: string, defaultValue: any=undefined): any{
+        let storage = JSON.parse(window.localStorage[this.name]);
+        let value = storage[key];
+
+        if(value === undefined){
+            value = defaultValue;
+            if(value !== undefined){
+                storage[key] = value;
+                window.localStorage[this.name] = JSON.stringify(storage);
+            }
+        }
+
+        return value;
+    }
+
+    set(key: string, value: any): void {
+        let storage = JSON.parse(window.localStorage[this.name]);
+        storage[key] = value;
+        window.localStorage[this.name] = JSON.stringify(storage);
+    }
+
+    clear(): void{
+        delete window.localStorage[this.name];
+    }
+}

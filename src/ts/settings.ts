@@ -8,31 +8,36 @@
 
 /// <reference path="../../typings/index.d.ts" />
 import { WebGLRendererParameters } from 'three';
+import { Storage } from './utils';
+
+export let settingsStorage = new Storage('settings');
 
 export let rendererSettings: WebGLRendererParameters = {
     alpha: true,
-    antialias: true
+    antialias: settingsStorage.get('antialias', true)
 };
 
 export const renderPipeline = {
     ssao: {
-        enabled: false
+        enabled: settingsStorage.get('ssaoEnabled', false)
     },
     shadow: {
-        enabled: true,
-        map: 2048,
+        enabled: settingsStorage.get('shadowEnabled', true),
+        map: settingsStorage.get('shadowMap', 2000),
         camera : {
             view: 5,
             // near: 5,
             far: 350
         }
     }
-}
+};
 
 export let canvasWrapper: HTMLElement = document.getElementById('canvas-wrapper');
 
 // Touch is in the rotate area if `touchX >= height * rotateAreaY`
 export const rotateAreaY = 0.90;
+
+export const swapRotation = settingsStorage.get('swapRotation', false);
 
 // Unit is pixel
 export const rotateSwipeThreshold = 30;
@@ -62,7 +67,6 @@ export const cameraHeight = 5;
 
 export const animationDuration = 250;
 
-
 export const paths = {
     levels: './assets/levels.json',
     objects: './assets/objects.json'
@@ -83,7 +87,8 @@ const paletteDefault = {
     "ground.dark" : 0x546E7A
 
     // ... 
-}
+};
 
 export const palette = [paletteDefault];
 
+export const loadDelay = 250;

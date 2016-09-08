@@ -24,33 +24,110 @@
 
     <div id="ui-layer" class="hidden">
         <div id="logo">
-        <div id="logo-texts">
-            <h1>buk</h1>
-            <h2>a cube rolling puzzle</h2>
+            <div id="logo-texts">
+                <h1>buk</h1>
+                <h2>a cube rolling puzzle</h2>
+            </div>
+            <svg id="logo-bg" viewBox="0 0 153.43 177.17">
+                <path fill="#f5f5f5" d="M76.715,0.0000055971,0.0000077861,44.291,76.715,88.583,153.43,44.291z"/>
+                <path fill="#e53935" d="M0.0000077861,132.87,76.715,177.17v-88.583l-76.715-44.296z"/>
+                <path fill="#1e88e5" d="m153.43,44.291-76.715,44.291,0,88.583,76.715-44.291z"/>
+            </svg>
         </div>
-        <svg id="logo-bg" viewBox="0 0 153.43 177.17">
-            <path fill="#f5f5f5" d="M76.715,0.0000055971,0.0000077861,44.291,76.715,88.583,153.43,44.291z"/>
-            <path fill="#e53935" d="M0.0000077861,132.87,76.715,177.17v-88.583l-76.715-44.296z"/>
-            <path fill="#1e88e5" d="m153.43,44.291-76.715,44.291,0,88.583,76.715-44.291z"/>
-        </svg>
-    </div>
 
         <div id="menu">
-            <button id="btn-play">Play</button>
+            <label id="btn-play" for="levels-toggle">Play</label>
             <label id="btn-settings" for="settings-toggle">Settings</label>
             <label id="btn-about" for="about-toggle">About</label>
             <span id="cc">IR - 2016</span>
         </div>
 
+        <input type="checkbox" class="toggle" id="levels-toggle">
+        <div id="levels-screen" class="screen">
+            <div class="screen-head">
+                <h1>Levels</h1>
+                <label for="levels-toggle"><span class="fa fa-times"></span></label>
+            </div>
+            <div id="levels" class="screen-body"></div>
+        </div>
+
         <input type="checkbox" class="toggle" id="settings-toggle">
-        <div id="settings" class="screen">
-            <label for="settings-toggle">Burger</label>
+        <div id="settings-screen" class="screen">
+            <div class="screen-head">
+                <h1>Settings</h1>
+                <label for="settings-toggle" id="save-settings"><span class="fa fa-times"></span></label>
+            </div>
+            <div id="settings" class="screen-body">
+                <div id="control-settings" class="section">
+                    <h1><span>Controls</span></h1>
+                    <div class="section-body">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><label for="swap-rotation">Swap camera rotation</label></td>
+                                    <td><input type="checkbox" id="swap-rotation"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="graphics-settings" class="section">
+                    <h1><span>Graphics</span></h1>
+                    <div class="section-body">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><label for="antialias">Anti-aliasing</label></td>
+                                    <td><input type="checkbox" id="antialias"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="ssao">SSAO</label></td>
+                                    <td><input type="checkbox" id="ssao"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="shadow">Shadow quality</label></td>
+                                    <td>
+                                        <select id="shadow">
+                                            <option value="off">Off</option>
+                                            <option value="low">Low</option>
+                                            <option value="high">High</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="game-settings" class="section">
+                    <h1><span>Game</span></h1>
+                    <div class="section-body">
+                        <button id="reset-game">Reset the game</button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <input type="checkbox" class="toggle" id="about-toggle">
-        <div id="about" class="screen">
-            <label for="about-toggle">Burger</label>
+        <div id="about-screen" class="screen">
+            <div class="screen-head">
+                <h1>About</h1>
+                <label for="about-toggle"><span class="fa fa-times"></span></label>
+            </div>
+            <div id="about" class="screen-body">
+                <!-- @echo readme -->
+            </div>
         </div>
+
+        <div id="overlay"></div>
+    </div>
+
+    <div id="game-layer" class="hidden">
+        <div id="step-counter"></div>
+        <div id="bonus-counter"></div>
+        <span class="fa fa-arrow-left"></span>
     </div>
 
     <input type="checkbox" class="toggle" id="go-fullscreen-area-toggle">

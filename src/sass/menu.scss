@@ -1,5 +1,6 @@
 #menu {
   position: fixed;
+  z-index: 10;
   box-sizing: border-box;
 
   display: flex;
@@ -46,16 +47,123 @@
 
 .screen {
   position: fixed;
-  left: 50%;
-  width: 50%;
+  left: 36%;
+  width: 64%;
   height: 100%;
   z-index: 20;
   background: white;
   transform: translateY(100%);
   transition: 0.4s ease transform;
+  border-left: 2px solid black;
+  border-top: 2px solid black;
 
   @media (max-width: 420px){
     width: 100%;
     left: 0;
+    border-left: none;
+  }
+
+  .screen-head {
+    display: flex;
+    border-bottom: 2px solid black;
+    background: #f5f5f5;
+
+    label {
+      cursor: pointer;
+      font-size: 24pt;
+      line-height: 28pt;
+      border-left: 2px solid black;
+      padding: 0 4pt;
+
+      &:active {
+        color: #f5f5f5;
+        background: black;
+      }
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24pt;
+      line-height: 28pt;
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  .screen-body {
+    overflow-y: auto;
+    height: calc(100% - 44pt - 4px);
+  }
+
+  #levels {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: space-around;
+
+    .level-card {
+      position: relative;
+      width: 18vw;
+      height: 18vw;
+      margin: 1vw;
+      box-sizing: border-box;
+      border: 2px solid rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+
+      .fa {
+        position: absolute;
+        opacity: 0.2;
+        font-size: 6vw;
+      }
+
+      .star-finished {
+        width: 100%;
+        text-align: center;
+        top: 4pt;
+      }
+
+      .star-bonus {
+        top: 7vw;
+        left: 8pt;
+      }
+
+      .star-steps {
+        top: 7vw;
+        right: 8pt;
+      }
+
+      @media (max-width: 420px){
+        width: 30vw;
+        height: 30vw;
+
+        .fa {
+          font-size: 10vw;
+        }
+
+        .star-bonus {
+          top: 12vw;
+        }
+
+        .star-steps {
+          top: 12vw;
+        }
+      }
+
+      .level-name {
+        position: absolute;
+        bottom: 0;
+        font-size: 16pt;
+        width: 100%;
+        text-align: center;
+
+        &:before {
+          content: '#';
+        }
+      }
+    }
+  }
+
+  #about {
+    padding: 8pt;
   }
 }

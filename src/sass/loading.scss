@@ -3,7 +3,6 @@
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
-  width: 25%;
 
   h1 {
     font-size: 32pt;
@@ -45,6 +44,11 @@
     #cog {
       color: $body-bg;
     }
+  }
+
+  #loading-title {
+    width: 100pt;
+    margin: auto;
   }
 
   #loading-log {
