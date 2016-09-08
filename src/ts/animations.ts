@@ -89,6 +89,13 @@ export class AvatarAnimations extends AnimationBase {
     }
 
     move(d: AbsoluteDirection) {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+
         let tweens = this.setupTweens(d);
         tweens.forEach((tween: TWEEN.Tween) => {
             this.lock.push();
@@ -98,11 +105,20 @@ export class AvatarAnimations extends AnimationBase {
         this.scene.startRendering();
     }
 
-    die(d: any): void {
+    die(d: AbsoluteDirection, callback?: () => void): void {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
+
         let tweens = this.setupTweens(d);
 
         const duration = SETTINGS.animationDuration * 4;
         let node = this.scene.avatarAnimation;
+
+        this.lock.setCallback(callback);
 
         node.position.set(0, 0, 0);
         let die = new TWEEN.Tween(node.position)
@@ -165,13 +181,6 @@ export class AvatarAnimations extends AnimationBase {
     }
 
     private setupMoveTweens(mov: Direction, rot: Direction): TWEEN.Tween[] {
-        if (this.lock.isLocked()) {
-            //? if(DEBUG){
-            console.info("locked");
-            //? }
-            return;
-        }
-
         let lockPop = () => {
             this.lock.pop();
         };
@@ -253,13 +262,15 @@ export class AvatarAnimations extends AnimationBase {
         this.scene.startRendering();
     }
 
-    win() : void {
+    win(callback?: () => void): void {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
             //? }
             return;
         }
+
+        this.lock.setCallback(callback);
 
         let lockPop = () => {
             this.lock.pop();
