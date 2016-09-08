@@ -242,8 +242,8 @@ export class AvatarAnimations extends AnimationBase {
         };
 
         const duration = SETTINGS.animationDuration * 4;
-        this.scene.avatar.position.set(x, 0, h - y);
-        this.scene.camera.setCenter(x, h - y);
+        this.scene.avatar.position.set(x, 0, /*h -*/ y);
+        this.scene.camera.setCenter(x, /*h -*/ y);
 
         let node = this.scene.avatarAnimation;
 
