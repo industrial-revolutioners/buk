@@ -122,7 +122,7 @@ export class AvatarAnimations extends AnimationBase {
 
         node.position.set(0, 0, 0);
         let die = new TWEEN.Tween(node.position)
-            .to({ y: -10 }, duration)
+            .to({ y: -1 }, duration)
             .easing(TWEEN.Easing.Cubic.Out)
             .onComplete(() => {
                 this.lock.pop();
@@ -238,79 +238,8 @@ export class AvatarAnimations extends AnimationBase {
 
     }
 
-    respawn(w: number, h: number, x: number, y: number): void {
-        if (this.lock.isLocked()) {
-            //? if(DEBUG){
-            console.info("locked");
-            //? }
-            return;
-        }
 
-        // roll camera back
-        const duration = SETTINGS.animationDuration * 4;
-        let xy = this.scene.camera.getCenter();
-
-        // TODO forgast resetelje 
-
-        let node = this.scene.avatarAnimation;
-        node.position.set(0, 10, 0);
-
-        let cica = { x: 0, y: 0 };
-        let rollback = new TWEEN.Tween(cica)
-            .to({ x: x, y: y }, duration)
-            .easing(TWEEN.Easing.Cubic.InOut)
-            .onUpdate(function () {
-                
-            })
-            .onComplete(() => {
-                this.lock.pop();
-                
-            });
-
-        // then start spwan animation
-        this.lock.setCallback(() => {
-            this.spawn(w, h, x, y);
-        });
-
-        this.lock.push();
-        rollback.start();
-
-        this.scene.startRendering();
-    }
-
-    win(callback?: () => void): void {
-        if (this.lock.isLocked()) {
-            //? if(DEBUG){
-            console.info("locked");
-            //? }
-            return;
-        }
-
-        this.lock.setCallback(callback);
-
-        let lockPop = () => {
-            this.lock.pop();
-        };
-
-        const duration = SETTINGS.animationDuration * 4;
-
-        let node = this.scene.avatarAnimation;
-
-        // --- fall down
-        node.position.set(0, 0, 0);
-        let fall = new TWEEN.Tween(node.position)
-            .to({ y: 10 }, duration)
-            .easing(TWEEN.Easing.Cubic.In)
-            .onComplete(lockPop);
-
-        // --- start
-        this.lock.push();
-        fall.chain().start();
-
-        this.scene.startRendering();
-    }
-
-    spawn(w: number, h: number, x: number, y: number): void {
+    spawn(x: number, y: number, respawn: boolean): void {
         if (this.lock.isLocked()) {
             //? if(DEBUG){
             console.info("locked");
@@ -326,9 +255,26 @@ export class AvatarAnimations extends AnimationBase {
         const q = new THREE.Quaternion();
         this.scene.avatarOrientation.quaternion.set(q.x, q.y, q.z, q.w);
         this.scene.avatar.position.set(x, 0, y);
-        this.scene.camera.setCenter(x, y);
 
         let node = this.scene.avatarAnimation;
+        let camera = this.scene.camera;
+
+        // reset camera position on respawn
+        let rollback: TWEEN.Tween;
+        let camPos = camera.getCenter();
+
+        if (respawn) {
+            console.log("campos", x, y, camPos.x, camPos.y);
+            rollback = new TWEEN.Tween(camPos)
+                .to({ x: x, y: y }, duration)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(function () {
+                    camera.setCenter(this.x, this.y);
+                })
+                .onComplete(lockPop);
+        } else {
+            this.scene.camera.setCenter(x, y);
+        }
 
         // --- fall down
         node.position.set(0, 10, 0);
@@ -338,7 +284,7 @@ export class AvatarAnimations extends AnimationBase {
             .onComplete(lockPop);
 
         // -- shake camera like shit
-        let camera = this.scene.camera;
+
         const freq = 0.24;
         let v = { v: 1 };
         let bang = new TWEEN.Tween(v)
@@ -351,10 +297,15 @@ export class AvatarAnimations extends AnimationBase {
             .onComplete(lockPop);
 
         // --- start
-        // push for each tweens at once 
+        // push for each tweens at once
         this.lock.push();
         this.lock.push();
-        fall.chain(bang).start();
+        if (respawn) {
+            this.lock.push();
+            fall.chain(bang).start();
+        } else {
+            fall.chain(bang).start();
+        }
 
         this.scene.startRendering();
     }
