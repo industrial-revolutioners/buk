@@ -269,7 +269,6 @@ export class AvatarAnimations extends AnimationBase {
 
         // then start spwan animation
         this.lock.setCallback(() => {
-            
             this.spawn(w, h, x, y);
         });
 
@@ -324,7 +323,8 @@ export class AvatarAnimations extends AnimationBase {
         };
 
         const duration = SETTINGS.animationDuration * 4;
-        this.scene.avatarOrientation.quaternion = new THREE.Quaternion();
+        const q = new THREE.Quaternion();
+        this.scene.avatarOrientation.quaternion.set(q.x, q.y, q.z, q.w);
         this.scene.avatar.position.set(x, 0, y);
         this.scene.camera.setCenter(x, y);
 
