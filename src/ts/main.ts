@@ -59,11 +59,24 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
     ui.loadLevelDescriptions(levels.getLevelDescriptions());
 
     ui.on(UI.UIEvents.LOAD_LEVEL, (name: string) => {
-        ui.loadLog(`Loading level #${name}`);
+        scene.exit();
+        ui.hideFinishUi();
         ui.showUi(false);
+        ui.loadLog(`Loading level #${name}`);
         ui.showLoading(true);
         setTimeout(() => {
             game.loadLevel(levels.getLevelByName(name));
+        }, SETTINGS.loadDelay);
+    });
+
+    ui.on(UI.UIEvents.REPLAY_LEVEL, () => {
+        scene.exit();
+        ui.hideFinishUi();
+        ui.showUi(false);
+        ui.loadLog(`Loading level #${game.activeLevel.name}`);
+        ui.showLoading(true);
+        setTimeout(() => {
+            game.loadLevel(game.activeLevel);
         }, SETTINGS.loadDelay);
     });
 
@@ -73,6 +86,9 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
 
     ui.on(UI.UIEvents.LEAVE_GAME, () => {
         game.leave();
+        ui.hideFinishUi();
+        ui.showGameUi(false);
+        ui.showUi(true);
     });
 
     game.on(Game.GameEvents.level.loaded, (level: Levels.Level) => {
@@ -84,6 +100,10 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
 
     game.on(Game.GameEvents.storage.clear, () => {
         window.location.reload();
+    });
+
+    game.on(Game.GameEvents.level.finished, (level: Levels.Level, stats: Game.LevelStats) => {
+        ui.showFinishUi(level, stats);
     });
 
     game.on(Game.GameEvents.level.bonus, (current: number, total: number) => {

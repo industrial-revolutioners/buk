@@ -118,7 +118,7 @@ export class Avatar {
                 });
             },
             finish: target => {
-
+                this.game.finished();
             },
             bonus: target => {
                 this.game.addBonus();

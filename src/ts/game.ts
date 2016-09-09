@@ -19,12 +19,18 @@ export const GameEvents = {
     level: {
         loaded: 'level.loaded',
         bonus: 'level.bonus',
-        step: 'level.step'
+        step: 'level.step',
+        finished: 'level.finished'
     },
     storage: {
         clear: 'storage.clear'
     }
 };
+
+export interface LevelStats {
+    steps: number;
+    bonus: number;
+}
 
 export class Game extends EventEmitter{
     private avatar: Avatar;
@@ -33,7 +39,7 @@ export class Game extends EventEmitter{
     private swapRotation: boolean = settingsStorage.get('swapRotation');
     public scene: Scene;
 
-    private activeLevel: Level;
+    public activeLevel: Level;
     public bonus = 0;
     public steps = 0;
     private isActive = false;
@@ -62,6 +68,8 @@ export class Game extends EventEmitter{
     }
 
     loadLevel(level: Level){
+        level.reset();
+
         this.scene.build(level);
 
         this.avatar = new Avatar(this, level.startTile);
@@ -120,11 +128,17 @@ export class Game extends EventEmitter{
 
     addBonus(): void {
         this.bonus++;
-
         this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
     }
 
     leave(): void {
-        
+        this.scene.exit();
+    }
+
+    finished(): void {
+        this.isActive = false;
+        this.emit(GameEvents.level.finished,
+            this.activeLevel, <LevelStats>{bonus: this.bonus, steps: this.steps}
+        );
     }
 }
