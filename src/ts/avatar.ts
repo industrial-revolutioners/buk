@@ -116,7 +116,6 @@ export class Avatar {
                     const level = this.tile.level;
                     this.game.scene.animations.avatar.respawn(0, 0, level.startTile.row, level.startTile.col);
                 });
-                
             },
             finish: target => {
 

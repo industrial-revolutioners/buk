@@ -36,7 +36,8 @@ declare global {
 
 export let UIEvents = {
     LOAD_LEVEL: 'UIEvents.loadLevel',
-    RESET_SETTINGS: 'UIEvents.resetSettings'
+    RESET_SETTINGS: 'UIEvents.resetSettings',
+    LEAVE_GAME: 'UIEvents.leaveGame'
 };
 
 
@@ -62,7 +63,8 @@ export class UserInterface extends EventEmitter {
     buttons = {
         goFullscreen: dom.byId('go-fullscreen'),
         resetGame: dom.byId('reset-game'),
-        saveSettings: dom.byId('save-settings')
+        saveSettings: dom.byId('save-settings'),
+        leaveGame: dom.byId('leave-game')
     };
 
     inputs = {
@@ -143,6 +145,16 @@ export class UserInterface extends EventEmitter {
             if(this.reloadRequired){
                 alert('The game will restart for the new settings to take effect');
                 window.location.reload();
+            }
+        };
+
+        buttons.leaveGame.onclick = () => {
+            let confirmed = confirm(
+                'Are you sure you want to leave the game?\n' +
+                'Your status will be lost.');
+
+            if(confirmed){
+                this.emit(UIEvents.LEAVE_GAME);
             }
         }
     }
@@ -292,11 +304,10 @@ export class UserInterface extends EventEmitter {
         dataset.total = total;
     }
 
-    stepCounter(current: number, total: number): void {
+    stepCounter(current: number): void {
         let dataset = this.elements.stepCounter.dataset;
 
         dataset.current = current;
-        dataset.total = total;
     }
 }
 

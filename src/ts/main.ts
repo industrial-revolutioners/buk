@@ -71,10 +71,14 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         game.resetSettings();
     });
 
+    ui.on(UI.UIEvents.LEAVE_GAME, () => {
+        game.leave();
+    });
+
     game.on(Game.GameEvents.level.loaded, (level: Levels.Level) => {
         ui.showLoading(false);
-        ui.bonusCounter(0, level.bonus);
-        ui.stepCounter(0, level.steps);
+        ui.bonusCounter(game.bonus, level.bonus);
+        ui.stepCounter(game.steps);
         ui.showGameUi(true);
     });
 
@@ -86,8 +90,8 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         ui.bonusCounter(current, total)
     });
 
-    game.on(Game.GameEvents.level.step, (current: number, total: number) => {
-        ui.stepCounter(current, total);
+    game.on(Game.GameEvents.level.step, (current: number) => {
+        ui.stepCounter(current);
     });
 
     ui.showLoading(false);

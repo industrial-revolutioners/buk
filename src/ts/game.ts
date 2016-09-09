@@ -34,8 +34,8 @@ export class Game extends EventEmitter{
     public scene: Scene;
 
     private activeLevel: Level;
-    private bonus = 0;
-    private steps = 0;
+    public bonus = 0;
+    public steps = 0;
     private isActive = false;
 
     constructor(levels: LevelContainer, scene: Scene){
@@ -65,7 +65,10 @@ export class Game extends EventEmitter{
         this.scene.build(level);
 
         this.avatar = new Avatar(this, level.startTile);
+
         this.activeLevel = level;
+        this.steps = 0;
+        this.bonus = 0;
 
         this.emit(GameEvents.level.loaded, level);
         this.isActive = true;
@@ -81,7 +84,7 @@ export class Game extends EventEmitter{
             else {
                 this.steps++;
                 avatar.move(this.scene.camera.toAbsoluteDirection(e));
-                this.emit(GameEvents.level.step, this.steps, this.activeLevel.steps);
+                this.emit(GameEvents.level.step, this.steps);
             }
         }
     }
@@ -109,17 +112,19 @@ export class Game extends EventEmitter{
     }
 
     died(): void {
-        setTimeout(() => {
-            let level = this.activeLevel;
+        let level = this.activeLevel;
 
-            level.reset();
-            this.avatar = new Avatar(this, level.startTile);
-        }, 10000);
+        level.reset();
+        this.avatar.setTile(level.startTile);
     }
 
     addBonus(): void {
         this.bonus++;
 
         this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
+    }
+
+    leave(): void {
+        
     }
 }
