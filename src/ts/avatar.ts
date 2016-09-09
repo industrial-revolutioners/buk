@@ -50,29 +50,33 @@ export class Avatar {
     private tile: BaseTile;
     private faces: Faces;
 
-    constructor(game: Game, startTile: Start){
-        if(!(startTile instanceof Start)){
+    constructor(game: Game, startTile: Start) {
+        if (!(startTile instanceof Start)) {
             throw new Error(`Expected Start, got ${startTile.constructor.name} instead.`);
         }
 
         this.game = game;
 
-        this.faces = <Faces>{
-            top: AvatarFaces.WHITE, bottom: AvatarFaces.YELLOW,
-            left: AvatarFaces.GREEN, right: AvatarFaces.BLUE,
-            front: AvatarFaces.RED, back: AvatarFaces.ORANGE
-        };
+        this.reset();
 
         this.setTile(startTile);
         const level = startTile.level;
         this.game.scene.animations.avatar.spawn(startTile.col, startTile.row, false);
     }
 
-    delegateState(d: AbsoluteDirection){
+    reset() {
+        this.faces = <Faces>{
+            top: AvatarFaces.WHITE, bottom: AvatarFaces.YELLOW,
+            left: AvatarFaces.GREEN, right: AvatarFaces.BLUE,
+            front: AvatarFaces.RED, back: AvatarFaces.ORANGE
+        };
+    }
+
+    delegateState(d: AbsoluteDirection) {
         let faces = Object.assign({}, this.faces);
 
         let temp = faces.top;
-        switch(d){
+        switch (d) {
             case AbsoluteDirection.NORTH:
                 faces.top = faces.front;
                 faces.front = faces.bottom;
@@ -111,10 +115,10 @@ export class Avatar {
                 this.setTile(target);
             },
             kill: target => {
-                this.game.scene.animations.avatar.die(d, ()=>{
+                this.game.scene.animations.avatar.die(d, () => {
                     this.game.died();
                 });
-                
+
             },
             finish: target => {
 
@@ -125,11 +129,11 @@ export class Avatar {
         }
     }
 
-    move(d: AbsoluteDirection){
+    move(d: AbsoluteDirection) {
         let stateDelegate = this.delegateState(d);
         let target: BaseTile;
 
-        switch(d){
+        switch (d) {
             case AbsoluteDirection.NORTH:
                 target = <BaseTile>this.tile.front;
                 break;
@@ -153,7 +157,7 @@ export class Avatar {
         target.action(stateDelegate);
     }
 
-    setTile(tile: BaseTile){
+    setTile(tile: BaseTile) {
         this.tile = tile;
     }
 }

@@ -110,12 +110,16 @@ export class Game extends EventEmitter {
 
     died(): void {
         this.activeLevel.reset();
+        this.avatar.reset();
         this.avatar.setTile(this.activeLevel.startTile);
+        
         
         const px = this.activeLevel.startTile.col;
         const py = this.activeLevel.startTile.row;
 
         this.scene.animations.avatar.spawn(px, py, true);
+
+        this.isActive = true;
     }
 
     addBonus(): void {

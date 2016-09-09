@@ -264,7 +264,6 @@ export class AvatarAnimations extends AnimationBase {
         let camPos = camera.getCenter();
 
         if (respawn) {
-            console.log("campos", x, y, camPos.x, camPos.y);
             rollback = new TWEEN.Tween(camPos)
                 .to({ x: x, y: y }, duration)
                 .easing(TWEEN.Easing.Cubic.InOut)
@@ -302,6 +301,7 @@ export class AvatarAnimations extends AnimationBase {
         this.lock.push();
         if (respawn) {
             this.lock.push();
+            rollback.start();
             fall.chain(bang).start();
         } else {
             fall.chain(bang).start();
