@@ -56,7 +56,9 @@ export class UserInterface extends EventEmitter {
         finishLayer: dom.byId('finish-layer'),
         loadLog: dom.byId('loading-log'),
         stepCounter: dom.byId('step-counter'),
-        bonusCounter: dom.byId('bonus-counter')
+        bonusCounter: dom.byId('bonus-counter'),
+        finishSteps: dom.byId('finish-steps'),
+        finishBonus: dom.byId('finish-bonus')
     };
 
     screens = {
@@ -302,7 +304,11 @@ export class UserInterface extends EventEmitter {
 
         this.buttons.finishLeave.onclick = () => {
             this.emit(UIEvents.LEAVE_GAME);
-        }
+        };
+
+        this.elements.finishBonus.dataset.current = stats.bonus;
+        this.elements.finishBonus.dataset.total = level.bonus;
+        this.elements.finishSteps.dataset.current = stats.steps;
     }
 
     loadLevelDescriptions(descriptions: LevelDescription[]){

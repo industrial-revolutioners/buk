@@ -86,10 +86,26 @@
 
     button {
       font-size: 6vw;
+      width: 8vw;
+      height: 8vw;
 
       @media (max-width: 420px) {
         font-size: 12vw;
+        width: 16vw;
+        height: 16vw;
       }
+    }
+  }
+
+  #finish-steps {
+    &::after {
+      content: attr(data-current);
+    }
+  }
+
+  #finish-bonus {
+    &::after {
+      content: attr(data-current) ' / ' attr(data-total);
     }
   }
 }

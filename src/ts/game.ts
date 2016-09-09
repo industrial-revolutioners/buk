@@ -130,6 +130,12 @@ export class Game extends EventEmitter{
         const py = this.activeLevel.startTile.row;
 
         this.scene.animations.avatar.spawn(px, py, true);
+
+        this.steps = 0;
+        this.bonus = 0;
+
+        this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
+        this.emit(GameEvents.level.step, this.steps);
     }
 
     addBonus(): void {
