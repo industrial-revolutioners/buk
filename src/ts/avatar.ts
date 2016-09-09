@@ -118,10 +118,9 @@ export class Avatar {
                 this.game.scene.animations.avatar.die(d, () => {
                     this.game.died();
                 });
-
             },
             finish: target => {
-
+                this.game.finished();
             },
             bonus: target => {
                 this.game.addBonus();

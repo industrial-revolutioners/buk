@@ -19,23 +19,29 @@ export const GameEvents = {
     level: {
         loaded: 'level.loaded',
         bonus: 'level.bonus',
-        step: 'level.step'
+        step: 'level.step',
+        finished: 'level.finished'
     },
     storage: {
         clear: 'storage.clear'
     }
 };
 
-export class Game extends EventEmitter {
+export interface LevelStats {
+    steps: number;
+    bonus: number;
+}
+
+export class Game extends EventEmitter{
     private avatar: Avatar;
     private levels: LevelContainer;
     private storage = new Storage('game');
     private swapRotation: boolean = settingsStorage.get('swapRotation');
     public scene: Scene;
 
-    private activeLevel: Level;
-    private bonus = 0;
-    private steps = 0;
+    public activeLevel: Level;
+    public bonus = 0;
+    public steps = 0;
     private isActive = false;
 
     constructor(levels: LevelContainer, scene: Scene) {
@@ -61,11 +67,15 @@ export class Game extends EventEmitter {
         })
     }
 
-    loadLevel(level: Level) {
+    loadLevel(level: Level){
+        level.reset();
         this.scene.build(level);
 
         this.avatar = new Avatar(this, level.startTile);
+
         this.activeLevel = level;
+        this.steps = 0;
+        this.bonus = 0;
 
         this.emit(GameEvents.level.loaded, level);
         this.isActive = true;
@@ -81,7 +91,7 @@ export class Game extends EventEmitter {
             else {
                 this.steps++;
                 avatar.move(this.scene.camera.toAbsoluteDirection(e));
-                this.emit(GameEvents.level.step, this.steps, this.activeLevel.steps);
+                this.emit(GameEvents.level.step, this.steps);
             }
         }
     }
@@ -109,6 +119,10 @@ export class Game extends EventEmitter {
     }
 
     died(): void {
+        let level = this.activeLevel;
+
+        level.reset();
+        this.avatar.setTile(level.startTile);
         this.activeLevel.reset();
         this.avatar.reset();
         this.avatar.setTile(this.activeLevel.startTile);
@@ -119,12 +133,27 @@ export class Game extends EventEmitter {
 
         this.scene.animations.avatar.spawn(px, py, true);
 
+        this.steps = 0;
+        this.bonus = 0;
+
+        this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
+        this.emit(GameEvents.level.step, this.steps);
         this.isActive = true;
     }
 
     addBonus(): void {
         this.bonus++;
-
         this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
+    }
+
+    leave(): void {
+        this.scene.exit();
+    }
+
+    finished(): void {
+        this.isActive = false;
+        this.emit(GameEvents.level.finished,
+            this.activeLevel, <LevelStats>{bonus: this.bonus, steps: this.steps}
+        );
     }
 }

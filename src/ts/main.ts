@@ -59,11 +59,24 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
     ui.loadLevelDescriptions(levels.getLevelDescriptions());
 
     ui.on(UI.UIEvents.LOAD_LEVEL, (name: string) => {
-        ui.loadLog(`Loading level #${name}`);
+        scene.exit();
+        ui.hideFinishUi();
         ui.showUi(false);
+        ui.loadLog(`Loading level #${name}`);
         ui.showLoading(true);
         setTimeout(() => {
             game.loadLevel(levels.getLevelByName(name));
+        }, SETTINGS.loadDelay);
+    });
+
+    ui.on(UI.UIEvents.REPLAY_LEVEL, () => {
+        scene.exit();
+        ui.hideFinishUi();
+        ui.showUi(false);
+        ui.loadLog(`Loading level #${game.activeLevel.name}`);
+        ui.showLoading(true);
+        setTimeout(() => {
+            game.loadLevel(game.activeLevel);
         }, SETTINGS.loadDelay);
     });
 
@@ -71,10 +84,17 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         game.resetSettings();
     });
 
+    ui.on(UI.UIEvents.LEAVE_GAME, () => {
+        game.leave();
+        ui.hideFinishUi();
+        ui.showGameUi(false);
+        ui.showUi(true);
+    });
+
     game.on(Game.GameEvents.level.loaded, (level: Levels.Level) => {
         ui.showLoading(false);
-        ui.bonusCounter(0, level.bonus);
-        ui.stepCounter(0, level.steps);
+        ui.bonusCounter(game.bonus, level.bonus);
+        ui.stepCounter(game.steps);
         ui.showGameUi(true);
     });
 
@@ -82,12 +102,16 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         window.location.reload();
     });
 
+    game.on(Game.GameEvents.level.finished, (level: Levels.Level, stats: Game.LevelStats) => {
+        ui.showFinishUi(level, stats);
+    });
+
     game.on(Game.GameEvents.level.bonus, (current: number, total: number) => {
         ui.bonusCounter(current, total)
     });
 
-    game.on(Game.GameEvents.level.step, (current: number, total: number) => {
-        ui.stepCounter(current, total);
+    game.on(Game.GameEvents.level.step, (current: number) => {
+        ui.stepCounter(current);
     });
 
     ui.showLoading(false);

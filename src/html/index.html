@@ -125,9 +125,31 @@
     </div>
 
     <div id="game-layer" class="hidden">
+        <button id="replay-game"><span class="fa fa-refresh"></span></button>
+        <button id="leave-game"><span class="fa fa-times"></span></button>
         <div id="step-counter"></div>
         <div id="bonus-counter"></div>
-        <span class="fa fa-arrow-left"></span>
+    </div>
+
+    <div id="finish-layer" class="hidden">
+        <div id="finish-panel">
+            <h1 id="finished-level">Finished level</h1>
+            <div id="finish-stars">
+                <div id="finish-star" class="star"><span class="fa fa-star"></span></div>
+                <div id="bonus-star" class="star"><span class="fa fa-star"></span></div>
+                <div id="step-star" class="star"><span class="fa fa-star"></span></div>
+            </div>
+            <div id="finish-stats">
+                <div id="finish-steps">Steps: </div>
+                <div id="finish-bonus">Bonus: </div>
+            </div>
+            <div id="finish-controls">
+                <button id="replay"><span class="fa fa-refresh"></span></button>
+                <button id="leave"><span class="fa fa-times"></span></button>
+                <button id="next"><span class="fa fa-arrow-right"></span></button>
+            </div>
+        </div>
+        <div id="finish-overlay"></div>
     </div>
 
     <input type="checkbox" class="toggle" id="go-fullscreen-area-toggle">

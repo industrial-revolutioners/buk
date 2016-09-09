@@ -11,7 +11,8 @@
 import {EventEmitter} from 'events';
 
 import {dom} from './utils';
-import {LevelDescription} from './levels';
+import {LevelDescription, Level} from './levels';
+import {LevelStats} from './game';
 import {settingsStorage} from './settings';
 
 
@@ -36,7 +37,9 @@ declare global {
 
 export let UIEvents = {
     LOAD_LEVEL: 'UIEvents.loadLevel',
-    RESET_SETTINGS: 'UIEvents.resetSettings'
+    RESET_SETTINGS: 'UIEvents.resetSettings',
+    LEAVE_GAME: 'UIEvents.leaveGame',
+    REPLAY_LEVEL: 'UIEvents.replayLevel'
 };
 
 
@@ -50,19 +53,27 @@ export class UserInterface extends EventEmitter {
         loading: dom.byId('loading'),
         uiLayer: dom.byId('ui-layer'),
         gameLayer: dom.byId('game-layer'),
+        finishLayer: dom.byId('finish-layer'),
         loadLog: dom.byId('loading-log'),
         stepCounter: dom.byId('step-counter'),
-        bonusCounter: dom.byId('bonus-counter')
+        bonusCounter: dom.byId('bonus-counter'),
+        finishSteps: dom.byId('finish-steps'),
+        finishBonus: dom.byId('finish-bonus')
     };
 
     screens = {
-        levels: dom.byId('levels')
+        levels: dom.byId('levels'),
     };
     
     buttons = {
         goFullscreen: dom.byId('go-fullscreen'),
         resetGame: dom.byId('reset-game'),
-        saveSettings: dom.byId('save-settings')
+        saveSettings: dom.byId('save-settings'),
+        leaveGame: dom.byId('leave-game'),
+        replayGame: dom.byId('replay-game'),
+        replay: dom.byId('replay'),
+        finishLeave: dom.byId('leave'),
+        next: dom.byId('next')
     };
 
     inputs = {
@@ -73,7 +84,10 @@ export class UserInterface extends EventEmitter {
     };
 
     toggles = {
-        goFullscreen: <HTMLInputElement>dom.byId('go-fullscreen-area-toggle')
+        goFullscreen: <HTMLInputElement>dom.byId('go-fullscreen-area-toggle'),
+        levels: <HTMLInputElement>dom.byId('levels-toggle'),
+        settings: <HTMLInputElement>dom.byId('settings-toggle'),
+        about: <HTMLInputElement>dom.byId('about-toggle')
     };
 
     private reloadRequired = false;
@@ -143,6 +157,24 @@ export class UserInterface extends EventEmitter {
             if(this.reloadRequired){
                 alert('The game will restart for the new settings to take effect');
                 window.location.reload();
+            }
+        };
+
+        buttons.leaveGame.onclick = () => {
+            let confirmed = confirm(
+                'Are you sure you want to leave the game?\n' +
+                'Your status will be lost.');
+
+            if(confirmed){
+                this.emit(UIEvents.LEAVE_GAME);
+            }
+        };
+
+        buttons.replayGame.onclick = () => {
+            let confirmed = confirm('Are you sure you want to retry this level?');
+
+            if(confirmed){
+                this.emit(UIEvents.REPLAY_LEVEL);
             }
         }
     }
@@ -235,6 +267,10 @@ export class UserInterface extends EventEmitter {
             classList.remove(className);
         }
         else {
+            for(let toggle in this.toggles){
+                this.toggles[toggle].checked = state;
+            }
+
             classList.add(className);
         }
     }
@@ -249,6 +285,30 @@ export class UserInterface extends EventEmitter {
         else {
             classList.add(className);
         }
+    }
+
+    hideFinishUi(): void{
+        this.elements.finishLayer.classList.remove('visible');
+    }
+
+    showFinishUi(level: Level, stats: LevelStats){
+        this.elements.finishLayer.classList.add('visible');
+
+        this.buttons.replay.onclick = () => {
+            this.emit(UIEvents.LOAD_LEVEL, level.name);
+        };
+
+        this.buttons.next.onclick = () => {
+            this.emit(UIEvents.LOAD_LEVEL, level.nextLevel.name);
+        };
+
+        this.buttons.finishLeave.onclick = () => {
+            this.emit(UIEvents.LEAVE_GAME);
+        };
+
+        this.elements.finishBonus.dataset.current = stats.bonus;
+        this.elements.finishBonus.dataset.total = level.bonus;
+        this.elements.finishSteps.dataset.current = stats.steps;
     }
 
     loadLevelDescriptions(descriptions: LevelDescription[]){
@@ -292,11 +352,10 @@ export class UserInterface extends EventEmitter {
         dataset.total = total;
     }
 
-    stepCounter(current: number, total: number): void {
+    stepCounter(current: number): void {
         let dataset = this.elements.stepCounter.dataset;
 
         dataset.current = current;
-        dataset.total = total;
     }
 }
 
