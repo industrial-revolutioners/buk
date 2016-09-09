@@ -115,7 +115,7 @@ export class AvatarAnimations extends AnimationBase {
 
         let tweens = this.setupTweens(d);
 
-        const duration = SETTINGS.animationDuration * 4;
+        const duration = SETTINGS.animationDuration * 2;
         let node = this.scene.avatarAnimation;
 
         this.lock.setCallback(callback);
@@ -250,6 +250,7 @@ export class AvatarAnimations extends AnimationBase {
         const duration = SETTINGS.animationDuration * 4;
         let xy = this.scene.camera.getCenter();
         let lockPop = () => {
+            console.log("lokokain");
             this.lock.pop();
         };
         

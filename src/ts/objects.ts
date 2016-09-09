@@ -102,6 +102,8 @@ export class Scene extends Renderable {
     constructor(objContainer: ObjectContainer) {
         super();
 
+        // window["lol"] = () => { this.exit(); };
+
         this.objContainer = objContainer;
         this.animations = new Animations(this);
 
@@ -172,7 +174,7 @@ export class Scene extends Renderable {
 
         level.tileList.forEach((tileObject: Tiles.BaseTile) => {
             const px = tileObject.col;
-            const py = /*level.height -*/ tileObject.row;
+            const py = tileObject.row;
 
             let tileNode = new THREE.Object3D();
             levelNode.add(tileNode);
@@ -180,8 +182,8 @@ export class Scene extends Renderable {
             let tileName = "tile_" + tileObject.constructor.name.toLowerCase();
 
             let tile: THREE.Mesh;
-            if (tileObject instanceof Tiles.Finish) {
-                console.log("gate", tileObject.getFaceName());
+
+            if (tileObject.getName() === "Gate" || tileObject.getName() === "Finish") {
                 const color = (<Tiles.Gate>tileObject).getFaceName();
                 tileName = tileName + "_" + color;
             }
@@ -194,17 +196,35 @@ export class Scene extends Renderable {
 
         // -- build object atop of tiles
 
-        let groundNode = new THREE.Object3D();
-        // ... 
+        let objectLayerNode = new THREE.Object3D();
+
+
+        level.objects.forEach((levelObject: LevelObject) => {
+            const px = levelObject.col;
+            const py = levelObject.row;
+
+            let object = this.objContainer.getObject(levelObject.name).clone();
+            let objectNode = new THREE.Object3D();
+            objectNode.add(object);
+            objectNode.position.set(px, 0, py);
+
+            objectLayerNode.add(objectNode);
+        });
 
         // build scene
         this.scene = new THREE.Scene();
 
         this.scene.add(levelNode);
+        this.scene.add(objectLayerNode);
         this.scene.add(this.avatar);
 
         this.scene.add(this.dirLight);
         this.scene.add(this.ambientLight);
+    }
+
+    exit() {
+        this.scene = new THREE.Scene();
+        this.startRendering();
     }
 }
 
@@ -293,7 +313,14 @@ export class ObjectContainer {
         this.duplicateObject("ground", "tile_tile", {});
 
         // 'gate' - ebbol minden szinre kell majd 
-        // TODO
+        // TODO fucking do it
+        for (let k in Avatar.stringToAvatarFace) {
+            const v: number = Avatar.stringToAvatarFace[k];
+            // console.log("k, v", k, v);
+            this.duplicateObject("ground", "tile_gate_" + v, {
+                "ground.light": "avatar." + k,
+            });
+        }
 
         // 'finish' - ebbol minden szinre kell majd
         for (let k in Avatar.stringToAvatarFace) {
@@ -307,6 +334,9 @@ export class ObjectContainer {
 
         // 'bonus' - ebbol ketto kell + cserelni kell majd oket
         // TODO 
+        this.duplicateObject("ground", "tile_bonus", {
+            "ground.dark": "avatar.green",
+        });
 
         //? if(DEBUG){
         for (let i in this.objects) {
