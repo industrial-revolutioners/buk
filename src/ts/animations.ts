@@ -249,23 +249,27 @@ export class AvatarAnimations extends AnimationBase {
         // roll camera back
         const duration = SETTINGS.animationDuration * 4;
         let xy = this.scene.camera.getCenter();
-        let lockPop = () => {
-            console.log("lokokain");
-            this.lock.pop();
-        };
-        
+
         // TODO forgast resetelje 
-        
+
         let node = this.scene.avatarAnimation;
         node.position.set(0, 10, 0);
 
-        let rollback = new TWEEN.Tween()
+        let cica = { x: 0, y: 0 };
+        let rollback = new TWEEN.Tween(cica)
             .to({ x: x, y: y }, duration)
             .easing(TWEEN.Easing.Cubic.InOut)
-            .onComplete(lockPop);
+            .onUpdate(function () {
+                
+            })
+            .onComplete(() => {
+                this.lock.pop();
+                
+            });
 
         // then start spwan animation
         this.lock.setCallback(() => {
+            
             this.spawn(w, h, x, y);
         });
 
@@ -320,6 +324,7 @@ export class AvatarAnimations extends AnimationBase {
         };
 
         const duration = SETTINGS.animationDuration * 4;
+        this.scene.avatarOrientation.quaternion = new THREE.Quaternion();
         this.scene.avatar.position.set(x, 0, y);
         this.scene.camera.setCenter(x, y);
 
