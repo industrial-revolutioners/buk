@@ -167,15 +167,6 @@ export class Scene extends Renderable {
         const lw = level.width;
         const lh = level.height;
 
-        // polygon offset is a good and awesome invention, if it would work
-        // (but it doesn't)
-        // let allocation = {};
-        // for (let y = 0; y < lh; y++) {
-        //     for (let x = 0; x < lw; x++) {
-        //         allocation[x + "" + y] = { x: x, y: y };
-        //     }
-        // }
-
         // -- build ground tiles
         let levelNode = new THREE.Object3D();
 
@@ -203,13 +194,17 @@ export class Scene extends Renderable {
             tileNode.position.set(px, 0, py);
         });
 
-        // fill the rest with ground tiles
-        // for(let i in allocation){
-        //     const pos = allocation[i];
-        //     let tile = this.objContainer.getObject("tile_border").clone();
-        //     levelNode.add(tile);
-        //     tile.position.set(pos.x, 0, pos.y);
-        // }
+        // one big thing under everything
+        let geometry = new THREE.BoxGeometry(lw, .25, lh);
+        let material = new THREE.MeshLambertMaterial(this.objContainer.currentPalette["ground.light"]);
+        material.polygonOffset = true;
+        material.polygonOffsetFactor = .01;
+        material.polygonOffsetUnits = .0;
+        let oneBigThing = new THREE.Mesh(geometry, material);
+        oneBigThing.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
+        oneBigThing.position.set(lw * .5 - .5 , -.125, lh * .5 - .5);
+
+        levelNode.add(oneBigThing);
 
         // -- build object atop of tiles
 
@@ -250,7 +245,7 @@ export class ObjectContainer {
     private objects: Object = {};
     private loader = new THREE.JSONLoader();
 
-    private currentPalette = SETTINGS.palette[0];
+    public currentPalette = SETTINGS.palette[0];
 
     public getObject(name: string): THREE.Mesh {
         if (!this.objects.hasOwnProperty(name)) {
@@ -287,7 +282,6 @@ export class ObjectContainer {
 
     private lookupMaterials(materials: THREE.Material[]) {
         for (let i in materials) {
-            // console.log("Material:", materials[i]);
             let material = <THREE.MeshLambertMaterial>materials[i];
             if (this.currentPalette.hasOwnProperty(material.name)) {
                 const color = this.currentPalette[material.name];
@@ -333,7 +327,6 @@ export class ObjectContainer {
         // TODO fucking do it
         for (let k in Avatar.stringToAvatarFace) {
             const v: number = Avatar.stringToAvatarFace[k];
-            // console.log("k, v", k, v);
             this.duplicateObject("ground", "tile_gate_" + v, {
                 "ground.light": "avatar." + k,
             });
@@ -342,7 +335,6 @@ export class ObjectContainer {
         // 'finish' - ebbol minden szinre kell majd
         for (let k in Avatar.stringToAvatarFace) {
             const v: number = Avatar.stringToAvatarFace[k];
-            // console.log("k, v", k, v);
             this.duplicateObject("ground", "tile_finish_" + v, {
                 "ground.light": "avatar." + k,
             });

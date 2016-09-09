@@ -124,7 +124,9 @@ export class Game extends EventEmitter{
         level.reset();
         this.avatar.setTile(level.startTile);
         this.activeLevel.reset();
+        this.avatar.reset();
         this.avatar.setTile(this.activeLevel.startTile);
+        
         
         const px = this.activeLevel.startTile.col;
         const py = this.activeLevel.startTile.row;
@@ -136,6 +138,7 @@ export class Game extends EventEmitter{
 
         this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
         this.emit(GameEvents.level.step, this.steps);
+        this.isActive = true;
     }
 
     addBonus(): void {
