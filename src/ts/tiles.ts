@@ -33,6 +33,8 @@ export abstract class BaseTile {
 
     level: Level;
 
+    getName(){return this.constructor.name;}
+
     constructor(level: Level, tileJson: LevelJsonTile){
         this.level = level;
 

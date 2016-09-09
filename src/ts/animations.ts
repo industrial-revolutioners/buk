@@ -115,7 +115,7 @@ export class AvatarAnimations extends AnimationBase {
 
         let tweens = this.setupTweens(d);
 
-        const duration = SETTINGS.animationDuration * 4;
+        const duration = SETTINGS.animationDuration * 2;
         let node = this.scene.avatarAnimation;
 
         this.lock.setCallback(callback);
@@ -239,13 +239,26 @@ export class AvatarAnimations extends AnimationBase {
     }
 
     respawn(w: number, h: number, x: number, y: number): void {
+        if (this.lock.isLocked()) {
+            //? if(DEBUG){
+            console.info("locked");
+            //? }
+            return;
+        }
 
         // roll camera back
         const duration = SETTINGS.animationDuration * 4;
         let xy = this.scene.camera.getCenter();
         let lockPop = () => {
+            console.log("lokokain");
             this.lock.pop();
         };
+        
+        // TODO forgast resetelje 
+        
+        let node = this.scene.avatarAnimation;
+        node.position.set(0, 10, 0);
+
         let rollback = new TWEEN.Tween()
             .to({ x: x, y: y }, duration)
             .easing(TWEEN.Easing.Cubic.InOut)

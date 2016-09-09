@@ -111,11 +111,15 @@ export class Avatar {
                 this.setTile(target);
             },
             kill: target => {
-                this.game.scene.animations.avatar.die(d);
-                this.game.died();
+                this.game.scene.animations.avatar.die(d, ()=>{
+                    this.game.died();
+                    const level = this.tile.level;
+                    this.game.scene.animations.avatar.respawn(0, 0, level.startTile.row, level.startTile.col);
+                });
+                
             },
             finish: target => {
-                console.warn('Finished');
+
             },
             bonus: target => {
                 this.game.addBonus();
