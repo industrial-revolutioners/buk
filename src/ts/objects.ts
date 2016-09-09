@@ -161,13 +161,20 @@ export class Scene extends Renderable {
 
             this.dirLight.shadow.bias = -0.0001;
         }
-
-        // +++ cuccok
     }
 
     build(level: Level): void {
         const lw = level.width;
         const lh = level.height;
+
+        // polygon offset is a good and awesome invention, if it would work
+        // (but it doesn't)
+        // let allocation = {};
+        // for (let y = 0; y < lh; y++) {
+        //     for (let x = 0; x < lw; x++) {
+        //         allocation[x + "" + y] = { x: x, y: y };
+        //     }
+        // }
 
         // -- build ground tiles
         let levelNode = new THREE.Object3D();
@@ -190,9 +197,19 @@ export class Scene extends Renderable {
 
             tile = this.objContainer.getObject(tileName);
 
+            // delete allocation[px + "_" + py];
+
             tileNode.add(tile.clone());
             tileNode.position.set(px, 0, py);
         });
+
+        // fill the rest with ground tiles
+        // for(let i in allocation){
+        //     const pos = allocation[i];
+        //     let tile = this.objContainer.getObject("tile_border").clone();
+        //     levelNode.add(tile);
+        //     tile.position.set(pos.x, 0, pos.y);
+        // }
 
         // -- build object atop of tiles
 

@@ -44,7 +44,7 @@ export class Game extends EventEmitter{
     public steps = 0;
     private isActive = false;
 
-    constructor(levels: LevelContainer, scene: Scene){
+    constructor(levels: LevelContainer, scene: Scene) {
         super();
 
         this.levels = levels;
@@ -69,7 +69,6 @@ export class Game extends EventEmitter{
 
     loadLevel(level: Level){
         level.reset();
-
         this.scene.build(level);
 
         this.avatar = new Avatar(this, level.startTile);
@@ -83,10 +82,10 @@ export class Game extends EventEmitter{
     }
 
     moveAvatar(e: ControlEvent): void {
-        if(this.isActive && !this.scene.animations.isAnimationRunning()){
+        if (this.isActive && !this.scene.animations.isAnimationRunning()) {
             let avatar = this.avatar;
 
-            if(!this.avatar){
+            if (!this.avatar) {
                 throw new Error('No avatar exist')
             }
             else {
@@ -98,9 +97,9 @@ export class Game extends EventEmitter{
     }
 
     rotateCamera(e: CameraDirectionEvent): void {
-        if(this.isActive && !this.scene.animations.isAnimationRunning()){
-            if(this.swapRotation){
-                e.direction = e.direction === 0 ? 1: 0;
+        if (this.isActive && !this.scene.animations.isAnimationRunning()) {
+            if (this.swapRotation) {
+                e.direction = e.direction === 0 ? 1 : 0;
             }
 
             this.scene.animations.camera.rotate(e.direction);
@@ -108,7 +107,7 @@ export class Game extends EventEmitter{
     }
 
     zoomCamera(e: CameraAttributeEvent): void {
-        if(this.isActive){
+        if (this.isActive) {
             this.scene.animations.camera.zoom(e.value);
         }
     }
@@ -124,6 +123,13 @@ export class Game extends EventEmitter{
 
         level.reset();
         this.avatar.setTile(level.startTile);
+        this.activeLevel.reset();
+        this.avatar.setTile(this.activeLevel.startTile);
+        
+        const px = this.activeLevel.startTile.col;
+        const py = this.activeLevel.startTile.row;
+
+        this.scene.animations.avatar.spawn(px, py, true);
     }
 
     addBonus(): void {

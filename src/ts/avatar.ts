@@ -65,7 +65,7 @@ export class Avatar {
 
         this.setTile(startTile);
         const level = startTile.level;
-        this.game.scene.animations.avatar.spawn(level.width, level.height, startTile.col, startTile.row);
+        this.game.scene.animations.avatar.spawn(startTile.col, startTile.row, false);
     }
 
     delegateState(d: AbsoluteDirection){
@@ -113,8 +113,6 @@ export class Avatar {
             kill: target => {
                 this.game.scene.animations.avatar.die(d, ()=>{
                     this.game.died();
-                    const level = this.tile.level;
-                    this.game.scene.animations.avatar.respawn(0, 0, level.startTile.row, level.startTile.col);
                 });
             },
             finish: target => {
