@@ -197,7 +197,7 @@ export class Scene extends Renderable {
 
         // one big thing under everything
         let geometry = new THREE.BoxGeometry(lw, .25, lh);
-        let material = new THREE.MeshLambertMaterial({ color: this.objContainer.currentPalette["ground.light"] });
+        let material = new THREE.MeshLambertMaterial({ color: this.objContainer.currentPalette["green"] });
         material.polygonOffset = true;
         material.polygonOffsetFactor = .05;
         material.polygonOffsetUnits = .0;
@@ -315,7 +315,7 @@ export class ObjectContainer {
         });
 
         this.duplicateObject("ground", "tile_border", {
-            "ground.dark": "ground.light"
+            "ground.dark": "green"
         });
 
         // 'start' - mindig sarga := sarga gate  

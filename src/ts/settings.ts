@@ -24,7 +24,7 @@ export const renderPipeline = {
     shadow: {
         enabled: settingsStorage.get('shadowEnabled', true),
         map: settingsStorage.get('shadowMap', 2000),
-        camera : {
+        camera: {
             view: 20,
             near: -10,
             far: 1000
@@ -86,11 +86,12 @@ const paletteDefault = {
     "bush.trunk": 0x5D4037,
     "bush.crown": 0x388E3C,
 
-    "ground.light" : 0x90A4AE,
-    "ground.dark" : 0x546E7A,
+    "ground.light": 0x90A4AE,
+    "ground.dark": 0x546E7A,
     "pinetree.trunk": 0x5D4037,
-    "pinetree.crown": 0x33691E
+    "pinetree.crown": 0x33691E,
 
+    "green": 0xAED581
     // ... 
 };
 
