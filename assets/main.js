@@ -937,68 +937,7 @@ class Input extends InputBase {
         this.rotateAreaY = height * settings_1.rotateAreaY;
     }
 }
-/** This class periodically emits:
- *      - [FRONT, BACK, LEFT, RIGHT] ControlEvents
- *      - 4x cw and 4x ccw CameraDirectionEvents (that's 2 whole round around the avatar)
- *      - 4x zoom in and 4x zoom out event
- */
-class InputMock extends InputBase {
-    constructor(eventSourceElement, controlEventFrequency = 1000, cameraDirectionEventFrequency = 1000, cameraAttributeEventFrequency = 1000) {
-        super(eventSourceElement);
-        this.mockControlEvents = [
-            { direction: ControlDirection.FRONT, angle: 0 },
-            { direction: ControlDirection.RIGHT, angle: 0 },
-            { direction: ControlDirection.BACK, angle: 0 },
-            { direction: ControlDirection.LEFT, angle: 0 }
-        ];
-        this.mockCameraDirectionEvents = [
-            { direction: CameraDirection.CW },
-            { direction: CameraDirection.CW },
-            { direction: CameraDirection.CW },
-            { direction: CameraDirection.CW },
-            { direction: CameraDirection.CCW },
-            { direction: CameraDirection.CCW },
-            { direction: CameraDirection.CCW },
-            { direction: CameraDirection.CCW }
-        ];
-        this.mockCameraAttributeEvents = [
-            { attribute: CameraAttribute.ZOOM, value: settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: -1 * settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: -1 * settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: -1 * settings_1.zoom.step },
-            { attribute: CameraAttribute.ZOOM, value: -1 * settings_1.zoom.step }
-        ];
-        if (controlEventFrequency > 0) {
-            let controlEventCounter = 0;
-            setInterval(() => {
-                let i = controlEventCounter % this.mockControlEvents.length;
-                this.emit(exports.events.avatar.MOVE, this.mockControlEvents[i]);
-                controlEventCounter++;
-            }, controlEventFrequency);
-        }
-        if (cameraDirectionEventFrequency > 0) {
-            let cameraDirectionEventCounter = 0;
-            setInterval(() => {
-                let i = cameraDirectionEventCounter % this.mockCameraDirectionEvents.length;
-                this.emit(exports.events.camera.ROTATE, this.mockCameraDirectionEvents[i]);
-                cameraDirectionEventCounter++;
-            }, cameraDirectionEventFrequency);
-        }
-        if (cameraAttributeEventFrequency > 0) {
-            let cameraAttributeEventCounter = 0;
-            setInterval(() => {
-                let i = cameraAttributeEventCounter % this.mockCameraAttributeEvents.length;
-                this.emit(exports.events.camera.ZOOM, this.mockCameraAttributeEvents[i]);
-                cameraAttributeEventCounter++;
-            }, cameraAttributeEventFrequency);
-        }
-    }
-    update() { }
-}
-exports.input = new InputMock(settings_1.canvasWrapper, 0, 500, 0);
+exports.input = new Input(settings_1.canvasWrapper);
 
 },{"./settings":9,"events":13}],6:[function(require,module,exports){
 /**
