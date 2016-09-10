@@ -13,7 +13,7 @@ import {EventEmitter} from 'events';
 import {dom} from './utils';
 import {LevelDescription, Level} from './levels';
 import {LevelStats, FinishState} from './game';
-import {settingsStorage} from './settings';
+import {settingsStorage, palette, canvasWrapper} from './settings';
 
 
 declare global {
@@ -92,10 +92,11 @@ export class UserInterface extends EventEmitter {
         goFullscreen: <HTMLInputElement>dom.byId('go-fullscreen-area-toggle'),
         levels: <HTMLInputElement>dom.byId('levels-toggle'),
         settings: <HTMLInputElement>dom.byId('settings-toggle'),
-        about: <HTMLInputElement>dom.byId('about-toggle')
+        help: <HTMLInputElement>dom.byId('help-toggle')
     };
 
     private reloadRequired = false;
+    private defaultBackground = window.getComputedStyle(document.body).backgroundColor;
 
     constructor(){
         super();
@@ -401,6 +402,27 @@ export class UserInterface extends EventEmitter {
         let dataset = this.elements.stepCounter.dataset;
 
         dataset.current = current;
+    }
+
+    setBackground(background: string){
+        let activePalette = palette[0];
+
+        if(background !== undefined){
+            let color = activePalette[background];
+            if(color){
+                document.body.style.backgroundColor = '#' + color.toString(16);
+            }
+            else {
+                document.body.style.backgroundColor = this.defaultBackground;
+            }
+        }
+        else {
+            document.body.style.backgroundColor = this.defaultBackground;
+        }
+    }
+
+    focusCanvas(): void {
+        canvasWrapper.focus();
     }
 }
 

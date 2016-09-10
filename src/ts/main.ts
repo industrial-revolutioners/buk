@@ -92,10 +92,12 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
     });
 
     game.on(Game.GameEvents.level.loaded, (level: Levels.Level) => {
+        ui.setBackground(level.background);
         ui.showLoading(false);
         ui.bonusCounter(game.bonus, level.bonus);
         ui.stepCounter(game.steps);
         ui.showGameUi(true);
+        ui.focusCanvas();
     });
 
     game.on(Game.GameEvents.storage.clear, () => {

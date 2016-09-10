@@ -119,6 +119,7 @@ function tmxParserPlugin(outFile){
             height: data.height,
             bonus: 0,
             steps: parseInt(data.properties.steps),
+            background: data.properties.background,
             startTile: null,
             finishTile: null,
             tileWidth: data.tileWidth,

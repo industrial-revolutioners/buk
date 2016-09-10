@@ -30,6 +30,7 @@ body {
   background: $body-bg;
   cursor: default;
   border-radius: 0;
+  transition: 3s ease background-color;
 }
 
 button {
