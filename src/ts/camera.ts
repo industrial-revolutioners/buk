@@ -71,7 +71,9 @@ export class CameraModel {
     constructor() {
         this.status = CameraOrientation.SOUTH_EAST;
 
-        this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 100);
+        let camprops = SETTINGS.renderPipeline.shadow.camera; 
+
+        this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, camprops.near, camprops.far);
         this.height = SETTINGS.cameraHeight;
 
         this.center = new THREE.Vector3(0, 0, 0);

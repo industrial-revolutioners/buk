@@ -25,9 +25,9 @@ export const renderPipeline = {
         enabled: settingsStorage.get('shadowEnabled', true),
         map: settingsStorage.get('shadowMap', 2000),
         camera : {
-            view: 5,
-            // near: 5,
-            far: 350
+            view: 20,
+            near: -10,
+            far: 1000
         }
     }
 };
