@@ -92,3 +92,5 @@ const paletteDefault = {
 export const palette = [paletteDefault];
 
 export const loadDelay = 250;
+
+export const finishDelay = 250;

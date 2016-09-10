@@ -13,7 +13,7 @@ import {ControlEvent, CameraDirectionEvent, CameraAttributeEvent, events, input}
 import {Level, LevelContainer} from './levels';
 import {Scene, RenderableEvents} from './objects';
 import {Storage} from './utils';
-import {settingsStorage} from './settings';
+import {settingsStorage, finishDelay} from './settings';
 import {LevelDescription} from "./levels";
 
 export const GameEvents = {
@@ -175,7 +175,11 @@ export class Game extends EventEmitter{
         };
 
         this.storage.set(this.activeLevel.name, finishState);
-        this.emit(GameEvents.level.finished, this.activeLevel, finishState, levelStats);
+
+        setTimeout(() => {
+            this.emit(GameEvents.level.finished, this.activeLevel, finishState, levelStats);
+        }, finishDelay);
+
     }
 
     getFinishState(name: string): FinishState {

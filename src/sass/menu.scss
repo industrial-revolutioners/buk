@@ -18,10 +18,6 @@
 
     height: calc(100% - 4vh - 86pt);
     top: calc(4vh + 86pt);
-
-    button {
-      margin: 16pt 0;
-    }
   }
 
   button {
@@ -42,6 +38,10 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+
+      @media (min-width: 1280px) {
+          font-size: 42pt;
+      }
   }
 }
 
@@ -109,6 +109,12 @@
       box-sizing: border-box;
       border: 2px solid rgba(0, 0, 0, 0.5);
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+
+      &:active {
+        background: black;
+        color: white;
+      }
 
       .fa {
         position: absolute;

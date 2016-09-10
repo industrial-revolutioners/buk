@@ -13,6 +13,10 @@
     -1px 1px 0 black,
      1px 1px 0 black;
 
+  @media (min-width: 1280px){
+    font-size: 22pt;
+  }
+
   &.hidden {
     display: none;
   }
@@ -34,7 +38,11 @@
     font-size: 24pt;
     right: 0;
     top: 50%;
-    transform: translateY(-50%)
+    transform: translateY(-50%);
+
+    @media (min-width: 1280px){
+      font-size: 32pt;
+    }
   }
 
   #replay-game {
@@ -43,5 +51,10 @@
     right: 34pt;
     top: 50%;
     transform: translateY(-50%);
+
+    @media (min-width: 1280px){
+      font-size: 32pt;
+      right: 42pt;
+    }
   }
 }

@@ -27,7 +27,7 @@
     margin: 0;
     font-size: 14pt;
     text-align: center;
-    padding-left: 2pt;
+    padding-left: 4pt;
   }
 
   @media (max-width: 420px){
@@ -41,6 +41,17 @@
     #logo-texts {
       top: 4vh;
       transform: translateX(-50%)
+    }
+  }
+
+  @media (min-width: 1280px){
+    h1 {
+      font-size: 120pt;
+      line-height: 100pt;
+    }
+
+    h2 {
+      font-size: 20pt;
     }
   }
 }
