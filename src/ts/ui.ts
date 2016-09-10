@@ -12,7 +12,7 @@ import {EventEmitter} from 'events';
 
 import {dom} from './utils';
 import {LevelDescription, Level} from './levels';
-import {LevelStats} from './game';
+import {LevelStats, FinishState} from './game';
 import {settingsStorage} from './settings';
 
 
@@ -25,6 +25,7 @@ declare global {
     interface DOMStringMap {
         current: any;
         total: any;
+        name: any;
     }
 
     interface Document {
@@ -57,8 +58,12 @@ export class UserInterface extends EventEmitter {
         loadLog: dom.byId('loading-log'),
         stepCounter: dom.byId('step-counter'),
         bonusCounter: dom.byId('bonus-counter'),
+        finishedLevel: dom.byId('finished-level'),
         finishSteps: dom.byId('finish-steps'),
-        finishBonus: dom.byId('finish-bonus')
+        finishBonus: dom.byId('finish-bonus'),
+        finishStar: dom.byId('finish-star'),
+        bonusStar: dom.byId('bonus-star'),
+        stepStar: dom.byId('step-star')
     };
 
     screens = {
@@ -289,9 +294,12 @@ export class UserInterface extends EventEmitter {
 
     hideFinishUi(): void{
         this.elements.finishLayer.classList.remove('visible');
+        this.elements.finishStar.classList.remove('delay-0', 'delay-1', 'delay-2', 'yellow');
+        this.elements.bonusStar.classList.remove('delay-0', 'delay-1', 'delay-2', 'yellow');
+        this.elements.stepStar.classList.remove('delay-0', 'delay-1', 'delay-2', 'yellow');
     }
 
-    showFinishUi(level: Level, stats: LevelStats){
+    showFinishUi(level: Level, state: FinishState, stats: LevelStats){
         this.elements.finishLayer.classList.add('visible');
 
         this.buttons.replay.onclick = () => {
@@ -309,6 +317,22 @@ export class UserInterface extends EventEmitter {
         this.elements.finishBonus.dataset.current = stats.bonus;
         this.elements.finishBonus.dataset.total = level.bonus;
         this.elements.finishSteps.dataset.current = stats.steps;
+        this.elements.finishedLevel.dataset.name = level.name;
+
+        let delay = 0;
+        if(state.finishedStar){
+            this.elements.finishStar.classList.add('delay-' + delay, 'yellow');
+            delay++;
+        }
+
+        if(state.bonusStar){
+            this.elements.bonusStar.classList.add('delay-' + delay, 'yellow');
+            delay++;
+        }
+
+        if(state.stepsStar){
+            this.elements.stepStar.classList.add('delay-' + delay, 'yellow');
+        }
     }
 
     loadLevelDescriptions(descriptions: LevelDescription[]){
@@ -319,17 +343,27 @@ export class UserInterface extends EventEmitter {
         descriptions.forEach(level =>{
             let card = document.createElement('div');
             card.className = 'level-card';
+            card.id = 'card_' + level.name;
 
             let finished = document.createElement('span');
             finished.className = 'star-finished fa fa-star';
+            if(level.finishedStar){
+                finished.classList.add('yellow');
+            }
             card.appendChild(finished);
 
             let bonus = document.createElement('span');
             bonus.className = 'star-bonus fa fa-star';
+            if(level.bonusStar){
+                bonus.classList.add('yellow');
+            }
             card.appendChild(bonus);
 
             let steps = document.createElement('span');
             steps.className = 'star-steps fa fa-star';
+            if(level.stepsStar){
+                steps.classList.add('yellow');
+            }
             card.appendChild(steps);
 
             let name = document.createElement('span');
@@ -343,6 +377,17 @@ export class UserInterface extends EventEmitter {
                 this.emit(UIEvents.LOAD_LEVEL, level.name);
             }
         });
+    }
+
+    updateFinishState(name: string, state: FinishState){
+        let card = dom.byId('card_' + name);
+        let finishedStar = card.querySelector('.star-finished');
+        let bonusStar = card.querySelector('.star-bonus');
+        let stepsStar = card.querySelector('.star-steps');
+        
+        state.finishedStar === true ? finishedStar.classList.add('yellow') : finishedStar.classList.remove('yellow');
+        state.bonusStar === true ? bonusStar.classList.add('yellow') : bonusStar.classList.remove('yellow');
+        state.stepsStar === true ? stepsStar.classList.add('yellow') : stepsStar.classList.remove('yellow');
     }
 
     bonusCounter(current: number, total: number): void {

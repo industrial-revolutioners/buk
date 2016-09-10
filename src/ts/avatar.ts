@@ -111,6 +111,7 @@ export class Avatar {
             face: faces.bottom,
             accept: target => {
                 this.game.scene.animations.avatar.move(d);
+                this.game.addStep();
                 this.faces = faces;
                 this.setTile(target);
             },

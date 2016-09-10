@@ -14,6 +14,7 @@ import {Level, LevelContainer} from './levels';
 import {Scene, RenderableEvents} from './objects';
 import {Storage} from './utils';
 import {settingsStorage} from './settings';
+import {LevelDescription} from "./levels";
 
 export const GameEvents = {
     level: {
@@ -30,6 +31,12 @@ export const GameEvents = {
 export interface LevelStats {
     steps: number;
     bonus: number;
+}
+
+export interface FinishState {
+    finishedStar: boolean;
+    bonusStar: boolean;
+    stepsStar: boolean;
 }
 
 export class Game extends EventEmitter{
@@ -89,9 +96,7 @@ export class Game extends EventEmitter{
                 throw new Error('No avatar exist')
             }
             else {
-                this.steps++;
                 avatar.move(this.scene.camera.toAbsoluteDirection(e));
-                this.emit(GameEvents.level.step, this.steps);
             }
         }
     }
@@ -146,14 +151,51 @@ export class Game extends EventEmitter{
         this.emit(GameEvents.level.bonus, this.bonus, this.activeLevel.bonus);
     }
 
+    addStep(): void {
+        this.steps++;
+        this.emit(GameEvents.level.step, this.steps);
+    }
+
     leave(): void {
         this.scene.exit();
     }
 
     finished(): void {
         this.isActive = false;
-        this.emit(GameEvents.level.finished,
-            this.activeLevel, <LevelStats>{bonus: this.bonus, steps: this.steps}
-        );
+
+        let finishState = <FinishState>{
+            finishedStar: true,
+            bonusStar: this.bonus === this.activeLevel.bonus,
+            stepsStar: this.steps <= this.activeLevel.steps
+        };
+
+        let levelStats = <LevelStats>{
+            bonus: this.bonus,
+            steps: this.steps
+        };
+
+        this.storage.set(this.activeLevel.name, finishState);
+        this.emit(GameEvents.level.finished, this.activeLevel, finishState, levelStats);
+    }
+
+    getFinishState(name: string): FinishState {
+        return this.storage.get(name);
+    }
+
+    getLevelDescriptions(): LevelDescription[]{
+        let descriptions: LevelDescription[] = [];
+
+        this.levels.getLevelDescriptions().forEach((description: LevelDescription) => {
+            let state = this.getFinishState(description.name);
+            if(state !== undefined){
+                description.finishedStar = state.finishedStar;
+                description.bonusStar = state.bonusStar;
+                description.stepsStar = state.stepsStar;
+            }
+
+            descriptions.push(description);
+        });
+
+        return descriptions;
     }
 }

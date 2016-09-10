@@ -63,6 +63,9 @@ export interface LevelDescription {
     finished: boolean;
     bonus: boolean;
     steps: boolean;
+    finishedStar: boolean;
+    bonusStar: boolean;
+    stepsStar: boolean;
 }
 
 

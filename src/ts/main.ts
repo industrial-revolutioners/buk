@@ -56,7 +56,7 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
     let scene = new Objects.Scene(objects);
     let game = new Game.Game(levels, scene);
 
-    ui.loadLevelDescriptions(levels.getLevelDescriptions());
+    ui.loadLevelDescriptions(game.getLevelDescriptions());
 
     ui.on(UI.UIEvents.LOAD_LEVEL, (name: string) => {
         scene.exit();
@@ -102,8 +102,9 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         window.location.reload();
     });
 
-    game.on(Game.GameEvents.level.finished, (level: Levels.Level, stats: Game.LevelStats) => {
-        ui.showFinishUi(level, stats);
+    game.on(Game.GameEvents.level.finished, (level: Levels.Level, state: Game.FinishState, stats: Game.LevelStats) => {
+        ui.showFinishUi(level, state, stats);
+        ui.updateFinishState(level.name, game.getFinishState(level.name));
     });
 
     game.on(Game.GameEvents.level.bonus, (current: number, total: number) => {

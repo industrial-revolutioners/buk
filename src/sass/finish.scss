@@ -59,20 +59,38 @@
 
   #finish-stars {
     display: flex;
-    font-size: 10vw;
+    font-size: 8vw;
     justify-content: space-around;
 
     @media (max-width: 420px) {
-      font-size: 20vw
+      font-size: 16vw
     }
 
     .star {
       color: rgba(0, 0, 0, 0.4);
     }
+
+    .yellow {
+      color: $star-color;
+      scale: 1.4;
+    }
+
+    .delay-0 {
+       transition: 0.2s ease color 0.4s, 0.5s cubic-bezier(1, -2, 0, 2) scale 0.4s;
+    }
+
+    .delay-1 {
+      transition: 0.2s ease color 0.6s, 0.5s cubic-bezier(1, -2, 0, 2) scale 0.6s;
+    }
+
+    .delay-2 {
+      transition: 0.2s ease color 0.8s, 0.5s cubic-bezier(1, -2, 0, 2) scale 0.8s;
+    }
   }
 
   #finish-stats {
     font-size: 16pt;
+    margin-top: 16pt;
     text-align: center;
   }
 
@@ -108,4 +126,12 @@
       content: attr(data-current) ' / ' attr(data-total);
     }
   }
+
+  #finished-level {
+    &::after {
+      display: block;
+      content: '#' attr(data-name);
+    }
+  }
+
 }

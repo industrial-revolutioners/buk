@@ -132,6 +132,11 @@
         right: 8pt;
       }
 
+      .yellow {
+        color: $star-color;
+        opacity: 1;
+      }
+
       @media (max-width: 420px){
         width: 30vw;
         height: 30vw;
