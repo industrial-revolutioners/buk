@@ -4,9 +4,12 @@ const browserify = require('browserify');
 const browserSync = require('browser-sync').create();
 const errorify = require('errorify');
 const File = require('vinyl');
+const fs = require('fs');
 const gulp = require('gulp');
+const marked = require('marked');
 const metascript = require('gulp-metascript');
 const path = require('path');
+const preprocess = require('gulp-preprocess');
 const sass = require('gulp-sass');
 const stream = require('stream');
 const through2 = require('through2');
@@ -23,12 +26,18 @@ const RELEASE_CONTEXT = {DEBUG: false};
 // html ------------------------------------------------------------------------
 gulp.task('build-html', () => {
     return gulp.src('./src/html/index.html')
+        .pipe(preprocess({
+            context: {readme: marked(fs.readFileSync('README.md', 'utf8'))}
+        }))
         .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('watch-html', ['build-html'], () => {
     return gulp.watch('./src/html/index.html', () => {
         return gulp.src('./src/html/index.html')
+            .pipe(preprocess({
+                context: {readme: marked(fs.readFileSync('README.md', 'utf8'))}
+            }))
             .pipe(gulp.dest('./dist'))
             .pipe(browserSync.stream({match: '**/*.html'}));
     });
@@ -110,6 +119,7 @@ function tmxParserPlugin(outFile){
             height: data.height,
             bonus: 0,
             steps: parseInt(data.properties.steps),
+            background: data.properties.background,
             startTile: null,
             finishTile: null,
             tileWidth: data.tileWidth,
@@ -332,7 +342,9 @@ function objectCollector(outFile){
     return through2.obj(
         function(file, encoding, callback){
             util.log('Parsing', file.path);
-            objects.push(JSON.parse(file.contents));
+            let json = JSON.parse(file.contents);
+            json["name"] = path.parse(file.path).name;
+            objects.push(json);
             callback();
         },
         function(callback){

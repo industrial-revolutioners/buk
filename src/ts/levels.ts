@@ -46,6 +46,7 @@ interface LevelJson {
     height: number;
     bonus: number;
     steps: number;
+    background: string;
     startTile: number;
     finishTile: number;
     tileWidth: number;
@@ -58,8 +59,15 @@ interface LevelJson {
 /**
  * LevelDescription objects are used by the UI to show the level list
  */
-interface LevelDescription {
+export interface LevelDescription {
     name: string;
+    background: string;
+    finished: boolean;
+    bonus: boolean;
+    steps: boolean;
+    finishedStar: boolean;
+    bonusStar: boolean;
+    stepsStar: boolean;
 }
 
 
@@ -89,6 +97,7 @@ export class Level {
 
     objects: LevelObject[] = [];
 
+    background: string;
     bonus: number;
     steps: number;
 
@@ -100,6 +109,7 @@ export class Level {
         this.tileHeight = level.tileHeight;
         this.bonus = level.bonus;
         this.steps = level.steps;
+        this.background = level.background;
 
         level.tiles.forEach(tileJson =>{
             let tile = BaseTile.tileFactory(this, tileJson);
@@ -151,7 +161,8 @@ export class Level {
     /** Returns a light object with the brief description of the level. Used by the UI */
     getDescription(): LevelDescription {
         return <LevelDescription>{
-            name: this.name
+            name: this.name,
+            background: this.background
         };
     }
 }
