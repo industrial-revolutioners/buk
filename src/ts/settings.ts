@@ -77,7 +77,7 @@ const paletteDefault = {
     "avatar.green": 0x4CAF50,
     "avatar.blue": 0x1E88E5,
     "avatar.orange": 0xFB8C00,
-    "avatar.white": 0x90A4AE,
+    "avatar.white": 0xECEFF1,
     "avatar.yellow": 0xFDD835,
 
     "tree.crown": 0x8D6E63,

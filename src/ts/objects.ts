@@ -171,6 +171,9 @@ export class Scene extends Renderable {
         let levelNode = new THREE.Object3D();
 
         level.tileList.forEach((tileObject: Tiles.BaseTile) => {
+            if (tileObject.getName() === "Border")
+                return;
+                
             const px = tileObject.col;
             const py = tileObject.row;
 
@@ -181,14 +184,12 @@ export class Scene extends Renderable {
 
             let tile: THREE.Mesh;
 
-            if (tileObject.getName() === "Gate" || tileObject.getName() === "Finish") {
+            if (tileObject.getName() === "Gate" || tileObject.getName() === "Finish" || tileObject.getName() === "Bonus") {
                 const color = (<Tiles.Gate>tileObject).getFaceName();
                 tileName = tileName + "_" + color;
             }
 
             tile = this.objContainer.getObject(tileName);
-
-            // delete allocation[px + "_" + py];
 
             tileNode.add(tile.clone());
             tileNode.position.set(px, 0, py);
@@ -196,13 +197,13 @@ export class Scene extends Renderable {
 
         // one big thing under everything
         let geometry = new THREE.BoxGeometry(lw, .25, lh);
-        let material = new THREE.MeshLambertMaterial(this.objContainer.currentPalette["ground.light"]);
+        let material = new THREE.MeshLambertMaterial({ color: this.objContainer.currentPalette["ground.light"] });
         material.polygonOffset = true;
         material.polygonOffsetFactor = .01;
         material.polygonOffsetUnits = .0;
         let oneBigThing = new THREE.Mesh(geometry, material);
         oneBigThing.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
-        oneBigThing.position.set(lw * .5 - .5 , -.125, lh * .5 - .5);
+        oneBigThing.position.set(lw * .5 - .5, -.125, lh * .5 - .5);
 
         levelNode.add(oneBigThing);
 
@@ -267,6 +268,7 @@ export class ObjectContainer {
     private overrideMaterials(materials: THREE.Material[], nameMap: Object) {
         for (let i in materials) {
             let material = <THREE.MeshLambertMaterial>materials[i];
+
             if (this.currentPalette.hasOwnProperty(material.name) && nameMap.hasOwnProperty(material.name)) {
                 const newname = nameMap[material.name];
                 const color = this.currentPalette[newname];
@@ -282,6 +284,7 @@ export class ObjectContainer {
 
     private lookupMaterials(materials: THREE.Material[]) {
         for (let i in materials) {
+            const materialName = materials[i].name;
             let material = <THREE.MeshLambertMaterial>materials[i];
             if (this.currentPalette.hasOwnProperty(material.name)) {
                 const color = this.currentPalette[material.name];
@@ -342,10 +345,12 @@ export class ObjectContainer {
 
 
         // 'bonus' - ebbol ketto kell + cserelni kell majd oket
-        // TODO 
-        this.duplicateObject("ground", "tile_bonus", {
-            "ground.dark": "avatar.green",
-        });
+        for (let k in Avatar.stringToAvatarFace) {
+            const v: number = Avatar.stringToAvatarFace[k];
+            this.duplicateObject("ground", "tile_bonus_" + v, {
+                "ground.dark": "avatar." + k,
+            });
+        }
 
         //? if(DEBUG){
         for (let i in this.objects) {
