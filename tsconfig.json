@@ -1,10 +1,19 @@
 {
   "files": [
-    "src/ts/main.ts",
     "typings/index.d.ts"
+  ],
+  "filesGlob": [
+    "./build/**/*.ts",
+    "./build/**/*.tsx",
+    "!./node_modules/**"
   ],
   "compilerOptions": {
     "noImplicitAny": true,
-    "target": "es6"
+    "target": "es6",
+    "module": "commonjs",
+    "noLib": false,
+    "preserveConstEnums": true,
+    "declaration": false,
+    "suppressImplicitAnyIndexErrors": true
   }
 }

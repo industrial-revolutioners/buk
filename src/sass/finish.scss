@@ -1,0 +1,153 @@
+#finish-layer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  transition: 1s cubic-bezier(1, 0, 1, 1) z-index;
+
+  h1 {
+    text-align: center;
+    font-size: 18pt;
+
+
+
+    @media (min-width: 1280px){
+      font-size: 32pt;
+    }
+  }
+
+  #finish-panel {
+    position: fixed;
+    width: 50%;
+    background: $modal-bg;
+    height: 100vh;
+    border-right: 2px solid black;
+    border-left: 2px solid black;
+    left: 50%;
+    transform: translate(-50%, 100%);
+    transition: 0.4s ease transform, 2s z-index;
+    z-index: 10;
+
+    @media (max-width: 420px) {
+      width: 100%;
+    }
+  }
+
+  #finish-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    z-index: 0;
+    transition: 0.4s ease opacity;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  &.hidden {
+    display: block;
+  }
+
+  &.visible {
+    z-index: 10;
+    transition: 0s z-index;
+
+    #finish-panel {
+      transform: translate(-50%, 0);
+    }
+
+    #finish-overlay {
+      opacity: 1;
+    }
+  }
+
+  #finish-stars {
+    position: absolute;
+    width: 100%;
+    top: 24vh;
+    display: flex;
+    font-size: 8vw;
+    justify-content: space-around;
+
+    @media (max-width: 420px) {
+      font-size: 16vw
+    }
+
+    .star {
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    .yellow {
+      color: $star-color;
+      transform: scale(1.4);
+    }
+
+    .delay-0 {
+       transition: 0.2s ease color 0.4s, 0.5s cubic-bezier(1, -2, 0, 2) transform 0.4s;
+    }
+
+    .delay-1 {
+      transition: 0.2s ease color 0.6s, 0.5s cubic-bezier(1, -2, 0, 2) transform 0.6s;
+    }
+
+    .delay-2 {
+      transition: 0.2s ease color 0.8s, 0.5s cubic-bezier(1, -2, 0, 2) transform 0.8s;
+    }
+  }
+
+  #finish-stats {
+    position: absolute;
+    width: 100%;
+    top: 50vh;
+    font-size: 16pt;
+    text-align: center;
+
+    @media (min-width: 1280px){
+      font-size: 32pt;
+    }
+  }
+
+  #finish-controls {
+    position: absolute;
+    width: 100%;
+
+    bottom: 4vh;
+    display: flex;
+    justify-content: space-around;
+
+    button {
+      font-size: 6vw;
+      width: 8vw;
+      height: 8vw;
+
+      @media (max-width: 420px) {
+        font-size: 12vw;
+        width: 16vw;
+        height: 16vw;
+      }
+    }
+  }
+
+  #finish-steps {
+    &::after {
+      content: attr(data-current);
+    }
+  }
+
+  #finish-bonus {
+    &::after {
+      content: attr(data-current) ' / ' attr(data-total);
+    }
+  }
+
+  #finished-level {
+    &::after {
+      display: block;
+      content: '#' attr(data-name);
+    }
+  }
+
+}

@@ -1,0 +1,19 @@
+$font: 'Raleway', sans-serif;
+$button-font-size: 14pt;
+$body-bg: #81D4FA;
+$modal-bg: #f5f5f5;
+$star-color: #fbc02d;
+
+$reset-game-bg: #e53935;
+$reset-game-border: 2px solid black;
+$reset-game-active: black;
+$table-even-bg: $modal-bg;
+
+@mixin user-select($value) {
+  -webkit-touch-callout: $value;
+  -webkit-user-select: $value;
+  -khtml-user-select: $value;
+  -moz-user-select: $value;
+  -ms-user-select: $value;
+  user-select: $value;
+}

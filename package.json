@@ -8,14 +8,20 @@
     "browserify": "^13.1.0",
     "errorify": "^0.3.1",
     "gulp": "^3.9.1",
+    "gulp-metascript": "0.0.3",
+    "gulp-preprocess": "^2.0.0",
     "gulp-sass": "^2.3.2",
     "gulp-util": "^3.0.7",
-    "hammerjs": "^2.0.8",
+    "marked": "^0.3.6",
     "three": "^0.79.0",
+    "through2": "^2.0.1",
+    "tmx-parser": "^1.4.0",
     "tsify": "^1.0.3",
     "tween.js": "^16.3.5",
     "typescript": "^1.8.10",
     "typings": "^1.3.2",
+    "vinyl": "^1.2.0",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
   },
@@ -23,7 +29,8 @@
     "bootstrap": "npm install && typings install",
     "develop": "gulp watch",
     "build": "gulp",
-    "typings": "typings"
+    "typings": "typings",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",

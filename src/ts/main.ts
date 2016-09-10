@@ -1,21 +1,122 @@
-import * as THREE from 'three';
+/**
+ * main.ts
+ *
+ * buk - a cube rolling puzzle
+ *
+ * @author Caiwan
+ * @author Slapec
+ */
 
-import { renderer } from './renderer';
-import { camera } from './camera';
+/// <reference path="../../typings/index.d.ts" />
 
-let scene = new THREE.Scene();
+import * as Game from './game';
+import * as Levels from './levels';
+import * as Objects from './objects';
+import * as SETTINGS from './settings';
+import * as UI from './ui';
 
-let geometry = new THREE.BoxGeometry(1, 1, 1);
-let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-let cube = new THREE.Mesh(geometry, material);
+//? if(DEBUG){
+console.time('UI.bootstrap');
+//? }
 
-scene.add(cube);
+UI.bootstrap().then(ui => {
+    //? if(DEBUG) {
+    console.timeEnd('UI.bootstrap');
 
-camera.position.z = 5;
+    console.time('Levels.loadLevels');
+    //? }
 
-let render = () => {
-    requestAnimationFrame(render);
-    renderer.render(scene, camera);
-};
+    ui.loadLog('Initialized the interface');
 
-render();
+    let loadLevelsPromise = Levels.loadLevels();
+    loadLevelsPromise.then(() => {
+        //? if(DEBUG){
+        console.timeEnd('Levels.loadLevels');
+        //? }
+
+        ui.loadLog('Fetched levels')
+    });
+
+    let loadObjectsPromise = Objects.loadObjects();
+    loadObjectsPromise.then(() => {
+        //? if(DEBUG){
+        console.timeEnd('Objects.loadObjects');
+        //? }
+
+        ui.loadLog('Fetched objects');
+    });
+
+    Promise.all([loadLevelsPromise, loadObjectsPromise]).then((values: any[]) => {
+        main(ui, values[0], values[1])
+    });
+});
+
+
+function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Objects.ObjectContainer){
+    let scene = new Objects.Scene(objects);
+    let game = new Game.Game(levels, scene);
+
+    ui.loadLevelDescriptions(game.getLevelDescriptions());
+
+    ui.on(UI.UIEvents.LOAD_LEVEL, (name: string) => {
+        scene.exit();
+        ui.hideFinishUi();
+        ui.showUi(false);
+        ui.loadLog(`Loading level #${name}`);
+        ui.showLoading(true);
+        setTimeout(() => {
+            game.loadLevel(levels.getLevelByName(name));
+        }, SETTINGS.loadDelay);
+    });
+
+    ui.on(UI.UIEvents.REPLAY_LEVEL, () => {
+        scene.exit();
+        ui.hideFinishUi();
+        ui.showUi(false);
+        ui.loadLog(`Loading level #${game.activeLevel.name}`);
+        ui.showLoading(true);
+        setTimeout(() => {
+            game.loadLevel(game.activeLevel);
+        }, SETTINGS.loadDelay);
+    });
+
+    ui.on(UI.UIEvents.RESET_SETTINGS, () => {
+        game.resetSettings();
+    });
+
+    ui.on(UI.UIEvents.LEAVE_GAME, () => {
+        game.leave();
+        ui.hideFinishUi();
+        ui.showGameUi(false);
+        ui.showUi(true);
+    });
+
+    game.on(Game.GameEvents.level.loaded, (level: Levels.Level) => {
+        ui.setBackground(level.background);
+        ui.showLoading(false);
+        ui.bonusCounter(game.bonus, level.bonus);
+        ui.stepCounter(game.steps);
+        ui.showGameUi(true);
+        ui.focusCanvas();
+    });
+
+    game.on(Game.GameEvents.storage.clear, () => {
+        window.location.reload();
+    });
+
+    game.on(Game.GameEvents.level.finished, (level: Levels.Level, state: Game.FinishState, stats: Game.LevelStats) => {
+        ui.showFinishUi(level, state, stats);
+        ui.updateFinishState(level.name, game.getFinishState(level.name));
+    });
+
+    game.on(Game.GameEvents.level.bonus, (current: number, total: number) => {
+        ui.bonusCounter(current, total)
+    });
+
+    game.on(Game.GameEvents.level.step, (current: number) => {
+        ui.stepCounter(current);
+    });
+
+    ui.showLoading(false);
+    ui.showUi(true);
+}

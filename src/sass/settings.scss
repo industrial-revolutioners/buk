@@ -1,0 +1,64 @@
+#settings {
+  padding: 8pt;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    label {
+      padding: 4pt;
+      display: inline-block;
+      width: 100%;
+    }
+
+    td {
+      &:first-child {
+        width: 80%
+      }
+
+      &:last-child {
+        text-align: center;
+      }
+    }
+
+    tr:nth-child(even){
+      background: $table-even-bg;
+    }
+  }
+
+  .section {
+    margin: 0 0 12pt 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .section-body {
+    padding: 0 8pt;
+  }
+
+  h1 {
+    margin: 0 0 4pt 0;
+    padding-left: 4pt;
+    background: black;
+    font-size: 16pt;
+    color: white;
+  }
+
+  #game-settings {
+    .section-body {
+      text-align: center;
+
+      button {
+        padding: 6pt 4pt;
+        background: $reset-game-bg;
+        border: $reset-game-border;
+
+        &:active {
+          background: $reset-game-active;
+        }
+      }
+    }
+  }
+}
