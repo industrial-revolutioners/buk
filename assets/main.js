@@ -1494,7 +1494,7 @@ const paletteDefault = {
     "ground.dark": 0x546E7A,
     "pinetree.trunk": 0x5D4037,
     "pinetree.crown": 0x33691E,
-    "green": 0xC5E1A5
+    "green": 0xAED581
 };
 exports.palette = [paletteDefault];
 exports.loadDelay = 250;
