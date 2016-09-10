@@ -1290,7 +1290,7 @@ class Scene extends Renderable {
         });
         // one big thing under everything
         let geometry = new THREE.BoxGeometry(lw, .25, lh);
-        let material = new THREE.MeshLambertMaterial({ color: this.objContainer.currentPalette["ground.light"] });
+        let material = new THREE.MeshLambertMaterial({ color: this.objContainer.currentPalette["green"] });
         material.polygonOffset = true;
         material.polygonOffsetFactor = .05;
         material.polygonOffsetUnits = .0;
@@ -1338,7 +1338,7 @@ class ObjectContainer {
             this.objects[object3d.name] = object3d;
         });
         this.duplicateObject("ground", "tile_border", {
-            "ground.dark": "ground.light"
+            "ground.dark": "green"
         });
         // 'start' - mindig sarga := sarga gate
         this.duplicateObject("ground", "tile_start", {
@@ -1493,7 +1493,8 @@ const paletteDefault = {
     "ground.light": 0x90A4AE,
     "ground.dark": 0x546E7A,
     "pinetree.trunk": 0x5D4037,
-    "pinetree.crown": 0x33691E
+    "pinetree.crown": 0x33691E,
+    "green": 0xC5E1A5
 };
 exports.palette = [paletteDefault];
 exports.loadDelay = 250;
