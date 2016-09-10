@@ -1,0 +1,60 @@
+#game-layer {
+  position: fixed;
+  top: 8pt;
+  left: 8pt;
+  right: 8pt;
+  z-index: 10;
+  font-size: 16pt;
+  font-weight: bold;
+  color: white;
+  text-shadow:
+   -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+     1px 1px 0 black;
+
+  @media (min-width: 1280px){
+    font-size: 22pt;
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  #step-counter {
+    &::before {
+      content: 'Steps: ' attr(data-current);
+    }
+  }
+
+  #bonus-counter {
+    &::before {
+      content: 'Bonus: ' attr(data-current) '/' attr(data-total);
+    }
+  }
+
+  #leave-game {
+    position: absolute;
+    font-size: 24pt;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    @media (min-width: 1280px){
+      font-size: 32pt;
+    }
+  }
+
+  #replay-game {
+    position: absolute;
+    font-size: 24pt;
+    right: 34pt;
+    top: 50%;
+    transform: translateY(-50%);
+
+    @media (min-width: 1280px){
+      font-size: 32pt;
+      right: 42pt;
+    }
+  }
+}

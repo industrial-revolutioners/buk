@@ -8,6 +8,8 @@
     font-size: 32pt;
     line-height: 24pt;
     margin: 0;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
     font-weight: bold;
     background: black;
@@ -42,6 +44,11 @@
     #cog {
       color: $body-bg;
     }
+  }
+
+  #loading-title {
+    width: 100pt;
+    margin: auto;
   }
 
   #loading-log {

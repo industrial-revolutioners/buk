@@ -32,7 +32,7 @@ export class CameraModel {
     private status: CameraOrientation;
 
     // angle is in radian, where value is n*PI/4
-    private cameraOrientations =  [
+    private cameraOrientations = [
         {
             rad: 1,
             orientation: CameraOrientation.SOUTH_EAST,
@@ -66,14 +66,16 @@ export class CameraModel {
         }
     ];
 
-    constructor(){
+    private height: number;
+
+    constructor() {
         this.status = CameraOrientation.SOUTH_EAST;
 
         this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 100);
-        this.camera.position.set(5, 5, 5);
+        this.height = SETTINGS.cameraHeight;
 
         this.center = new THREE.Vector3(0, 0, 0);
-        this.camera.lookAt(this.center);
+        this.setViewAngle(this.cameraOrientations[0].rad);
 
         this.setZoom(SETTINGS.zoom.initial);
     }
@@ -82,7 +84,7 @@ export class CameraModel {
         let wh: number;
         let hw: number;
 
-        if(w > h){
+        if (w > h) {
             hw = h / w;
             wh = 1;
         }
@@ -100,7 +102,7 @@ export class CameraModel {
     }
 
     setZoom(z: number): void {
-        if (z < 0.000001){
+        if (z < 0.000001) {
             z = 1.;
         }
 
@@ -112,27 +114,54 @@ export class CameraModel {
         return 1. / this.camera.zoom;
     }
 
+    private angle: number;
+    private shiftCenter: THREE.Vector2 = new THREE.Vector2();
+
+    // TODO fix this miserable hack of mine 
+
     setViewAngle(phi: number) {
+        this.angle = phi;
         const x = Math.cos(phi) * SETTINGS.cameraRotationRadius;
         const y = Math.sin(phi) * SETTINGS.cameraRotationRadius;
 
-        this.camera.position.x = x;
-        this.camera.position.z = y;
-        this.camera.lookAt(this.center);
+        this.camera.position.x = this.center.x + x + this.shiftCenter.x;
+        this.camera.position.y = this.height;
+        this.camera.position.z = this.center.z + y + this.shiftCenter.y;
+        let ccenter = this.center.clone();
+        ccenter.x += this.shiftCenter.x;
+        ccenter.z += this.shiftCenter.y;
+        this.camera.lookAt(ccenter);
     }
 
+    shake(h: number): void {
+        this.height = SETTINGS.cameraHeight - h;
+        this.center.y = -h;
+        this.setViewAngle(this.angle);
+    }
+
+    shift(x: number, y: number) {
+        this.shiftCenter.set(x, y);
+        this.setViewAngle(this.angle);
+    }
+
+    getCenter() {
+        return {
+            x: this.center.x,
+            y: this.center.z
+        };
+    }
     setCenter(x: number, y: number) {
         this.center.x = x;
         this.center.z = y;
-        this.camera.lookAt(this.center);
+        this.setViewAngle(this.angle);
     }
 
     rotate(d: CameraDirection): void {
         d === CameraDirection.CW ? this.status-- : this.status++;
-        if(this.status > CameraOrientation.NORTH_EAST){
+        if (this.status > CameraOrientation.NORTH_EAST) {
             this.status = CameraOrientation.SOUTH_EAST;
         }
-        else if (this.status < CameraOrientation.SOUTH_EAST){
+        else if (this.status < CameraOrientation.SOUTH_EAST) {
             this.status = CameraOrientation.NORTH_EAST;
         }
     }

@@ -41,7 +41,7 @@ export interface AvatarState {
     accept: (target: BaseTile) => void;
     kill: (target: BaseTile) => void;
     finish: (target: BaseTile) => void;
-    checkpoint: (target: BaseTile) => void;
+    bonus: (target: BaseTile) => void;
 }
 
 
@@ -50,27 +50,33 @@ export class Avatar {
     private tile: BaseTile;
     private faces: Faces;
 
-    constructor(game: Game, startTile: Start){
-        if(!(startTile instanceof Start)){
+    constructor(game: Game, startTile: Start) {
+        if (!(startTile instanceof Start)) {
             throw new Error(`Expected Start, got ${startTile.constructor.name} instead.`);
         }
 
         this.game = game;
 
+        this.reset();
+
+        this.setTile(startTile);
+        const level = startTile.level;
+        this.game.scene.animations.avatar.spawn(startTile.col, startTile.row, false);
+    }
+
+    reset() {
         this.faces = <Faces>{
             top: AvatarFaces.WHITE, bottom: AvatarFaces.YELLOW,
             left: AvatarFaces.GREEN, right: AvatarFaces.BLUE,
             front: AvatarFaces.RED, back: AvatarFaces.ORANGE
         };
-
-        this.setTile(startTile);
     }
 
-    delegateState(d: AbsoluteDirection){
+    delegateState(d: AbsoluteDirection) {
         let faces = Object.assign({}, this.faces);
 
         let temp = faces.top;
-        switch(d){
+        switch (d) {
             case AbsoluteDirection.NORTH:
                 faces.top = faces.front;
                 faces.front = faces.bottom;
@@ -105,26 +111,29 @@ export class Avatar {
             face: faces.bottom,
             accept: target => {
                 this.game.scene.animations.avatar.move(d);
+                this.game.addStep();
                 this.faces = faces;
                 this.setTile(target);
-                //? if(DEBUG){
-                console.log(this);
-                //? }
             },
             kill: target => {
-                console.warn('Died');
+                this.game.scene.animations.avatar.die(d, () => {
+                    this.game.died();
+                });
             },
             finish: target => {
-                console.warn('Finished');
+                this.game.finished();
+            },
+            bonus: target => {
+                this.game.addBonus();
             }
         }
     }
 
-    move(d: AbsoluteDirection){
+    move(d: AbsoluteDirection) {
         let stateDelegate = this.delegateState(d);
         let target: BaseTile;
 
-        switch(d){
+        switch (d) {
             case AbsoluteDirection.NORTH:
                 target = <BaseTile>this.tile.front;
                 break;
@@ -148,7 +157,7 @@ export class Avatar {
         target.action(stateDelegate);
     }
 
-    setTile(tile: BaseTile){
+    setTile(tile: BaseTile) {
         this.tile = tile;
     }
 }

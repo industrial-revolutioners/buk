@@ -33,6 +33,8 @@ export abstract class BaseTile {
 
     level: Level;
 
+    getName(){return this.constructor.name;}
+
     constructor(level: Level, tileJson: LevelJsonTile){
         this.level = level;
 
@@ -142,6 +144,10 @@ export class Gate extends Tile {
         }
         return false;
     }
+
+    getFaceName() : string{
+        return this.face.toString();
+    }
 }
 
 
@@ -165,7 +171,7 @@ export class Bonus extends Gate {
         if(success){
             if(!this.reached){
                 this.reached = true;
-                state.checkpoint(this);
+                state.bonus(this);
             }
         }
 
