@@ -199,8 +199,8 @@ export class Scene extends Renderable {
         let geometry = new THREE.BoxGeometry(lw, .25, lh);
         let material = new THREE.MeshLambertMaterial({ color: this.objContainer.currentPalette["ground.light"] });
         material.polygonOffset = true;
-        material.polygonOffsetFactor = .01;
-        material.polygonOffsetUnits = .01;
+        material.polygonOffsetFactor = .05;
+        material.polygonOffsetUnits = .0;
         let oneBigThing = new THREE.Mesh(geometry, material);
         oneBigThing.receiveShadow = SETTINGS.renderPipeline.shadow.enabled;
         oneBigThing.position.set(lw * .5 - .5, -.125, lh * .5 - .5);

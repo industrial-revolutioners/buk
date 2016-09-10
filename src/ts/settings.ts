@@ -83,8 +83,13 @@ const paletteDefault = {
     "tree.trunk": 0x8D6E63,
     "tree.crown": 0x66BB6A,
 
+    "bush.trunk": 0x5D4037,
+    "bush.crown": 0x388E3C,
+
     "ground.light" : 0x90A4AE,
-    "ground.dark" : 0x546E7A
+    "ground.dark" : 0x546E7A,
+    "pinetree.trunk": 0x5D4037,
+    "pinetree.crown": 0x33691E
 
     // ... 
 };

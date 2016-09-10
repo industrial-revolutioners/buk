@@ -307,9 +307,16 @@ export class UserInterface extends EventEmitter {
             this.emit(UIEvents.LOAD_LEVEL, level.name);
         };
 
-        this.buttons.next.onclick = () => {
-            this.emit(UIEvents.LOAD_LEVEL, level.nextLevel.name);
-        };
+        if(level.nextLevel !== null){
+            this.buttons.next.classList.remove('hidden');
+            this.buttons.next.onclick = () => {
+                this.emit(UIEvents.LOAD_LEVEL, level.nextLevel.name);
+            };
+        }
+        else {
+            this.buttons.next.classList.add('hidden');
+        }
+
 
         this.buttons.finishLeave.onclick = () => {
             this.emit(UIEvents.LEAVE_GAME);
