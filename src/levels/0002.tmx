@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="13" height="13" tilewidth="32" tileheight="32" nextobjectid="4">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="13" height="13" tilewidth="32" tileheight="32" nextobjectid="10">
  <properties>
   <property name="steps" type="int" value="10"/>
  </properties>
@@ -56,8 +56,14 @@
 </data>
  </layer>
  <objectgroup name="objects">
-  <object id="1" name="tree" x="64" y="32" width="32" height="32"/>
-  <object id="2" name="tree" x="352" y="320" width="32" height="32"/>
-  <object id="3" name="tree" x="64" y="256" width="32" height="32"/>
+  <object id="1" name="tree" x="96" y="352" width="32" height="32"/>
+  <object id="2" name="tree" x="192" y="320" width="32" height="32"/>
+  <object id="3" name="pinetree" x="32" y="64" width="32" height="32"/>
+  <object id="4" name="pinetree" x="128" y="32" width="32" height="32"/>
+  <object id="5" name="pinetree" x="288" y="64" width="32" height="32"/>
+  <object id="6" name="pinetree" x="352" y="128" width="32" height="32"/>
+  <object id="7" name="bush" x="160" y="96" width="32" height="32"/>
+  <object id="8" name="tree" x="224" y="352" width="32" height="32"/>
+  <object id="9" name="tree" x="256" y="320" width="32" height="32"/>
  </objectgroup>
 </map>
