@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div id="loading">
+        <div id="loading-title">
+            <h1>buk</h1>
+            <h2>a cube rolling puzzle</h2>
+        </div>
+        <div id="cog-animation">
+            <svg id="cog-bg" viewBox="0 0 153.43 177.17">
+                <path fill="#000" d="M76.715-5.0293E-7,0,44.291v88.583l76.715,44.291,76.715-44.291v-88.583z"/>
+            </svg>
+            <span class="center-fix">
+                <span id="cog" class="fa fa-cog fa-spin"></span>
+            </span>
+        </div>
+        <div id="loading-log">Loading game core</div>
+    </div>
+
+    <div id="ui-layer" class="hidden">
+        <div id="logo">
+            <div id="logo-texts">
+                <h1>buk</h1>
+                <h2>a cube rolling puzzle</h2>
+            </div>
+            <svg id="logo-bg" viewBox="0 0 153.43 177.17">
+                <path fill="#f5f5f5" d="M76.715,0.0000055971,0.0000077861,44.291,76.715,88.583,153.43,44.291z"/>
+                <path fill="#e53935" d="M0.0000077861,132.87,76.715,177.17v-88.583l-76.715-44.296z"/>
+                <path fill="#1e88e5" d="m153.43,44.291-76.715,44.291,0,88.583,76.715-44.291z"/>
+            </svg>
+        </div>
+
+        <div id="menu">
+            <label id="btn-play" for="levels-toggle">Play</label>
+            <label id="btn-settings" for="settings-toggle">Settings</label>
+            <label id="btn-help" for="help-toggle">Help</label>
+            <span id="cc">IR - 2016 (party version)</span>
+        </div>
+
+        <input type="checkbox" class="toggle" id="levels-toggle">
+        <div id="levels-screen" class="screen">
+            <div class="screen-head">
+                <h1>Levels</h1>
+                <label for="levels-toggle"><span class="fa fa-times"></span></label>
+            </div>
+            <div id="levels" class="screen-body"></div>
+        </div>
+
+        <input type="checkbox" class="toggle" id="settings-toggle">
+        <div id="settings-screen" class="screen">
+            <div class="screen-head">
+                <h1>Settings</h1>
+                <label for="settings-toggle" id="save-settings"><span class="fa fa-times"></span></label>
+            </div>
+            <div id="settings" class="screen-body">
+                <div id="control-settings" class="section">
+                    <h1><span>Controls</span></h1>
+                    <div class="section-body">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><label for="swap-rotation">Swap camera rotation</label></td>
+                                    <td><input type="checkbox" id="swap-rotation"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="graphics-settings" class="section">
+                    <h1><span>Graphics</span></h1>
+                    <div class="section-body">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><label for="antialias">Anti-aliasing</label></td>
+                                    <td><input type="checkbox" id="antialias"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="ssao">SSAO</label></td>
+                                    <td><input type="checkbox" id="ssao"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="shadow">Shadow quality</label></td>
+                                    <td>
+                                        <select id="shadow">
+                                            <option value="off">Off</option>
+                                            <option value="low">Low</option>
+                                            <option value="high">High</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="game-settings" class="section">
+                    <h1><span>Game</span></h1>
+                    <div class="section-body">
+                        <button id="reset-game">Reset the game</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <input type="checkbox" class="toggle" id="help-toggle">
+        <div id="help-screen" class="screen">
+            <div class="screen-head">
+                <h1>Help</h1>
+                <label for="help-toggle"><span class="fa fa-times"></span></label>
+            </div>
+            <div id="help" class="screen-body">
+                <h1 id="-buk">.buk</h1>
+<p>.buk is a cube rolling puzzle game</p>
+<h2 id="how-to-play-the-game-">How to play the game?</h2>
+<p>After selecting a level you can control the game from either keyboard
+or from touch screen.</p>
+<p>If you&#39;re on touch screen then:</p>
+<ul>
+<li>Swipe up, down, left or right to roll the cube to the desired
+direction</li>
+<li>Swipe left or right at the bottom of the screen to rotate the camera
+clockwise or counter-clockwise.</li>
+<li>Pinch to zoom</li>
+</ul>
+<p>Or from keyboard:</p>
+<ul>
+<li><code>w</code> or <code>up arrow</code> - Move forward</li>
+<li><code>s</code> or <code>down arrow</code> - Move back</li>
+<li><code>a</code> or <code>left arrow</code> - Move left</li>
+<li><code>d</code> or <code>right arrow</code> - Move right</li>
+<li><code>shift + a</code> - Rotate the camera clockwise</li>
+<li><code>shift + d</code> - Rotate the camea counter-clockwise</li>
+<li><code>shift + w</code> - Zoom in</li>
+<li><code>shift + s</code> - Zoom out</li>
+</ul>
+<h2 id="what-s-the-goal-of-the-game-">What&#39;s the goal of the game?</h2>
+<p>The goal is to roll the cube on the level towards the exit. The cube
+can step on the tile if the side of the cube matches the color of the
+tile.</p>
+<h2 id="how-can-i-earn-stars-">How can I earn stars?</h2>
+<p>You get the first star if you finish the level successfully.
+The second star is given if you collect all the bonuses on the level.
+The third star is given if you finish the level with the fewest steps. </p>
+<h1 id="development-stuff">Development stuff</h1>
+<h2 id="requirements">Requirements</h2>
+<p>You need Node.js 6.3.1 or newer to start developing.</p>
+<p>To bootstrap your environment run <code>npm run bootstrap</code> in the root
+directory of the project.</p>
+<blockquote>
+<p>This npm script will install all dependencies and type definitions</p>
+</blockquote>
+<h2 id="development">Development</h2>
+<p>Run <code>npm run develop</code> to start the development server and navigate to
+<code>http://localhost:3000</code> (as seen in the console output).</p>
+<p>Any change you make in the <code>src/</code> directory will trigger the browser
+to reload. The server is available externally to so you can access
+the application on your phone easily.</p>
+<p><em>To set it up in VS code check 
+<a href="https://gist.github.com/caiwan/c23ee4b06e6c90748b2da58a9ea98e38">these</a> 
+sample jsons.</em> Also please note that
+<code>/// &lt;reference path=&quot;../../typings/index.d.ts&quot; /&gt;</code> line seems to be
+mandatory before any includes to make it work with it <em>(But also YMMW)</em>.
+Please don&#39;t remove them.</p>
+<h2 id="release-build">Release build</h2>
+<p>Simply run <code>npm run build</code>. The result will be written in <code>dist/</code></p>
+
+            </div>
+        </div>
+
+        <div id="overlay"></div>
+    </div>
+
+    <div id="game-layer" class="hidden">
+        <button id="replay-game"><span class="fa fa-refresh"></span></button>
+        <button id="leave-game"><span class="fa fa-times"></span></button>
+        <div id="step-counter"></div>
+        <div id="bonus-counter"></div>
+    </div>
+
+    <div id="finish-layer" class="hidden">
+        <div id="finish-panel">
+            <h1 id="finished-level">Finished level </h1>
+            <div id="finish-stars">
+                <div id="finish-star" class="star"><span class="fa fa-star"></span></div>
+                <div id="bonus-star" class="star"><span class="fa fa-star"></span></div>
+                <div id="step-star" class="star"><span class="fa fa-star"></span></div>
+            </div>
+            <div id="finish-stats">
+                <div id="finish-steps">Steps: </div>
+                <div id="finish-bonus">Bonus: </div>
+            </div>
+            <div id="finish-controls">
+                <button id="replay"><span class="fa fa-refresh"></span></button>
+                <button id="leave"><span class="fa fa-times"></span></button>
+                <button id="next"><span class="fa fa-arrow-right"></span></button>
+            </div>
+        </div>
+        <div id="finish-overlay"></div>
+    </div>
+
+    <input type="checkbox" class="toggle" id="go-fullscreen-area-toggle">
+    <div id="go-fullscreen-area">
+        <button id="go-fullscreen">Go fullscreen</button>
+        <label for="go-fullscreen-area-toggle">✕</label>
+    </div>
+    <div id="canvas-wrapper"></div>
+    <script src="assets/main.js"></script>
+</body>
+</html>
