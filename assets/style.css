@@ -2,13 +2,13 @@
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
-  src: url("/assets/fonts/raleway/Raleway-Regular.ttf") format("truetype"); }
+  src: url("./fonts/raleway/Raleway-Regular.ttf") format("truetype"); }
 
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 600;
-  src: url("/assets/fonts/raleway/Raleway-SemiBold.ttf") format("truetype"); }
+  src: url("./fonts/raleway/Raleway-SemiBold.ttf") format("truetype"); }
 
 #loading {
   position: fixed;
@@ -424,8 +424,8 @@
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
-  src: url("/assets/fonts/font-awesome/fonts//fontawesome-webfont.eot?v=4.6.3");
-  src: url("/assets/fonts/font-awesome/fonts//fontawesome-webfont.eot?#iefix&v=4.6.3") format("embedded-opentype"), url("/assets/fonts/font-awesome/fonts//fontawesome-webfont.woff2?v=4.6.3") format("woff2"), url("/assets/fonts/font-awesome/fonts//fontawesome-webfont.woff?v=4.6.3") format("woff"), url("/assets/fonts/font-awesome/fonts//fontawesome-webfont.ttf?v=4.6.3") format("truetype"), url("/assets/fonts/font-awesome/fonts//fontawesome-webfont.svg?v=4.6.3#fontawesomeregular") format("svg");
+  src: url("./fonts/font-awesome/fonts//fontawesome-webfont.eot?v=4.6.3");
+  src: url("./fonts/font-awesome/fonts//fontawesome-webfont.eot?#iefix&v=4.6.3") format("embedded-opentype"), url("./fonts/font-awesome/fonts//fontawesome-webfont.woff2?v=4.6.3") format("woff2"), url("./fonts/font-awesome/fonts//fontawesome-webfont.woff?v=4.6.3") format("woff"), url("./fonts/font-awesome/fonts//fontawesome-webfont.ttf?v=4.6.3") format("truetype"), url("./fonts/font-awesome/fonts//fontawesome-webfont.svg?v=4.6.3#fontawesomeregular") format("svg");
   font-weight: normal;
   font-style: normal; }
 
