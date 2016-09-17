@@ -2,7 +2,7 @@
 
 .buk is a cube rolling puzzle game
 
-![buk screenshot](assets/images/lvl0004.png)
+![buk screenshot](src/images/lvl0004.png)
 
 > Reached the 2nd place at Function 2016 game development competition
 
