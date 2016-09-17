@@ -372,8 +372,9 @@ gulp.task('watch-objects', ['build-objects'], () => {
 
 // static ----------------------------------------------------------------------
 gulp.task('copy-static', () => {
-    return gulp.src('./src/fonts/**/*')
-        .pipe(gulp.dest('./dist/assets/fonts/'));
+    gulp.src('./src/fonts/**/*').pipe(gulp.dest('./dist/assets/fonts/'));
+    gulp.src('./src/images/*').pipe(gulp.dest('./dist/assets/images/'));
+    gulp.src('./file_id.diz').pipe(gulp.dest('./dist/'));
 });
 
 

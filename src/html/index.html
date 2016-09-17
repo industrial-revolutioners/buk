@@ -22,6 +22,34 @@
         <div id="loading-log">Loading game core</div>
     </div>
 
+    <input type="checkbox" class="toggle" id="tutorial-toggle">
+    <div id="tutorial-layer">
+        <div id="tutorial-texts">
+            <div id="tutorial-goal">
+                <h3>Long story short</h3>
+                Roll the cube to the exit. The cube can roll on the tile if the side of the cube
+                matches the color of the tile. The exit tile has gray border and is filled with the exit color.
+                Other tile types may appear!
+            </div>
+            <div id="tutorial-controls">
+                <h3>Controls</h3>
+                <ul id="tutorial-touch">
+                    <li>Pinch to zoom</li>
+                    <li>Swipe to roll</li>
+                    <li>Swipe at the bottom of the screen to rotate the camera</li>
+                </ul>
+                <div id="tutorial-keyboard">
+                    If you're on keyboard use wasd to roll, shift+w/s to zoom and shift+a/d to rotate.
+                </div>
+            </div>
+            <div id="tutorial-help">
+                <h3>Have any issue?</h3>
+                See the <i>Help</i> menu for more information
+            </div>
+        </div>
+        <label for="tutorial-toggle" id="btn-got-it">Got it!</label>
+    </div>
+
     <div id="ui-layer" class="hidden">
         <div id="logo">
             <div id="logo-texts">
@@ -39,7 +67,7 @@
             <label id="btn-play" for="levels-toggle">Play</label>
             <label id="btn-settings" for="settings-toggle">Settings</label>
             <label id="btn-help" for="help-toggle">Help</label>
-            <span id="cc">IR - 2016 (party version)</span>
+            <span id="cc">IR - 2016 (1.0.0)</span>
         </div>
 
         <input type="checkbox" class="toggle" id="levels-toggle">
@@ -80,10 +108,6 @@
                                 <tr>
                                     <td><label for="antialias">Anti-aliasing</label></td>
                                     <td><input type="checkbox" id="antialias"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="ssao">SSAO</label></td>
-                                    <td><input type="checkbox" id="ssao"></td>
                                 </tr>
                                 <tr>
                                     <td><label for="shadow">Shadow quality</label></td>

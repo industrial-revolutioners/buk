@@ -171,7 +171,7 @@ export class Scene extends Renderable {
         let levelNode = new THREE.Object3D();
 
         level.tileList.forEach((tileObject: Tiles.BaseTile) => {
-            if (tileObject.getName() === "Border")
+            if (tileObject.type === "border")
                 return;
                 
             const px = tileObject.col;
@@ -180,11 +180,11 @@ export class Scene extends Renderable {
             let tileNode = new THREE.Object3D();
             levelNode.add(tileNode);
 
-            let tileName = "tile_" + tileObject.constructor.name.toLowerCase();
+            let tileName = "tile_" + tileObject.type;
 
             let tile: THREE.Mesh;
 
-            if (tileObject.getName() === "Gate" || tileObject.getName() === "Finish" || tileObject.getName() === "Bonus") {
+            if (tileObject.type === "gate" || tileObject.type === "finish" || tileObject.type === "bonus") {
                 const color = (<Tiles.Gate>tileObject).getFaceName();
                 tileName = tileName + "_" + color;
             }

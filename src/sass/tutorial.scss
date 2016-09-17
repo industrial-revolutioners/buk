@@ -1,0 +1,47 @@
+#tutorial-toggle {
+  &:checked ~ #tutorial-layer {
+    z-index: 20;
+    transition: 0.2s ease opacity, 0s cubic-bezier(1, 0, 1, 1) z-index;
+    opacity: 1;
+  }
+}
+
+#tutorial-layer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  z-index: 0;
+  transition: 0.2s ease opacity, 0.5s cubic-bezier(1, 0, 1, 1) z-index;
+  text-align: center;
+  overflow: auto;
+
+  h3 {
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+  }
+
+  #btn-got-it {
+    @extend button;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8pt;
+  }
+
+  #tutorial-texts {
+    background: white;
+    text-align: justify;
+    padding: 8pt;
+    margin: 8pt;
+    border: 2px solid black;
+  }
+
+  #tutorial-touch {
+    margin: 0 0 4pt 0;
+    padding-left: 20pt;
+  }
+}

@@ -97,6 +97,7 @@ function main(ui: UI.UserInterface, levels: Levels.LevelContainer, objects: Obje
         ui.bonusCounter(game.bonus, level.bonus);
         ui.stepCounter(game.steps);
         ui.showGameUi(true);
+        ui.showTutorial();
         ui.focusCanvas();
     });
 

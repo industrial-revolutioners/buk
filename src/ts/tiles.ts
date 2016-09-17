@@ -21,6 +21,7 @@ import {Level, LevelJsonTile} from './levels';
 export abstract class BaseTile {
     // This object is populated at the end of this module
     static tileTypes = {};
+    type: string;
 
     id: number;
     col: number;
@@ -32,8 +33,6 @@ export abstract class BaseTile {
     right: number|BaseTile;
 
     level: Level;
-
-    getName(){return this.constructor.name;}
 
     constructor(level: Level, tileJson: LevelJsonTile){
         this.level = level;
@@ -102,6 +101,8 @@ export abstract class BaseTile {
  * the avatar can step on it freely.
  */
 export class Tile extends BaseTile {
+    type = 'tile';
+
     action(state: AvatarState){
         state.accept(this);
     }
@@ -113,6 +114,8 @@ export class Tile extends BaseTile {
  * The level should be bordered with void tiles.
  */
 export class Border extends BaseTile {
+    type = 'border';
+
     action(state: AvatarState){
         state.kill(this);
     }
@@ -124,6 +127,7 @@ export class Border extends BaseTile {
  */
 export class Gate extends Tile {
     protected face: AvatarFaces;
+    type = 'gate';
 
     constructor(level: Level, tileJson: LevelJsonTile){
         super(level, tileJson);
@@ -158,6 +162,7 @@ export class Gate extends Tile {
  */
 export class Bonus extends Gate {
     protected reached = false;
+    type = 'bonus';
 
     reset(): void {
         super.reset();
@@ -183,13 +188,17 @@ export class Bonus extends Gate {
 /**
  * The avatar is spawned on this tile. It also behaves like a Gate.
  */
-export class Start extends Gate {}
+export class Start extends Gate {
+    type = 'start';
+}
 
 
 /**
  * The level is finished if the avatar steps on this tile. It's also a gate.
  */
 export class Finish extends Gate {
+    type = 'finish';
+
     action(state: AvatarState){
         if(super.action(state)){
             state.finish(this);

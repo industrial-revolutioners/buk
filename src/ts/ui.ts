@@ -10,7 +10,7 @@
 
 import {EventEmitter} from 'events';
 
-import {dom} from './utils';
+import {dom, Storage} from './utils';
 import {LevelDescription, Level} from './levels';
 import {LevelStats, FinishState} from './game';
 import {settingsStorage, palette, canvasWrapper} from './settings';
@@ -84,7 +84,6 @@ export class UserInterface extends EventEmitter {
     inputs = {
         swapRotation: <HTMLInputElement>dom.byId('swap-rotation'),
         antialias: <HTMLInputElement>dom.byId('antialias'),
-        ssao: <HTMLInputElement>dom.byId('ssao'),
         shadow: <HTMLInputElement>dom.byId('shadow')
     };
 
@@ -92,11 +91,13 @@ export class UserInterface extends EventEmitter {
         goFullscreen: <HTMLInputElement>dom.byId('go-fullscreen-area-toggle'),
         levels: <HTMLInputElement>dom.byId('levels-toggle'),
         settings: <HTMLInputElement>dom.byId('settings-toggle'),
-        help: <HTMLInputElement>dom.byId('help-toggle')
+        help: <HTMLInputElement>dom.byId('help-toggle'),
+        tutorial: <HTMLInputElement>dom.byId('tutorial-toggle')
     };
 
     private reloadRequired = false;
     private defaultBackground = window.getComputedStyle(document.body).backgroundColor;
+    private storage = new Storage('ui');
 
     constructor(){
         super();
@@ -112,7 +113,6 @@ export class UserInterface extends EventEmitter {
     loadSettings(): void {
         this.inputs.swapRotation.checked = settingsStorage.get('swapRotation');
         this.inputs.antialias.checked = settingsStorage.get('antialias');
-        this.inputs.ssao.checked = settingsStorage.get('ssao');
 
         let shadow = this.inputs.shadow;
         let shadowEnabled = settingsStorage.get('shadowEnabled');
@@ -155,6 +155,7 @@ export class UserInterface extends EventEmitter {
             );
 
             if(confirmed){
+                this.storage.clear();
                 this.emit(UIEvents.RESET_SETTINGS);
             }
         };
@@ -195,11 +196,6 @@ export class UserInterface extends EventEmitter {
 
         this.inputs.antialias.onchange = function(){
             settingsStorage.set('antialias', this.checked);
-            self.reloadRequired = true;
-        };
-
-        this.inputs.ssao.onchange = function(){
-            settingsStorage.set('ssao', this.checked);
             self.reloadRequired = true;
         };
 
@@ -430,6 +426,14 @@ export class UserInterface extends EventEmitter {
 
     focusCanvas(): void {
         canvasWrapper.focus();
+    }
+
+    showTutorial(): void {
+        let tutorialShown = this.storage.get('tutorialShown', false);
+        if(!tutorialShown){
+            this.toggles.tutorial.checked = true;
+            this.storage.set('tutorialShown', true);
+        }
     }
 }
 

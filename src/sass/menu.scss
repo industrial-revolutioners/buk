@@ -176,5 +176,24 @@
 
   #help{
     padding: 8pt;
+
+    blockquote {
+      background: rgba(0, 0, 0, 0.2);
+      margin: 0;
+    }
+
+    img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+
+      @media (max-width: 420px) {
+          width: 94vw;
+      }
+
+      @media (min-width: 420px) and (max-width: 624px){
+        width: 60vw;
+      }
+    }
   }
 }

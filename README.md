@@ -2,6 +2,10 @@
 
 .buk is a cube rolling puzzle game
 
+![buk screenshot](assets/images/lvl0004.png)
+
+> Reached the 2nd place at Function 2016 game development competition
+
 ## How to play the game?
 
 After selecting a level you can control the game from either keyboard
@@ -34,9 +38,26 @@ tile.
 
 ## How can I earn stars?
 
-You get the first star if you finish the level successfully.
-The second star is given if you collect all the bonuses on the level.
-The third star is given if you finish the level with the fewest steps. 
+-   You get the first star if you finish the level successfully.
+-   The second star is given if you collect all the bonuses on the level.
+-   The third star is given if you finish the level with the fewest steps. 
+
+## It does not work / it's ugly!
+
+We've tested the game and should work in:
+ 
+-   Google Chrome 53.0.2785.101
+-   Google Chrome Android 52.0.2743.98
+-   Firefox 48.0
+-   Firefox Android 48.0
+
+Unfortunatelly we don't have the equipments to check if the game works 
+in Safari, Microsoft Edge or Internet Explorer so it's very likely that 
+it won't work.
+
+If you see the shadow is a skewed, or that some surfaces shine
+so bad it's natural. Texture flickering (z-fight) might appear on some
+poor hardware.
 
 # Development stuff
 
@@ -68,3 +89,22 @@ Please don't remove them.
 ## Release build
 
 Simply run `npm run build`. The result will be written in `dist/`
+
+## Changelog
+
+### v1.0.0 - 2016-09-10
+
+This version should work in Firefox (tested with 48.0).
+
+I know it's not a huge improvement but we consider this state of the game
+as the 1.0.0 version.
+
+### v0.0.1 - Function 2016 party version - 2016-09-10
+
+This is the party version as it was released at Function 2016.
+
+Known issues:
+
+Doesn't work in Firefox
+Doesn't work on iOS (only Chrome desktop/android is fully supported obviously)
+On some devices (usually on lower hardwares) may have some flickering (z-fight)
