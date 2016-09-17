@@ -1139,6 +1139,7 @@ function main(ui, levels, objects) {
         ui.bonusCounter(game.bonus, level.bonus);
         ui.stepCounter(game.steps);
         ui.showGameUi(true);
+        ui.showTutorial();
         ui.focusCanvas();
     });
     game.on(Game.GameEvents.storage.clear, () => {
@@ -1272,15 +1273,15 @@ class Scene extends Renderable {
         // -- build ground tiles
         let levelNode = new THREE.Object3D();
         level.tileList.forEach((tileObject) => {
-            if (tileObject.getName() === "Border")
+            if (tileObject.type === "border")
                 return;
             const px = tileObject.col;
             const py = tileObject.row;
             let tileNode = new THREE.Object3D();
             levelNode.add(tileNode);
-            let tileName = "tile_" + tileObject.constructor.name.toLowerCase();
+            let tileName = "tile_" + tileObject.type;
             let tile;
-            if (tileObject.getName() === "Gate" || tileObject.getName() === "Finish" || tileObject.getName() === "Bonus") {
+            if (tileObject.type === "gate" || tileObject.type === "finish" || tileObject.type === "bonus") {
                 const color = tileObject.getFaceName();
                 tileName = tileName + "_" + color;
             }
@@ -1528,7 +1529,6 @@ class BaseTile {
         this.back = tileJson.neighbors.back;
         this.left = tileJson.neighbors.left;
     }
-    getName() { return this.constructor.name; }
     /**
      * If the derived class is expected to be statefull (like it's going to track how many
      * times the avatar have stepped on it) you have reset its internal state here.
@@ -1567,6 +1567,10 @@ exports.BaseTile = BaseTile;
  * the avatar can step on it freely.
  */
 class Tile extends BaseTile {
+    constructor(...args) {
+        super(...args);
+        this.type = 'tile';
+    }
     action(state) {
         state.accept(this);
     }
@@ -1577,6 +1581,10 @@ exports.Tile = Tile;
  * The level should be bordered with void tiles.
  */
 class Border extends BaseTile {
+    constructor(...args) {
+        super(...args);
+        this.type = 'border';
+    }
     action(state) {
         state.kill(this);
     }
@@ -1588,6 +1596,7 @@ exports.Border = Border;
 class Gate extends Tile {
     constructor(level, tileJson) {
         super(level, tileJson);
+        this.type = 'gate';
         let face = avatar_1.stringToAvatarFace[tileJson.properties.face];
         if (face === undefined) {
             throw new Error(`Unsupported face ${face}`);
@@ -1617,6 +1626,7 @@ class Bonus extends Gate {
     constructor(...args) {
         super(...args);
         this.reached = false;
+        this.type = 'bonus';
     }
     reset() {
         super.reset();
@@ -1638,12 +1648,20 @@ exports.Bonus = Bonus;
  * The avatar is spawned on this tile. It also behaves like a Gate.
  */
 class Start extends Gate {
+    constructor(...args) {
+        super(...args);
+        this.type = 'start';
+    }
 }
 exports.Start = Start;
 /**
  * The level is finished if the avatar steps on this tile. It's also a gate.
  */
 class Finish extends Gate {
+    constructor(...args) {
+        super(...args);
+        this.type = 'finish';
+    }
     action(state) {
         if (super.action(state)) {
             state.finish(this);
@@ -1717,17 +1735,18 @@ class UserInterface extends events_1.EventEmitter {
         this.inputs = {
             swapRotation: utils_1.dom.byId('swap-rotation'),
             antialias: utils_1.dom.byId('antialias'),
-            ssao: utils_1.dom.byId('ssao'),
             shadow: utils_1.dom.byId('shadow')
         };
         this.toggles = {
             goFullscreen: utils_1.dom.byId('go-fullscreen-area-toggle'),
             levels: utils_1.dom.byId('levels-toggle'),
             settings: utils_1.dom.byId('settings-toggle'),
-            help: utils_1.dom.byId('help-toggle')
+            help: utils_1.dom.byId('help-toggle'),
+            tutorial: utils_1.dom.byId('tutorial-toggle')
         };
         this.reloadRequired = false;
         this.defaultBackground = window.getComputedStyle(document.body).backgroundColor;
+        this.storage = new utils_1.Storage('ui');
         this.registerElementHandlers();
         this.registerButtonHandlers();
         this.loadSettings();
@@ -1738,7 +1757,6 @@ class UserInterface extends events_1.EventEmitter {
     loadSettings() {
         this.inputs.swapRotation.checked = settings_1.settingsStorage.get('swapRotation');
         this.inputs.antialias.checked = settings_1.settingsStorage.get('antialias');
-        this.inputs.ssao.checked = settings_1.settingsStorage.get('ssao');
         let shadow = this.inputs.shadow;
         let shadowEnabled = settings_1.settingsStorage.get('shadowEnabled');
         let shadowMap = settings_1.settingsStorage.get('shadowMap');
@@ -1771,6 +1789,7 @@ class UserInterface extends events_1.EventEmitter {
             let confirmed = confirm('This will erase levels and game settings.\n\n' +
                 'Are you sure you want to reset the game?');
             if (confirmed) {
+                this.storage.clear();
                 this.emit(exports.UIEvents.RESET_SETTINGS);
             }
         };
@@ -1802,10 +1821,6 @@ class UserInterface extends events_1.EventEmitter {
         };
         this.inputs.antialias.onchange = function () {
             settings_1.settingsStorage.set('antialias', this.checked);
-            self.reloadRequired = true;
-        };
-        this.inputs.ssao.onchange = function () {
-            settings_1.settingsStorage.set('ssao', this.checked);
             self.reloadRequired = true;
         };
         this.inputs.shadow.onchange = function () {
@@ -1992,6 +2007,13 @@ class UserInterface extends events_1.EventEmitter {
     }
     focusCanvas() {
         settings_1.canvasWrapper.focus();
+    }
+    showTutorial() {
+        let tutorialShown = this.storage.get('tutorialShown', false);
+        if (!tutorialShown) {
+            this.toggles.tutorial.checked = true;
+            this.storage.set('tutorialShown', true);
+        }
     }
 }
 exports.UserInterface = UserInterface;
@@ -2413,40 +2435,25 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
 (function () {
     try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
+        cachedSetTimeout = setTimeout;
     } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
     }
     try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
+        cachedClearTimeout = clearTimeout;
     } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -2467,11 +2474,6 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {

@@ -131,14 +131,14 @@
       left: 0;
       height: calc(100% - 4vh - 86pt);
       top: calc(4vh + 86pt); } }
-  #menu button, #menu label {
+  #menu button, #menu label, #menu #tutorial-layer #btn-got-it, #tutorial-layer #menu #btn-got-it {
     height: 20%;
     margin: 8pt 0;
     font-size: 24pt;
     outline: none;
     background: #f5f5f5;
     border: 2pt solid black; }
-    #menu button:active, #menu label:active {
+    #menu button:active, #menu label:active, #menu #tutorial-layer #btn-got-it:active, #tutorial-layer #menu #btn-got-it:active {
       background: black; }
   #menu label {
     display: inline-flex;
@@ -240,6 +240,19 @@
           content: '#'; }
   .screen #help {
     padding: 8pt; }
+    .screen #help blockquote {
+      background: rgba(0, 0, 0, 0.2);
+      margin: 0; }
+    .screen #help img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; }
+      @media (max-width: 420px) {
+        .screen #help img {
+          width: 94vw; } }
+      @media (min-width: 420px) and (max-width: 624px) {
+        .screen #help img {
+          width: 60vw; } }
 
 #settings {
   padding: 8pt; }
@@ -270,11 +283,11 @@
     color: white; }
   #settings #game-settings .section-body {
     text-align: center; }
-    #settings #game-settings .section-body button, #settings #game-settings .section-body #menu label, #menu #settings #game-settings .section-body label, #settings #game-settings .section-body #go-fullscreen-area label, #go-fullscreen-area #settings #game-settings .section-body label {
+    #settings #game-settings .section-body button, #settings #game-settings .section-body #menu label, #menu #settings #game-settings .section-body label, #settings #game-settings .section-body #tutorial-layer #btn-got-it, #tutorial-layer #settings #game-settings .section-body #btn-got-it, #settings #game-settings .section-body #go-fullscreen-area label, #go-fullscreen-area #settings #game-settings .section-body label {
       padding: 6pt 4pt;
       background: #e53935;
       border: 2px solid black; }
-      #settings #game-settings .section-body button:active, #settings #game-settings .section-body #menu label:active, #menu #settings #game-settings .section-body label:active, #settings #game-settings .section-body #go-fullscreen-area label:active, #go-fullscreen-area #settings #game-settings .section-body label:active {
+      #settings #game-settings .section-body button:active, #settings #game-settings .section-body #menu label:active, #menu #settings #game-settings .section-body label:active, #settings #game-settings .section-body #tutorial-layer #btn-got-it:active, #tutorial-layer #settings #game-settings .section-body #btn-got-it:active, #settings #game-settings .section-body #go-fullscreen-area label:active, #go-fullscreen-area #settings #game-settings .section-body label:active {
         background: black; }
 
 #game-layer {
@@ -286,7 +299,7 @@
   font-size: 16pt;
   font-weight: bold;
   color: white;
-  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; }
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; }
   @media (min-width: 1280px) {
     #game-layer {
       font-size: 22pt; } }
@@ -399,12 +412,12 @@
     bottom: 4vh;
     display: flex;
     justify-content: space-around; }
-    #finish-layer #finish-controls button, #finish-layer #finish-controls #menu label, #menu #finish-layer #finish-controls label, #finish-layer #finish-controls #go-fullscreen-area label, #go-fullscreen-area #finish-layer #finish-controls label {
+    #finish-layer #finish-controls button, #finish-layer #finish-controls #menu label, #menu #finish-layer #finish-controls label, #finish-layer #finish-controls #tutorial-layer #btn-got-it, #tutorial-layer #finish-layer #finish-controls #btn-got-it, #finish-layer #finish-controls #go-fullscreen-area label, #go-fullscreen-area #finish-layer #finish-controls label {
       font-size: 6vw;
       width: 8vw;
       height: 8vw; }
       @media (max-width: 420px) {
-        #finish-layer #finish-controls button, #finish-layer #finish-controls #menu label, #menu #finish-layer #finish-controls label, #finish-layer #finish-controls #go-fullscreen-area label, #go-fullscreen-area #finish-layer #finish-controls label {
+        #finish-layer #finish-controls button, #finish-layer #finish-controls #menu label, #menu #finish-layer #finish-controls label, #finish-layer #finish-controls #tutorial-layer #btn-got-it, #tutorial-layer #finish-layer #finish-controls #btn-got-it, #finish-layer #finish-controls #go-fullscreen-area label, #go-fullscreen-area #finish-layer #finish-controls label {
           font-size: 12vw;
           width: 16vw;
           height: 16vw; } }
@@ -415,6 +428,41 @@
   #finish-layer #finished-level::after {
     display: block;
     content: "#" attr(data-name); }
+
+#tutorial-toggle:checked ~ #tutorial-layer {
+  z-index: 20;
+  transition: 0.2s ease opacity, 0s cubic-bezier(1, 0, 1, 1) z-index;
+  opacity: 1; }
+
+#tutorial-layer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  z-index: 0;
+  transition: 0.2s ease opacity, 0.5s cubic-bezier(1, 0, 1, 1) z-index;
+  text-align: center;
+  overflow: auto; }
+  #tutorial-layer h3 {
+    margin-top: 4pt;
+    margin-bottom: 4pt; }
+  #tutorial-layer #btn-got-it {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8pt; }
+  #tutorial-layer #tutorial-texts {
+    background: white;
+    text-align: justify;
+    padding: 8pt;
+    margin: 8pt;
+    border: 2px solid black; }
+  #tutorial-layer #tutorial-touch {
+    margin: 0 0 4pt 0;
+    padding-left: 20pt; }
 
 /*!
  *  Font Awesome 4.6.3 by @davegandy - http://fontawesome.io - @fontawesome
@@ -2630,7 +2678,7 @@ body {
   border-radius: 0;
   transition: 3s ease background-color; }
 
-button, #menu label, #go-fullscreen-area label {
+button, #menu label, #tutorial-layer #btn-got-it, #go-fullscreen-area label {
   font-family: "Raleway", sans-serif;
   border: 2pt solid black;
   background: #f5f5f5;
@@ -2638,7 +2686,7 @@ button, #menu label, #go-fullscreen-area label {
   cursor: pointer;
   color: black;
   -webkit-tap-highlight-color: transparent; }
-  button:active, #menu label:active, #go-fullscreen-area label:active {
+  button:active, #menu label:active, #tutorial-layer #btn-got-it:active, #go-fullscreen-area label:active {
     background: black;
     color: white; }
 
@@ -2674,11 +2722,11 @@ button, #menu label, #go-fullscreen-area label {
   transition: 0.4s ease transform;
   display: flex;
   justify-content: center; }
-  #go-fullscreen-area button, #go-fullscreen-area label {
+  #go-fullscreen-area button, #go-fullscreen-area #tutorial-layer #btn-got-it, #tutorial-layer #go-fullscreen-area #btn-got-it, #go-fullscreen-area label {
     font-size: 14pt;
     padding: 2pt 4pt;
     margin: 0; }
-    #go-fullscreen-area button:last-child, #go-fullscreen-area label:last-child {
+    #go-fullscreen-area button:last-child, #go-fullscreen-area #tutorial-layer #btn-got-it:last-child, #tutorial-layer #go-fullscreen-area #btn-got-it:last-child, #go-fullscreen-area label:last-child {
       border-left: none; }
   #go-fullscreen-area label {
     cursor: pointer; }

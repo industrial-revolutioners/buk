@@ -22,6 +22,34 @@
         <div id="loading-log">Loading game core</div>
     </div>
 
+    <input type="checkbox" class="toggle" id="tutorial-toggle">
+    <div id="tutorial-layer">
+        <div id="tutorial-texts">
+            <div id="tutorial-goal">
+                <h3>Long story short</h3>
+                Roll the cube to the exit. The cube can roll on the tile if the side of the cube
+                matches the color of the tile. The exit tile has gray border and is filled with the exit color.
+                Other tile types may appear!
+            </div>
+            <div id="tutorial-controls">
+                <h3>Controls</h3>
+                <ul id="tutorial-touch">
+                    <li>Pinch to zoom</li>
+                    <li>Swipe to roll</li>
+                    <li>Swipe at the bottom of the screen to rotate the camera</li>
+                </ul>
+                <div id="tutorial-keyboard">
+                    If you're on keyboard use wasd to roll, shift+w/s to zoom and shift+a/d to rotate.
+                </div>
+            </div>
+            <div id="tutorial-help">
+                <h3>Have any issue?</h3>
+                See the <i>Help</i> menu for more information
+            </div>
+        </div>
+        <label for="tutorial-toggle" id="btn-got-it">Got it!</label>
+    </div>
+
     <div id="ui-layer" class="hidden">
         <div id="logo">
             <div id="logo-texts">
@@ -39,7 +67,7 @@
             <label id="btn-play" for="levels-toggle">Play</label>
             <label id="btn-settings" for="settings-toggle">Settings</label>
             <label id="btn-help" for="help-toggle">Help</label>
-            <span id="cc">IR - 2016 (party version)</span>
+            <span id="cc">IR - 2016 (1.0.0)</span>
         </div>
 
         <input type="checkbox" class="toggle" id="levels-toggle">
@@ -82,10 +110,6 @@
                                     <td><input type="checkbox" id="antialias"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="ssao">SSAO</label></td>
-                                    <td><input type="checkbox" id="ssao"></td>
-                                </tr>
-                                <tr>
                                     <td><label for="shadow">Shadow quality</label></td>
                                     <td>
                                         <select id="shadow">
@@ -119,6 +143,10 @@
             <div id="help" class="screen-body">
                 <h1 id="-buk">.buk</h1>
 <p>.buk is a cube rolling puzzle game</p>
+<p><img src="assets/images/lvl0004.png" alt="buk screenshot"></p>
+<blockquote>
+<p>Reached the 2nd place at Function 2016 game development competition</p>
+</blockquote>
 <h2 id="how-to-play-the-game-">How to play the game?</h2>
 <p>After selecting a level you can control the game from either keyboard
 or from touch screen.</p>
@@ -146,9 +174,25 @@ clockwise or counter-clockwise.</li>
 can step on the tile if the side of the cube matches the color of the
 tile.</p>
 <h2 id="how-can-i-earn-stars-">How can I earn stars?</h2>
-<p>You get the first star if you finish the level successfully.
-The second star is given if you collect all the bonuses on the level.
-The third star is given if you finish the level with the fewest steps. </p>
+<ul>
+<li>You get the first star if you finish the level successfully.</li>
+<li>The second star is given if you collect all the bonuses on the level.</li>
+<li>The third star is given if you finish the level with the fewest steps. </li>
+</ul>
+<h2 id="it-does-not-work-it-s-ugly-">It does not work / it&#39;s ugly!</h2>
+<p>We&#39;ve tested the game and should work in:</p>
+<ul>
+<li>Google Chrome 53.0.2785.101</li>
+<li>Google Chrome Android 52.0.2743.98</li>
+<li>Firefox 48.0</li>
+<li>Firefox Android 48.0</li>
+</ul>
+<p>Unfortunatelly we don&#39;t have the equipments to check if the game works 
+in Safari, Microsoft Edge or Internet Explorer so it&#39;s very likely that 
+it won&#39;t work.</p>
+<p>If you see the shadow is a skewed, or that some surfaces shine
+so bad it&#39;s natural. Texture flickering (z-fight) might appear on some
+poor hardware.</p>
 <h1 id="development-stuff">Development stuff</h1>
 <h2 id="requirements">Requirements</h2>
 <p>You need Node.js 6.3.1 or newer to start developing.</p>
@@ -171,6 +215,17 @@ mandatory before any includes to make it work with it <em>(But also YMMW)</em>.
 Please don&#39;t remove them.</p>
 <h2 id="release-build">Release build</h2>
 <p>Simply run <code>npm run build</code>. The result will be written in <code>dist/</code></p>
+<h2 id="changelog">Changelog</h2>
+<h3 id="v1-0-0-2016-09-10">v1.0.0 - 2016-09-10</h3>
+<p>This version should work in Firefox (tested with 48.0).</p>
+<p>I know it&#39;s not a huge improvement but we consider this state of the game
+as the 1.0.0 version.</p>
+<h3 id="v0-0-1-function-2016-party-version-2016-09-10">v0.0.1 - Function 2016 party version - 2016-09-10</h3>
+<p>This is the party version as it was released at Function 2016.</p>
+<p>Known issues:</p>
+<p>Doesn&#39;t work in Firefox
+Doesn&#39;t work on iOS (only Chrome desktop/android is fully supported obviously)
+On some devices (usually on lower hardwares) may have some flickering (z-fight)</p>
 
             </div>
         </div>
