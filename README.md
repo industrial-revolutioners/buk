@@ -52,8 +52,8 @@ We've tested the game and should work in:
 -   Firefox Android 48.0
 
 Unfortunatelly we don't have the equipments to check if the game works 
-in Safari, Microsoft Edge or Internet Explorer so it's very likely that 
-it won't work.
+in Safari (and entirely on MacOS and iOS devices), Microsoft Edge or 
+Internet Explorer so it's very likely that it won't work.
 
 If you see the shadow is a skewed, or that some surfaces shine
 so bad it's natural. Texture flickering (z-fight) might appear on some
