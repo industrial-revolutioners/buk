@@ -1,6 +1,6 @@
 # .buk
 
-.buk is a cube rolling puzzle game
+.buk is a cube rolling puzzle game [Online version](https://industrial-revolutioners.github.io/buk/)
 
 ![buk screenshot](src/images/lvl0004.png)
 
